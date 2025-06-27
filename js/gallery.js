@@ -14,36 +14,36 @@ const imageGalleryState = {
 
 const galleryImages = [
   // Seasons (6 images)
-  { id: 's01', title: 'Sakura Bloom', location: 'Kyoto', photographer: 'Photographer A', category: 'seasons', path: 'images/seasons/season_01.txt' },
-  { id: 's02', title: 'Autumn Leaves', location: 'Nikko', photographer: 'Photographer B', category: 'seasons', path: 'images/seasons/season_02.txt' },
-  { id: 's03', title: 'Winter Snowscape', location: 'Hokkaido', photographer: 'Photographer C', category: 'seasons', path: 'images/seasons/season_03.txt' },
-  { id: 's04', title: 'Summer Festival', location: 'Tokyo', photographer: 'Photographer D', category: 'seasons', path: 'images/seasons/season_04.txt' },
-  { id: 's05', title: 'Early Spring Greens', location: 'Kamakura', photographer: 'Photographer E', category: 'seasons', path: 'images/seasons/season_05.txt' },
-  { id: 's06', title: 'Late Autumn Sunset', location: 'Hakone', photographer: 'Photographer F', category: 'seasons', path: 'images/seasons/season_06.txt' },
+  { id: 's01', title: 'Sakura Bloom', location: 'Kyoto', photographer: 'Photographer A', category: 'seasons', path: 'images/seasons/season_01.jpg' },
+  { id: 's02', title: 'Autumn Leaves', location: 'Nikko', photographer: 'Photographer B', category: 'seasons', path: 'images/seasons/season_02.jpg' },
+  { id: 's03', title: 'Winter Snowscape', location: 'Hokkaido', photographer: 'Photographer C', category: 'seasons', path: 'images/seasons/season_03.jpg' },
+  { id: 's04', title: 'Summer Festival', location: 'Tokyo', photographer: 'Photographer D', category: 'seasons', path: 'images/seasons/season_04.jpg' },
+  { id: 's05', title: 'Early Spring Greens', location: 'Kamakura', photographer: 'Photographer E', category: 'seasons', path: 'images/seasons/season_05.jpg' },
+  { id: 's06', title: 'Late Autumn Sunset', location: 'Hakone', photographer: 'Photographer F', category: 'seasons', path: 'images/seasons/season_06.jpg' },
 
   // Architecture (6 images)
-  { id: 'a01', title: 'Kinkaku-ji Temple', location: 'Kyoto', photographer: 'Photographer G', category: 'architecture', path: 'images/architecture/architecture_01.txt' },
-  { id: 'a02', title: 'Modern Shrine Design', location: 'Osaka', photographer: 'Photographer H', category: 'architecture', path: 'images/architecture/architecture_02.txt' },
-  { id: 'a03', title: 'Traditional Garden Bridge', location: 'Kanazawa', photographer: 'Photographer I', category: 'architecture', path: 'images/architecture/architecture_03.txt' },
-  { id: 'a04', title: 'Tokyo Skytree', location: 'Tokyo', photographer: 'Photographer J', category: 'architecture', path: 'images/architecture/architecture_04.txt' },
-  { id: 'a05', title: 'Himeji Castle', location: 'Himeji', photographer: 'Photographer K', category: 'architecture', path: 'images/architecture/architecture_05.txt' },
-  { id: 'a06', title: 'Rural Farmhouse', location: 'Shirakawa-go', photographer: 'Photographer L', category: 'architecture', path: 'images/architecture/architecture_06.txt' },
+  { id: 'a01', title: 'Kinkaku-ji Temple', location: 'Kyoto', photographer: 'Photographer G', category: 'architecture', path: 'images/architecture/architecture_01.jpg' },
+  { id: 'a02', title: 'Modern Shrine Design', location: 'Osaka', photographer: 'Photographer H', category: 'architecture', path: 'images/architecture/architecture_02.jpg' },
+  { id: 'a03', title: 'Traditional Garden Bridge', location: 'Kanazawa', photographer: 'Photographer I', category: 'architecture', path: 'images/architecture/architecture_03.jpg' },
+  { id: 'a04', title: 'Tokyo Skytree', location: 'Tokyo', photographer: 'Photographer J', category: 'architecture', path: 'images/architecture/architecture_04.jpg' },
+  { id: 'a05', title: 'Himeji Castle', location: 'Himeji', photographer: 'Photographer K', category: 'architecture', path: 'images/architecture/architecture_05.jpg' },
+  { id: 'a06', title: 'Rural Farmhouse', location: 'Shirakawa-go', photographer: 'Photographer L', category: 'architecture', path: 'images/architecture/architecture_06.jpg' },
 
   // Nature (6 images)
-  { id: 'n01', title: 'Mount Fuji View', location: 'Yamanashi', photographer: 'Photographer M', category: 'nature', path: 'images/nature/nature_01.txt' },
-  { id: 'n02', title: 'Bamboo Forest', location: 'Arashiyama', photographer: 'Photographer N', category: 'nature', path: 'images/nature/nature_02.txt' },
-  { id: 'n03', title: 'Okinawa Coastline', location: 'Okinawa', photographer: 'Photographer O', category: 'nature', path: 'images/nature/nature_03.txt' },
-  { id: 'n04', title: 'Aokigahara Forest', location: 'Fuji-Hakone-Izu National Park', photographer: 'Photographer P', category: 'nature', path: 'images/nature/nature_04.txt' },
-  { id: 'n05', title: 'Nachi Falls', location: 'Wakayama', photographer: 'Photographer Q', category: 'nature', path: 'images/nature/nature_05.txt' },
-  { id: 'n06', title: 'Shiretoko Peninsula', location: 'Hokkaido', photographer: 'Photographer R', category: 'nature', path: 'images/nature/nature_06.txt' },
+  { id: 'n01', title: 'Mount Fuji View', location: 'Yamanashi', photographer: 'Photographer M', category: 'nature', path: 'images/nature/nature_01.jpg' },
+  { id: 'n02', title: 'Bamboo Forest', location: 'Arashiyama', photographer: 'Photographer N', category: 'nature', path: 'images/nature/nature_02.jpg' },
+  { id: 'n03', title: 'Okinawa Coastline', location: 'Okinawa', photographer: 'Photographer O', category: 'nature', path: 'images/nature/nature_03.jpg' },
+  { id: 'n04', title: 'Aokigahara Forest', location: 'Fuji-Hakone-Izu National Park', photographer: 'Photographer P', category: 'nature', path: 'images/nature/nature_04.jpg' },
+  { id: 'n05', title: 'Nachi Falls', location: 'Wakayama', photographer: 'Photographer Q', category: 'nature', path: 'images/nature/nature_05.jpg' },
+  { id: 'n06', title: 'Shiretoko Peninsula', location: 'Hokkaido', photographer: 'Photographer R', category: 'nature', path: 'images/nature/nature_06.jpg' },
 
   // Culture (6 images)
-  { id: 'c01', title: 'Tea Ceremony Still Life', location: 'Uji', photographer: 'Photographer S', category: 'culture', path: 'images/culture/culture_01.txt' },
-  { id: 'c02', title: 'Zen Garden Raked Sand', location: 'Kyoto', photographer: 'Photographer T', category: 'culture', path: 'images/culture/culture_02.txt' },
-  { id: 'c03', title: 'Traditional Pottery Kiln', location: 'Mashiko', photographer: 'Photographer U', category: 'culture', path: 'images/culture/culture_03.txt' },
-  { id: 'c04', title: 'Calligraphy Tools', location: 'Nara', photographer: 'Photographer V', category: 'culture', path: 'images/culture/culture_04.txt' },
-  { id: 'c05', title: 'Ikebana Flower Arrangement', location: 'Tokyo', photographer: 'Photographer W', category: 'culture', path: 'images/culture/culture_05.txt' },
-  { id: 'c06', title: 'Taiko Drummers', location: 'Sado Island', photographer: 'Photographer X', category: 'culture', path: 'images/culture/culture_06.txt' }
+  { id: 'c01', title: 'Tea Ceremony Still Life', location: 'Uji', photographer: 'Photographer S', category: 'culture', path: 'images/culture/culture_01.jpg' },
+  { id: 'c02', title: 'Zen Garden Raked Sand', location: 'Kyoto', photographer: 'Photographer T', category: 'culture', path: 'images/culture/culture_02.jpg' },
+  { id: 'c03', title: 'Traditional Pottery Kiln', location: 'Mashiko', photographer: 'Photographer U', category: 'culture', path: 'images/culture/culture_03.jpg' },
+  { id: 'c04', title: 'Calligraphy Tools', location: 'Nara', photographer: 'Photographer V', category: 'culture', path: 'images/culture/culture_04.jpg' },
+  { id: 'c05', title: 'Ikebana Flower Arrangement', location: 'Tokyo', photographer: 'Photographer W', category: 'culture', path: 'images/culture/culture_05.jpg' },
+  { id: 'c06', title: 'Taiko Drummers', location: 'Sado Island', photographer: 'Photographer X', category: 'culture', path: 'images/culture/culture_06.jpg' }
 ];
 
 // Export if using modules later, for now they are global or encapsulated in IIFE
@@ -174,34 +174,31 @@ async function loadImage(imageObject, containerElement, isPreload) {
     //    return null;
     // }
 
-    // SIMPLIFIED for placeholder .txt files:
-    if (!isPreload) {
-        // In a real scenario, this would be `url('path/to/image.webp')`
-        // For placeholders, we just acknowledge it.
-        console.log(`Displaying: ${imageObject.title} from ${imageObject.path}`);
-        containerElement.style.backgroundImage = 'none'; // Clear previous
-        // To simulate content, you could put text, but for background, it's about the URL
-        // For now, we'll just use a distinct background color per container to see the fade.
-        // This will be replaced by actual image URLs.
-        if (containerElement === bgImageContainer1) {
-             containerElement.style.backgroundColor = 'rgba(100, 100, 255, 0.5)'; // Blueish
+    const img = new Image();
+    img.src = imageObject.path;
+
+    try {
+        await img.decode(); // Ensures image is downloaded and decoded
+        if (!isPreload) {
+            containerElement.style.backgroundImage = `url('${imageObject.path}')`;
+            containerElement.style.backgroundColor = ''; // Clear any fallback color
+            if (imageObject && imageObject.title && imageObject.location) {
+                imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
+                imageInfoOverlayElement.classList.add('visible');
+            } else {
+                imageInfoOverlayElement.classList.remove('visible');
+            }
         } else {
-             containerElement.style.backgroundColor = 'rgba(100, 255, 100, 0.5)'; // Greenish
+            console.log(`Preloaded: ${imageObject.title} from ${imageObject.path}`);
         }
-        // Update image info overlay
-        if (imageObject && imageObject.title && imageObject.location) {
-            imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
-            imageInfoOverlayElement.classList.add('visible');
-        } else {
-            imageInfoOverlayElement.classList.remove('visible');
-        }
-    } else {
-        console.log(`Preloading: ${imageObject.title} from ${imageObject.path}`);
+        imageGalleryState.transitionInProgress = false; // Should be set false *after* potential UI updates if !isPreload
+        return img; // Return the loaded image element
+    } catch (error) {
+        console.error("Error loading image:", imageObject.path, error);
+        if (!isPreload) handleImageLoadError(containerElement); // Pass container
+        imageGalleryState.transitionInProgress = false;
+        return null;
     }
-    // Simulate load time for preloader
-    await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network
-    imageGalleryState.transitionInProgress = false;
-    return { path: imageObject.path }; // Return a mock image object
 }
 
 
@@ -209,8 +206,7 @@ function handleImageLoadError(containerElement) {
     console.warn("Failed to load image. Displaying fallback and attempting to skip.");
     if (containerElement) { // Check if containerElement is provided
         containerElement.style.backgroundImage = 'none'; // Clear broken image
-        // Ensure the container itself doesn't obscure the body's fallback color
-        containerElement.style.backgroundColor = 'transparent';
+        containerElement.style.backgroundColor = '#E0E0E0'; // Set a fallback color for the failed container
     }
     imageInfoOverlayElement.classList.remove('visible'); // Hide info for broken image
 
@@ -220,8 +216,12 @@ function handleImageLoadError(containerElement) {
         console.log("Attempting to load next image after error...");
         stopRotation(); // Stop current rotation to prevent immediate re-trigger on same error
         setTimeout(() => {
+            // Ensure crossfadeToNextImage is called and then rotation is potentially restarted
             crossfadeToNextImage().then(() => {
-                if (imageGalleryState.isPlaying) startRotation(); // Restart if still supposed to be playing
+                // Check if it's still supposed to be playing before restarting
+                if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
+                    startRotation();
+                }
             });
         }, 1000); // Wait 1 second before trying next
     }
