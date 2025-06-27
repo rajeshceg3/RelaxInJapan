@@ -1,0 +1,250 @@
+/*
+  Serene Dashboard Styles
+  Version: 1.0.0
+  Author: Jules (AI Assistant)
+
+  Performance Considerations:
+  - This CSS is structured for readability. For production, it should be minified.
+  - Current font stack relies on system fonts or future font loading:
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Georgia', serif;
+  - Graceful degradation should be ensured if custom fonts fail to load.
+  - Critical CSS inlining could be considered for larger applications.
+
+  Cross-Browser Compatibility:
+  - Primarily uses modern CSS features (Flexbox, Custom Properties) expected to work
+    in the latest 2 versions of major browsers (Chrome, Firefox, Safari, Edge).
+  - Vendor prefixes are generally avoided unless specifically required for a property
+    to meet compatibility targets.
+  - Test thoroughly on all supported browsers.
+*/
+:root {
+    /* Color Palette */
+    --color-primary-warm-white-1: #FEFEFE;
+    --color-primary-warm-white-2: #F8F6F0;
+    --color-secondary-bamboo-green: #8FBC8F;
+    --color-secondary-zen-grey: #D3D3D3;
+    --color-accent-sakura-pink: #FFB7C5;
+    --color-accent-sunset-orange: #FFD4A3;
+    --color-text-deep-charcoal: #2F2F2F;
+
+    /* Typography System */
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Georgia', serif;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 24px;
+    --font-size-xxl: 32px;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-semibold: 600;
+    --line-height-body: 1.4;
+    --line-height-heading: 1.2;
+
+    /* Spacing Units */
+    --spacing-unit-xs: 4px;
+    --spacing-unit-sm: 8px;
+    --spacing-unit-md: 16px;
+    --spacing-unit-lg: 24px;
+    --spacing-unit-xl: 32px;
+    --spacing-unit-xxl: 48px;
+
+    /* New UI Element Properties */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --box-shadow-soft: 0 2px 8px rgba(0,0,0,0.1);
+    --border-thin: 1px solid var(--color-secondary-zen-grey);
+    --transition-speed: 300ms ease-in-out;
+    --focus-outline-color: var(--color-accent-sunset-orange);
+}
+
+/* Minimal Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-body);
+    color: var(--color-text-deep-charcoal);
+    background-color: var(--color-primary-warm-white-1);
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    background: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+    padding: var(--spacing-unit-md) 0;
+    text-align: center;
+}
+
+/* Mobile First: Stack columns by default */
+.dashboard-main {
+    display: flex;
+    flex-direction: column; /* Stack columns by default */
+    flex: 1;
+    padding: var(--spacing-unit-md);
+}
+
+.column {
+    padding: var(--spacing-unit-md);
+    background: var(--color-primary-warm-white-2);
+    width: 100%; /* Full width for mobile */
+    margin-bottom: var(--spacing-unit-md); /* Space between stacked columns */
+}
+
+.column:last-child {
+    margin-bottom: 0; /* No margin for the last column in stacked view */
+}
+
+/* Tablet Layout (768px - 1023px) */
+@media (min-width: 768px) {
+    .dashboard-main {
+        flex-direction: row; /* Arrange columns side-by-side */
+        flex-wrap: wrap; /* Allow wrapping for tablet layout */
+    }
+
+    .column {
+        margin-right: 0; /* Reset horizontal margins for flex items */
+        margin-left: 0; /* Reset horizontal margins for flex items */
+    }
+
+    .column-sidebar {
+        flex-basis: 100%;
+        order: 1;
+        margin-bottom: var(--spacing-unit-md); /* Space below full-width sidebar */
+    }
+
+    .column-content {
+        flex-basis: calc(60% - (var(--spacing-unit-md) / 2)); /* 60% width, accounting for gutter */
+        order: 2;
+        margin-right: var(--spacing-unit-md); /* Gutter between content and widgets */
+        margin-bottom: var(--spacing-unit-md); /* Space if widgets wrap below */
+    }
+
+    .column-widgets {
+        flex-basis: calc(40% - (var(--spacing-unit-md) / 2)); /* 40% width, accounting for gutter */
+        order: 3;
+        margin-bottom: var(--spacing-unit-md); /* Space if it's the last item in a row */
+    }
+
+    /* Remove margin from the last element in a row if it's not also the overall last*/
+    .column-content:last-of-type, .column-widgets:last-of-type {
+        margin-right: 0;
+    }
+}
+
+/* Desktop Layout (1024px+) */
+@media (min-width: 1024px) {
+    .dashboard-main {
+        flex-wrap: nowrap; /* Prevent wrapping for the 3-column layout */
+    }
+
+    .column-sidebar {
+        flex-basis: 25%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+
+    .column-content {
+        flex-basis: 50%; /* Can also be flex-grow: 1 if others have fixed basis */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+
+    .column-widgets {
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0; /* No right margin for the last column */
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+}
+
+/* Component Styles */
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+
+.btn-primary {
+    background-color: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #7aa87a; /* Slightly darker bamboo green */
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary-zen-grey);
+    color: var(--color-text-deep-charcoal);
+    border-color: var(--color-secondary-zen-grey);
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #c0c0c0; /* Slightly darker zen grey */
+    border-color: #c0c0c0;
+}
+
+.btn:focus-visible { /* Using focus-visible for better accessibility */
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 2px;
+}
+
+/* Link Styling */
+a {
+    color: var(--color-secondary-bamboo-green);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+a:hover, a:focus {
+    color: #7aa87a; /* Slightly darker bamboo green */
+    text-decoration: underline;
+}
+
+a:focus-visible { /* Using focus-visible for better accessibility */
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 1px;
+    text-decoration: none; /* Optional: remove underline on focus if outline is enough */
+}
+
+/* Card Styling */
+.card {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-1);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow-soft);
+    border: var(--border-thin);
+}
+
+/* Horizontal Rule / Divider Styling */
+hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-lg); /* Default margins for hr */
+    margin-bottom: var(--spacing-unit-lg); /* Default margins for hr */
+}
