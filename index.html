@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div id="background-gallery"></div>
     <div class="dashboard-container">
         <header class="dashboard-header">
             <h1>Dashboard Title</h1>
@@ -36,5 +37,18 @@
             </aside>
         </main>
     </div>
+    <div id="gallery-controls">
+        <button id="toggle-rotation" aria-label="Pause image rotation">Pause</button>
+        <button id="prev-image" aria-label="Previous image">Previous</button>
+        <button id="next-image" aria-label="Next image">Next</button>
+        <select id="category-filter" aria-label="Filter images by category">
+            <option value="all">All Categories</option>
+            <!-- Categories will be populated by JavaScript -->
+        </select>
+        <div id="image-info-overlay">
+            <!-- Image title and location will appear here -->
+        </div>
+    </div>
+    <script src="js/gallery.js"></script>
 </body>
 </html>
