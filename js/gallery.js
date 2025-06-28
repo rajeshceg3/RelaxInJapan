@@ -91,6 +91,24 @@ function initializeGallery() {
     currentVisibleContainer = bgImageContainer1; // Start with container 1
 
     populateCategoryFilter();
+
+    // Load saved preferences from localStorage
+    const savedCategory = localStorage.getItem('sereneDashboard_selectedCategory');
+    if (savedCategory) {
+        imageGalleryState.selectedCategory = savedCategory;
+        // Update the dropdown to reflect the loaded category
+        if (categoryFilterElement) categoryFilterElement.value = savedCategory;
+    }
+
+    const savedRotationState = localStorage.getItem('sereneDashboard_rotationState');
+    if (savedRotationState) {
+        imageGalleryState.isPlaying = savedRotationState === 'resumed';
+        if (toggleRotationBtn) {
+            toggleRotationBtn.textContent = imageGalleryState.isPlaying ? 'Pause' : 'Resume';
+            toggleRotationBtn.setAttribute('aria-label', imageGalleryState.isPlaying ? 'Pause image rotation' : 'Resume image rotation');
+        }
+    }
+
     loadInitialImage();
 
     if (imageGalleryState.userPreferences.autoRotate && imageGalleryState.isPlaying) {
@@ -359,6 +377,7 @@ function handleToggleRotation() {
         imageGalleryState.isPlaying = false;
         toggleRotationBtn.textContent = 'Resume';
         toggleRotationBtn.setAttribute('aria-label', 'Resume image rotation');
+        localStorage.setItem('sereneDashboard_rotationState', 'paused');
     } else {
         imageGalleryState.isPlaying = true;
         crossfadeToNextImage().then(() => {
@@ -366,6 +385,7 @@ function handleToggleRotation() {
         });
         toggleRotationBtn.textContent = 'Pause';
         toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
+        localStorage.setItem('sereneDashboard_rotationState', 'resumed');
     }
 }
 
@@ -438,6 +458,7 @@ function handlePreviousImage() {
 
 function handleCategoryChange(event) {
     imageGalleryState.selectedCategory = event.target.value;
+    localStorage.setItem('sereneDashboard_selectedCategory', imageGalleryState.selectedCategory);
     imageGalleryState.imageHistory = []; // Reset history for new category (AC4)
     imageGalleryState.currentImageIndex = -1; // Reset index
 

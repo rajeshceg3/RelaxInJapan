@@ -13,6 +13,7 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   **Image Information Overlay:** Displays the title and location of the current image.
 *   **Responsive Controls:** Gallery controls (pause, next, previous, category filter) are available and auto-hide when not in use.
 *   **Reduced Motion Accessibility:** Respects user preference for reduced motion.
+*   **User Preferences:** Remembers your last selected image category and whether image rotation was paused or active across sessions.
 
 ## How to Use
 
@@ -41,6 +42,13 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
     *   The title and location of the current image are displayed in an overlay.
 *   **Controls Visibility:**
     *   Move your mouse over the page to show the gallery controls. They will automatically hide after a few seconds of inactivity.
+
+### User Preferences
+The gallery automatically saves the following settings to your browser's local storage:
+*   **Selected Category:** The last image category you filtered by.
+*   **Rotation State:** Whether the image rotation was active or paused.
+
+These preferences are loaded when you next open the dashboard, allowing you to continue your session where you left off.
 
 ## Project Structure
 
@@ -81,7 +89,6 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 ## Future Ideas
 
 *   **Improved Preloading:** Enhance the image preloading logic for smoother transitions, especially on slower connections.
-*   **User Preferences Storage:** Use `localStorage` to save user preferences (e.g., selected category, auto-rotate preference) across sessions.
 *   **Lightbox Mode:** Implement a lightbox view for images, allowing users to see a larger version of the image with more details.
 *   **Admin Interface:** Create an admin interface for easier management of images and categories without directly editing the JavaScript file.
 *   **API Integration:** Fetch image data from an external API instead of a local array.
