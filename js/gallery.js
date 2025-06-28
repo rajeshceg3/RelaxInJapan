@@ -522,9 +522,33 @@ if (typeof module !== 'undefined' && module.exports) {
     stopRotation,
     saveUserPreferences,
     loadUserPreferences,
-    setSeasonalCategoryFilter // Export new function
+    setSeasonalCategoryFilter, // Export new function
+    // Exporting for testing purposes
+    populateCategoryFilter,
+    loadInitialImage,
+    resetControlsHideTimer,
+    handleVisibilityChange,
+    handleControlsVisibility,
+    // Expose for testing loadInitialImage if needed for currentVisibleContainer
+    // However, currentVisibleContainer is a module-level let, not a property of 'gallery' object.
+    // To make it testable this way, it would need to be part of an exported object,
+    // or initializeGallery should be used to set it up.
+    // For now, we will rely on initializeGallery to set it, or mock loadImage fully.
+    // Let's add an export for preloadNextImage as it's called by loadInitialImage
+    preloadNextImage,
+    handleImageLoadError // Export for testing
   };
 }
+// If currentVisibleContainer needs to be set directly for tests, it must be exported.
+// One way: export let currentVisibleContainer; (at the top)
+// and then assign to it. Or add to the module.exports object, which requires refactoring how it's used.
+// Given current structure, it's simpler to ensure DOM is set up for loadInitialImage tests
+// such that currentVisibleContainer is assigned by previous (mocked) gallery initialization steps.
+// Or, if loadInitialImage is truly unit tested, its dependencies like currentVisibleContainer
+// should be passed in or settable.
+// For now, the tests will mock gallery.loadImage, so the actual container object's properties
+// won't be accessed by loadImage, only that an object is passed.
+// We will create a mock div for this purpose in the test.
 
 // --- User Preferences ---
 function saveUserPreferences() {
@@ -573,3 +597,8 @@ function resetControlsHideTimer() {
         }, 3000); // AC4: Hide after 3 seconds
     }
 }
+
+// Make sure DOM elements are declared if they are to be accessed/checked in tests
+// This is usually handled by initializeGallery itself, but for direct function tests,
+// ensure they are either passed as args or globally available in the test environment.
+// For initializeGallery tests, the DOM setup in beforeEach should suffice.
