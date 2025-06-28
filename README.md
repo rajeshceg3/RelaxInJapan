@@ -48,7 +48,7 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   `css/style.css`: Contains the styles for the application.
 *   `js/gallery.js`: Handles the logic for the image gallery, including image loading, rotation, navigation, and filtering.
 *   `images/`: Contains subdirectories for different image categories.
-    *   `images/<category>/<image_file>.txt`: Placeholder files representing images. In a production scenario, these would be actual image files (e.g., .jpg, .png, .webp).
+    *   `images/<category>/<image_file>.jpg`: Image files for the gallery.
 *   `LICENSE`: Contains the license information for the project.
 *   `README.md`: This file.
 
@@ -80,7 +80,6 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 
 ## Future Ideas
 
-*   **Actual Image Support:** Replace the `.txt` placeholder files with actual image files (e.g., `.jpg`, `.png`, `.webp`) and update the `loadImage` function in `js/gallery.js` to display them.
 *   **Improved Preloading:** Enhance the image preloading logic for smoother transitions, especially on slower connections.
 *   **User Preferences Storage:** Use `localStorage` to save user preferences (e.g., selected category, auto-rotate preference) across sessions.
 *   **Lightbox Mode:** Implement a lightbox view for images, allowing users to see a larger version of the image with more details.
@@ -88,21 +87,6 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   **API Integration:** Fetch image data from an external API instead of a local array.
 *   **Advanced Animation & Transitions:** Explore more sophisticated image transition effects.
 *   **Unit Tests:** Add JavaScript unit tests to ensure the gallery logic functions as expected.
-
-## Bug Fixes and Known Issues
-
-*   **Placeholder Images:**
-    *   **Issue:** The gallery currently uses `.txt` files as placeholders for images (`path: 'images/category/name.txt'`). The `loadImage` function in `js/gallery.js` simulates loading these text files rather than actual image files.
-    *   **Fix:**
-        1.  Replace all `.txt` file references in the `galleryImages` array within `js/gallery.js` with paths to actual image files (e.g., `.jpg`, `.png`, `.webp`).
-        2.  Update the `loadImage` function in `js/gallery.js` to correctly load and display these image files. This involves:
-            *   Creating an `Image` object (`const img = new Image();`).
-            *   Setting its `src` to the image path.
-            *   Using `await img.decode()` or an `onload` event to ensure the image is loaded.
-            *   Setting the `backgroundImage` style of the container to `url('${imageObject.path}')`.
-        3.  Ensure actual image files are present in the `images/` subdirectories.
-*   **Initial Load Flicker:** There might be a slight flicker or style adjustment on initial load before the JavaScript fully initializes the gallery. This could be mitigated by setting initial styles or a loading state.
-*   **Accessibility Enhancements:** While some ARIA attributes are used, a full accessibility audit could identify further improvements for keyboard navigation and screen reader compatibility.
 
 ## CI/CD Pipeline (Conceptual Setup)
 
