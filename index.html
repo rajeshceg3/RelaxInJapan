@@ -47,6 +47,25 @@
             <input type="checkbox" id="time-format-toggle">
         </div>
     </div>
+    <div id="weather-widget">
+        <div id="weather-location">--</div>
+        <div id="weather-temp-current" style="font-size: 28px;">--°</div>
+        <div id="weather-condition">--</div>
+        <div id="weather-icon-current"><svg width="48" height="48"></svg></div>
+        <div id="weather-temp-feels-like">Feels like: --°</div>
+        <div id="weather-humidity">Humidity: --%</div>
+        <div id="weather-wind">Wind: -- m/s ---</div>
+        <div id="weather-last-updated" style="font-size: var(--font-size-xs);">Updated: --:--</div>
+        <div id="weather-forecast-daily">
+            <div><span>Mon</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Tue</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Wed</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Thu</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Fri</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+        </div>
+        <input type="text" id="weather-location-search" placeholder="Search city...">
+        <button id="weather-refresh-button">&#x21bb;</button>
+    </div>
             </aside>
         </main>
     </div>
@@ -64,5 +83,6 @@
     </div>
     <script src="js/gallery.js"></script>
     <script src="js/time-widget.js" defer></script>
+    <script src="js/weather-widget.js" defer></script>
 </body>
 </html>

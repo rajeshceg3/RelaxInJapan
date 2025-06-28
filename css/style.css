@@ -504,3 +504,241 @@ body {
         font-size: 18px;
     }
 }
+
+/* Color palette for weather icons */
+:root {
+  --weather-sun: #FFD700;
+  --weather-cloud: #B0C4DE;
+  --weather-rain: #4682B4;
+  --weather-snow: #F0F8FF;
+  --weather-storm: #483D8B;
+}
+
+/* Weather Widget Styles */
+#weather-widget {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-2);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-unit-md);
+    box-shadow: var(--box-shadow-soft);
+    text-align: center;
+}
+
+/* Current Weather Display */
+#weather-location {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#weather-temp-current {
+    font-size: 40px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin: var(--spacing-unit-sm) 0;
+}
+
+#weather-icon-current svg {
+    width: 48px;
+    height: 48px;
+    margin: var(--spacing-unit-sm) auto;
+    display: block;
+}
+
+#weather-condition {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#weather-temp-feels-like {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#weather-humidity,
+#weather-wind {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#weather-last-updated {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-sm);
+}
+
+/* Icon CSS Variables (from issue) */
+.weather-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+
+.weather-icon-small {
+    width: 24px;
+    height: 24px;
+}
+
+/* 5-Day Forecast Styling */
+#weather-forecast-daily {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-unit-md);
+    padding-top: var(--spacing-unit-md);
+    border-top: 1px solid var(--color-secondary-zen-grey);
+}
+
+.forecast-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    min-width: 50px;
+}
+
+.forecast-day .day-name {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+.forecast-day svg {
+    width: 24px;
+    height: 24px;
+    margin: var(--spacing-unit-xs) auto;
+}
+
+.forecast-day .temps {
+    margin-top: var(--spacing-unit-xs);
+}
+
+.forecast-day .condition-small {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-xs);
+}
+
+/* Today's forecast visual distinction - to be applied via JS */
+.forecast-day.today {
+    font-weight: var(--font-weight-semibold); /* Example distinction */
+    border: 1px solid var(--weather-sun); /* Example, can be more subtle */
+}
+
+/* Location Management Styling */
+#weather-location-search {
+    width: calc(100% - 40px - var(--spacing-unit-sm)); /* Full width minus button and gap */
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-unit-md);
+    font-size: var(--font-size-sm);
+}
+
+#weather-refresh-button {
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-primary-warm-white-1);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    line-height: 1;
+    margin-left: var(--spacing-unit-sm);
+    vertical-align: middle; /* Align with the input field */
+}
+
+#weather-location-search:focus,
+#weather-refresh-button:focus {
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+    #weather-forecast-daily {
+        flex-direction: column; /* Stack forecast days vertically */
+        align-items: stretch; /* Make items take full width */
+    }
+
+    .forecast-day {
+        flex-direction: row; /* Lay out day parts horizontally */
+        justify-content: space-between;
+        padding: var(--spacing-unit-sm) 0;
+        border-bottom: 1px solid var(--color-secondary-zen-grey);
+        width: 100%;
+    }
+
+    .forecast-day:last-child {
+        border-bottom: none;
+    }
+
+    .forecast-day svg {
+        margin-right: var(--spacing-unit-sm);
+    }
+
+    #weather-location-search {
+        width: calc(100% - 45px - var(--spacing-unit-sm)); /* Adjust for button size if different on mobile */
+    }
+}
+
+/* Weather-Influenced Theming */
+body {
+    /* Add transition for properties that will change */
+    transition: background-color 2.5s ease-in-out, color 2.5s ease-in-out;
+}
+
+/* Define classes to be applied to the body */
+.theme-sunny {
+    --current-bg-color: #FFFBF0; /* Warmer white, slightly brighter */
+    --current-accent-color: #FFA726; /* Warmer accent */
+    --current-text-color: #3E2723; /* Slightly warmer dark text */
+}
+
+.theme-rainy {
+    --current-bg-color: #E3F2FD; /* Cooler, slightly muted blueish white */
+    --current-accent-color: #64B5F6; /* Cooler accent */
+    --current-text-color: #37474F; /* Cooler dark text */
+}
+
+.theme-snowy {
+    --current-bg-color: #F5FAFA; /* Crisp, clean white with cool undertone */
+    --current-accent-color: #AED5E0; /* Light icy blue accent */
+    --current-text-color: #455A64;
+}
+
+.theme-cloudy {
+    --current-bg-color: #F0F2F5; /* Neutral, softer off-white */
+    --current-accent-color: #A0A0B0; /* Muted grey/blue accent */
+    --current-text-color: #4A4A4A;
+}
+
+.theme-night {
+    --current-bg-color: #2C3E50; /* Darker, subdued (example) */
+    --current-accent-color: #536D8A; /* Muted dark blue/grey accent */
+    --current-text-color: #B0BEC5; /* Lighter text for dark bg */
+}
+
+/* Apply these variables to relevant elements */
+body {
+    background-color: var(--current-bg-color, var(--color-primary-warm-white-1));
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+
+.dashboard-header {
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green));
+    transition: background-color 2.5s ease-in-out;
+}
+
+/* Example: Other elements that might adapt */
+/*
+.column {
+    background: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    transition: background-color 2.5s ease-in-out;
+}
+.card {
+    border-color: var(--current-accent-color, var(--color-secondary-zen-grey));
+    transition: border-color 2.5s ease-in-out;
+}
+*/
