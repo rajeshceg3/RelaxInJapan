@@ -31,6 +31,7 @@
     /* Typography System */
     --font-primary: 'Inter', sans-serif;
     --font-secondary: 'Georgia', serif;
+    --font-family-japanese: 'Noto Sans JP', sans-serif;
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-md: 16px;
@@ -1101,3 +1102,140 @@ body {
     background-color: rgba(143, 188, 143, 0.1);
 }
 */
+
+/* Daily Inspiration Widget Styles */
+#daily-inspiration-widget {
+    background-color: var(--widget-background-color, #f9f9f9);
+    padding: var(--spacing-unit-md, 15px);
+    border-radius: var(--border-radius-md, 8px);
+    box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+    margin-bottom: var(--spacing-unit-lg, 20px);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#daily-inspiration-widget h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit-md, 15px);
+    font-size: var(--font-size-lg, 1.2em);
+    color: var(--text-color-strong, #333);
+    /* text-align: center; */ /* Optional: if title needs to be centered */
+}
+
+#inspiration-content-area {
+    text-align: left; /* Default, can be centered if design prefers */
+}
+
+#inspiration-type-indicator {
+    font-size: var(--font-size-xs, 0.8em);
+    color: var(--text-color-muted, #777);
+    margin-bottom: var(--spacing-unit-sm, 5px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#inspiration-japanese-text {
+    font-size: var(--font-size-xl, 1.4em); /* Larger for prominence */
+    font-family: var(--font-family-japanese, 'Noto Sans JP', sans-serif); /* Ensure Noto Sans JP is primary */
+    color: var(--text-color-headings, #222);
+    margin-bottom: var(--spacing-unit-xs, 5px);
+    line-height: 1.6;
+}
+
+#inspiration-romaji-text {
+    font-size: var(--font-size-sm, 0.9em);
+    color: var(--text-color-subtle, #555);
+    font-style: italic;
+    margin-bottom: var(--spacing-unit-md, 10px);
+    line-height: 1.5;
+}
+
+#inspiration-english-text {
+    font-size: var(--font-size-md, 1em);
+    color: var(--text-color-default, #444);
+    margin-bottom: var(--spacing-unit-md, 10px);
+    line-height: 1.6;
+}
+
+#inspiration-explanation {
+    font-size: var(--font-size-sm, 0.9em);
+    color: var(--text-color-muted, #666);
+    margin-bottom: var(--spacing-unit-sm, 5px);
+    line-height: 1.5;
+    border-left: 3px solid var(--accent-color-subtle, #eee); /* Subtle emphasis */
+    padding-left: var(--spacing-unit-sm, 10px);
+}
+
+#inspiration-source {
+    font-size: var(--font-size-xs, 0.8em);
+    color: var(--text-color-muted, #777);
+    font-style: italic;
+    text-align: right;
+    margin-top: var(--spacing-unit-md, 10px);
+}
+
+/* Error state styling for the widget */
+#daily-inspiration-widget.error-state #inspiration-japanese-text {
+    color: var(--error-color, #D32F2F); /* Or a muted error color */
+    font-size: var(--font-size-md, 1em);
+}
+
+/* css/style.css - Add this if not present, or append to existing utilities */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Styling for the new controls */
+#inspiration-controls {
+    margin-top: var(--spacing-unit-md, 15px);
+    padding-top: var(--spacing-unit-sm, 10px);
+    border-top: 1px solid var(--border-color-soft, #eee);
+    display: flex;
+    justify-content: space-between; /* Adjust as needed */
+    align-items: center;
+    font-size: var(--font-size-sm, 0.9em);
+}
+
+#inspiration-controls select,
+#inspiration-controls input[type="checkbox"] {
+    padding: var(--spacing-unit-xs, 5px);
+    border-radius: var(--border-radius-sm, 4px);
+    border: 1px solid var(--border-color-interactive, #ccc);
+    background-color: var(--input-background-color, #fff);
+    color: var(--text-color-default, #333);
+}
+
+.romaji-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-unit-xs, 5px);
+    cursor: pointer;
+}
+
+/* css/style.css - Append to existing #inspiration-controls styles or nearby */
+#inspiration-controls button {
+    background-color: transparent;
+    border: 1px solid var(--border-color-interactive, #ccc);
+    color: var(--text-color-default, #333);
+    padding: var(--spacing-unit-xs, 5px) var(--spacing-unit-sm, 8px);
+    border-radius: var(--border-radius-sm, 4px);
+    cursor: pointer;
+    font-size: var(--font-size-md, 1em); /* Ensure icons are reasonably sized */
+    line-height: 1; /* Prevent extra space if text were present */
+}
+
+#inspiration-controls button:hover {
+    background-color: var(--background-color-hover, #f0f0f0);
+    border-color: var(--border-color-hover, #bbb);
+}
+
+#inspiration-controls button:active {
+    background-color: var(--background-color-active, #e0e0e0);
+}
