@@ -390,6 +390,15 @@ body {
     text-align: center;
     margin-bottom: var(--spacing-unit-md);
     box-shadow: var(--box-shadow-soft); /* Added for better visual separation */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+#time-display,
+#time-display #seconds,
+#time-display #am-pm,
+#time-display #timezone-abbr,
+#date-display {
+    transition: color var(--transition-speed) ease;
 }
 
 #time-display {
@@ -524,9 +533,23 @@ body {
     margin-bottom: var(--spacing-unit-md);
     box-shadow: var(--box-shadow-soft);
     text-align: center;
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
 /* Current Weather Display */
+#weather-location,
+#weather-temp-current,
+#weather-condition,
+#weather-temp-feels-like,
+#weather-humidity,
+#weather-wind,
+#weather-last-updated,
+.forecast-day .day-name,
+.forecast-day .temps,
+.forecast-day .condition-small {
+    transition: color var(--transition-speed) ease;
+}
+
 #weather-location {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
@@ -752,6 +775,15 @@ body {
     border: var(--border-thin);
     box-shadow: var(--box-shadow-soft);
     border-radius: var(--border-radius-md);
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+#quick-links-panel h3,
+#quick-links-panel .quick-link-category-header,
+#quick-links-panel .quick-link-item-name,
+#quick-links-panel .quick-link-item-category,
+#quick-links-empty-state p {
+    transition: color var(--transition-speed) ease;
 }
 
 #quick-links-panel h3 {
@@ -1110,7 +1142,17 @@ body {
     border-radius: var(--border-radius-md, 8px);
     box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
     margin-bottom: var(--spacing-unit-lg, 20px);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+#daily-inspiration-widget h3,
+#daily-inspiration-widget #inspiration-type-indicator,
+#daily-inspiration-widget #inspiration-japanese-text,
+#daily-inspiration-widget #inspiration-romaji-text,
+#daily-inspiration-widget #inspiration-english-text,
+#daily-inspiration-widget #inspiration-explanation,
+#daily-inspiration-widget #inspiration-source {
+    transition: color var(--transition-speed) ease;
 }
 
 #daily-inspiration-widget h3 {
@@ -1238,4 +1280,91 @@ body {
 
 #inspiration-controls button:active {
     background-color: var(--background-color-active, #e0e0e0);
+}
+
+/* Theme Customization Panel Styles */
+#theme-customization-panel {
+    padding: var(--spacing-unit-md);
+    margin-top: var(--spacing-unit-lg);
+    background-color: var(--color-primary-warm-white-2);
+    border: var(--border-thin);
+    box-shadow: var(--box-shadow-soft);
+    border-radius: var(--border-radius-md);
+    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out;
+}
+
+#theme-customization-panel h3,
+#theme-customization-panel h4 {
+    transition: color var(--transition-speed) ease-in-out;
+}
+
+#theme-customization-panel h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#palette-selection h4,
+#theme-preview-area h4 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+.palette-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-unit-sm);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+.theme-selector-btn {
+    /* Using existing .btn styles, but can add specific overrides if needed */
+    flex-grow: 1; /* Allow buttons to grow and fill space */
+}
+
+.theme-selector-btn[aria-pressed="true"] {
+    /* Style for the active/selected theme button */
+    background-color: var(--color-accent-sakura-pink); /* Example, this will be dynamic */
+    color: var(--color-primary-warm-white-1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.preview-widget-example {
+    padding: var(--spacing-unit-md);
+    border: 1px dashed var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out;
+}
+
+.preview-text {
+    color: var(--color-text-deep-charcoal); /* Ensure this uses theme variable */
+    margin-bottom: var(--spacing-unit-sm);
+    transition: color var(--transition-speed) ease-in-out;
+}
+
+/* Ensure preview elements use the theme variables */
+.preview-widget-example .preview-text {
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+
+.preview-widget-example .preview-button-primary {
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+    color: var(--color-primary-warm-white-1);
+    border-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+}
+
+.preview-widget-example .preview-button-primary:hover {
+    /* Define a slightly darker version of current-accent-color or a fixed hover color */
+    filter: brightness(90%);
+}
+
+.preview-widget-example .preview-button-secondary {
+    background-color: var(--color-secondary-zen-grey); /* This should also be themed */
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+    border-color: var(--color-secondary-zen-grey);
+}
+
+.preview-widget-example .preview-button-secondary:hover {
+    filter: brightness(90%);
 }
