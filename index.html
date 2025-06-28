@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serene Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/meditation-timer.css">
 </head>
@@ -35,6 +36,34 @@
             <aside class="column column-widgets">
                 <h2>Widgets</h2>
                 <p>Widgets</p>
+                <!-- Daily Inspiration Widget START -->
+                <div id="daily-inspiration-widget" class="widget" role="complementary" aria-labelledby="daily-inspiration-title">
+                    <h3 id="daily-inspiration-title">Daily Inspiration</h3>
+                    <div id="inspiration-content-area">
+                        <div id="inspiration-type-indicator" aria-hidden="true"></div>
+                        <p id="inspiration-japanese-text" lang="ja"></p>
+                        <p id="inspiration-romaji-text" class="romaji-text"></p>
+                        <p id="inspiration-english-text" lang="en"></p>
+                        <p id="inspiration-explanation" class="explanation-text"></p>
+                        <p id="inspiration-source" class="source-text"></p>
+                    </div>
+                    <div id="inspiration-controls" class="widget-controls">
+                        <label for="language-toggle" class="visually-hidden">Language Display Mode:</label>
+                        <select id="language-toggle" aria-label="Language display mode">
+                            <option value="dual">Dual (JP + EN)</option>
+                            <option value="jp_primary">Japanese Primary</option>
+                            <option value="en_primary">English Primary</option>
+                        </select>
+                        <label for="romaji-toggle" class="romaji-toggle-label">
+                            <input type="checkbox" id="romaji-toggle" checked> Show Romaji
+                        </label>
+                        <button id="inspiration-prev-btn" aria-label="Previous inspiration" title="Previous inspiration">&#9664;</button> <!-- Left arrow -->
+                        <button id="inspiration-random-btn" aria-label="Random inspiration" title="Random inspiration">&#128256;</button> <!-- Shuffle icon -->
+                        <button id="inspiration-copy-btn" aria-label="Copy inspiration" title="Copy inspiration">&#128203;</button> <!-- Clipboard icon -->
+                    </div>
+                    <!-- Controls for future steps (like language toggle, navigation) will go here -->
+                </div>
+                <!-- Daily Inspiration Widget END -->
     <div id="time-date-widget" role="timer" aria-live="polite" aria-atomic="true">
         <div id="time-display" aria-label="Current time">
             <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span> <span id="am-pm"></span>
@@ -240,5 +269,6 @@
     <script src="js/weather-widget.js" defer></script>
     <script src="js/quick-links.js" defer></script>
     <script src="js/meditation-timer.js" defer></script>
+    <script src="js/daily_inspiration.js" defer></script>
 </body>
 </html>
