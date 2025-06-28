@@ -470,6 +470,41 @@ function handleControlsVisibility() {
     resetControlsHideTimer();
 }
 
+/**
+ * Sets the image gallery category filter based on the given season.
+ * @param {string} season - The current season ('spring', 'summer', 'autumn', 'winter').
+ */
+function setSeasonalCategoryFilter(season) {
+    console.log(`Setting seasonal category filter for season: ${season}`);
+    const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
+    if (validSeasons.includes(season.toLowerCase())) {
+        imageGalleryState.selectedCategory = 'seasons';
+        console.log(`Gallery category set to 'seasons' for ${season}.`);
+
+        if (categoryFilterElement) { // Ensure element exists
+            populateCategoryFilter(); // Update the dropdown display
+        } else {
+            console.warn("categoryFilterElement not found, cannot update UI for seasonal filter.");
+        }
+
+        saveUserPreferences(); // Persist the category change
+
+        // Reset history and index to reflect the new category immediately
+        imageGalleryState.imageHistory = [];
+        imageGalleryState.currentImageIndex = -1;
+
+        // Display a new image from the 'seasons' category
+        stopRotation(); // Stop current interval
+        crossfadeToNextImage().then(() => {
+            if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
+                startRotation(); // Restart rotation with new category
+            }
+        });
+    } else {
+        console.warn(`Invalid season provided to setSeasonalCategoryFilter: ${season}`);
+    }
+}
+
 // Conditional export for Node.js/Jest environment
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -485,8 +520,9 @@ if (typeof module !== 'undefined' && module.exports) {
     crossfadeToNextImage,
     startRotation,
     stopRotation,
-    saveUserPreferences, // ADDED: Export new function
-    loadUserPreferences  // ADDED: Export new function
+    saveUserPreferences,
+    loadUserPreferences,
+    setSeasonalCategoryFilter // Export new function
   };
 }
 
