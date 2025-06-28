@@ -363,3 +363,144 @@ body {
     transition-duration: 0.01ms !important; /* Effectively disables the animation */
   }
 }
+
+/* Time Widget Styles */
+/* Seasonal Theme Variables for Time Widget */
+.time-widget-spring {
+    --widget-accent-color: var(--color-accent-sakura-pink); /* #FFB7C5 */
+}
+.time-widget-summer {
+    --widget-accent-color: var(--color-secondary-bamboo-green); /* #8FBC8F */
+}
+.time-widget-autumn {
+    --widget-accent-color: var(--color-accent-sunset-orange); /* #FFD4A3 */
+}
+.time-widget-winter {
+    --widget-accent-color: #ADD8E6; /* Light blue for cool, crisp tone */
+    /* Consider adding a new variable to :root if this blue is widely used */
+}
+
+#time-date-widget {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-2);
+    /* Using the seasonal accent color for the border, with fallback */
+    border: 1px solid var(--widget-accent-color, var(--color-secondary-zen-grey));
+    border-radius: var(--border-radius-md);
+    text-align: center;
+    margin-bottom: var(--spacing-unit-md);
+    box-shadow: var(--box-shadow-soft); /* Added for better visual separation */
+}
+
+#time-display {
+    /* Base font size for mobile (screens < 768px) */
+    font-size: 28px;
+    font-family: var(--font-primary);
+    color: var(--color-text-deep-charcoal);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#time-display #seconds {
+    font-size: 0.5em; /* Or var(--font-size-md) if preferred */
+    color: var(--color-secondary-zen-grey); /* Slightly less prominent */
+}
+
+#time-display #am-pm {
+    font-size: 0.5em; /* Or var(--font-size-md) */
+    margin-left: var(--spacing-unit-xs);
+}
+
+#time-display #timezone-abbr {
+    font-size: var(--font-size-xs); /* e.g., 12px */
+    /* Alternatively, use em for sizing relative to parent: font-size: 0.4em; */
+    margin-left: var(--spacing-unit-sm); /* e.g., 8px */
+    color: var(--color-secondary-zen-grey); /* Make it subtle */
+    /* vertical-align: middle; /* Adjust if needed based on visual alignment */
+}
+
+#date-display {
+    /* Base font size for mobile (screens < 768px) */
+    font-size: 14px;
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#widget-settings-button {
+    /* Basic styling, can be enhanced to match other buttons if needed */
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    background-color: var(--color-secondary-misty-rose); /* Using a secondary color */
+    color: var(--color-text-deep-charcoal);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-family: var(--font-secondary);
+    font-weight: var(--font-weight-regular);
+    float: right; /* Simple positioning for now */
+}
+
+#widget-settings-button:hover {
+    background-color: var(--color-accent-sunset-orange); /* Example hover effect */
+    color: var(--color-primary-warm-white-1);
+}
+
+/* Settings Panel Styles */
+.hidden {
+    display: none !important; /* Important to override other display properties if any */
+}
+
+#widget-settings-panel {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-1); /* Slightly different from widget bg */
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm); /* Smaller radius than widget */
+    margin-top: var(--spacing-unit-sm);
+    text-align: left; /* Override widget's center align for panel content */
+    box-shadow: var(--box-shadow-soft);
+}
+
+#widget-settings-panel h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit-md);
+    font-size: var(--font-size-md);
+    color: var(--color-text-deep-charcoal);
+    border-bottom: var(--border-thin);
+    padding-bottom: var(--spacing-unit-sm);
+}
+
+#widget-settings-panel label {
+    margin-right: var(--spacing-unit-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+}
+
+#widget-settings-panel input[type="checkbox"] {
+    /* Basic styling for checkbox, can be enhanced */
+    vertical-align: middle;
+}
+
+/* Ensure seasonal border overrides the default border if class is applied */
+.time-widget-spring,
+.time-widget-summer,
+.time-widget-autumn,
+.time-widget-winter {
+    border-color: var(--widget-accent-color);
+}
+
+/* Responsive Font Sizes for Time/Date Widget */
+@media (min-width: 768px) { /* Tablet */
+    #time-display {
+        font-size: 36px;
+    }
+    #date-display {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    #time-display {
+        font-size: 48px;
+    }
+    #date-display {
+        font-size: 18px;
+    }
+}
