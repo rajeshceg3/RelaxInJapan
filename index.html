@@ -18,6 +18,29 @@
             <aside class="column column-sidebar">
                 <h2>Navigation</h2>
                 <p>Sidebar</p>
+                <div id="theme-customization-panel" class="widget">
+                    <h3>Theme Customization</h3>
+                    <div id="palette-selection" aria-labelledby="palette-selection-title">
+                        <h4 id="palette-selection-title">Select a Color Palette:</h4>
+                        <div class="palette-buttons">
+                            <button class="btn theme-selector-btn" data-theme="default" aria-pressed="true">Default</button>
+                            <button class="btn theme-selector-btn" data-theme="sakura" aria-pressed="false">Sakura (Cherry Blossom)</button>
+                            <button class="btn theme-selector-btn" data-theme="momiji" aria-pressed="false">Momiji (Autumn Leaves)</button>
+                            <button class="btn theme-selector-btn" data-theme="yuki" aria-pressed="false">Yuki (Winter Snow)</button>
+                            <button class="btn theme-selector-btn" data-theme="haru" aria-pressed="false">Haru (Spring Garden)</button>
+                            <button class="btn theme-selector-btn" data-theme="dento" aria-pressed="false">Dentō (Traditional)</button>
+                            <button class="btn theme-selector-btn" data-theme="seki" aria-pressed="false">Seki (Zen Stone)</button>
+                        </div>
+                    </div>
+                    <div id="theme-preview-area" aria-labelledby="theme-preview-title">
+                        <h4 id="theme-preview-title">Preview:</h4>
+                        <div class="preview-widget-example card">
+                            <p class="preview-text">Sample Text</p>
+                            <button class="btn btn-primary preview-button-primary">Primary</button>
+                            <button class="btn btn-secondary preview-button-secondary">Secondary</button>
+                        </div>
+                    </div>
+                </div>
             </aside>
             <div class="column column-content">
                 <h2>Welcome to your serene space.</h2>
@@ -270,5 +293,6 @@
     <script src="js/quick-links.js" defer></script>
     <script src="js/meditation-timer.js" defer></script>
     <script src="js/daily_inspiration.js" defer></script>
+    <script src="js/theme-switcher.js" defer></script>
 </body>
 </html>
