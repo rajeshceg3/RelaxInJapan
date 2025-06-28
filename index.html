@@ -66,6 +66,63 @@
         <input type="text" id="weather-location-search" placeholder="Search city...">
         <button id="weather-refresh-button">&#x21bb;</button>
     </div>
+
+    <div id="quick-links-panel">
+        <h3>Quick Links</h3>
+        <button id="add-link-btn">Add Link</button>
+        <div class="quick-links-actions">
+            <button id="export-links-btn" class="btn btn-secondary">Export Links</button>
+            <input type="file" id="import-links-file" accept=".json" style="display: none;">
+            <button id="import-links-btn" class="btn btn-secondary">Import Links</button>
+        </div>
+        <div id="quick-links-list">
+            <!-- Links will be added here by JavaScript -->
+        </div>
+        <div id="quick-links-empty-state">
+            <div style="font-size: 48px; margin-bottom: var(--spacing-unit-md);">⛩️</div>
+            <p>Add your favorite sites for quick access.</p>
+            <button id="add-link-empty-state-btn" class="btn btn-primary">Add First Link</button>
+        </div>
+        <div id="quick-link-modal" class="hidden" style="display: none;">
+            <form id="quick-link-form">
+                <h4 id="quick-link-modal-title">Add New Link</h4>
+                <span id="close-modal-btn" style="cursor:pointer; float:right;">&times;</span>
+                <div>
+                    <label for="link-name">Website Name:</label>
+                    <input type="text" id="link-name" name="link-name" required maxlength="25">
+                </div>
+                <div>
+                    <label for="link-url">URL:</label>
+                    <input type="url" id="link-url" name="link-url" required>
+                </div>
+                <div>
+                    <label for="link-icon">Icon (URL or Font Awesome class):</label>
+                    <input type="text" id="link-icon" name="link-icon">
+                    <!-- Or a select for predefined icons -->
+                    <!-- <select id="link-icon" name="link-icon">
+                        <option value="fa-globe">Globe</option>
+                        <option value="fa-briefcase">Briefcase</option>
+                    </select> -->
+                </div>
+                <div>
+                    <label for="link-category">Category:</label>
+                    <select id="link-category" name="link-category">
+                        <option value="">Select Category</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="learning">Learning</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <input type="hidden" id="link-id" name="link-id">
+                <div>
+                    <button type="submit">Save Link</button>
+                    <button type="button" id="cancel-link-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
             </aside>
         </main>
     </div>
@@ -84,5 +141,6 @@
     <script src="js/gallery.js"></script>
     <script src="js/time-widget.js" defer></script>
     <script src="js/weather-widget.js" defer></script>
+    <script src="js/quick-links.js" defer></script>
 </body>
 </html>

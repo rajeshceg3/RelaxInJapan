@@ -742,3 +742,362 @@ body {
     transition: border-color 2.5s ease-in-out;
 }
 */
+
+/* --- Quick Links Panel Styles --- */
+#quick-links-panel {
+    padding: var(--spacing-unit-md);
+    margin-bottom: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-2);
+    border: var(--border-thin);
+    box-shadow: var(--box-shadow-soft);
+    border-radius: var(--border-radius-md);
+}
+
+#quick-links-panel h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#add-link-btn,
+#add-link-empty-state-btn {
+    /* Using existing button styles */
+    display: inline-block;
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    background-color: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#add-link-btn:hover,
+#add-link-empty-state-btn:hover,
+#add-link-btn:focus,
+#add-link-empty-state-btn:focus {
+    background-color: #7aa87a; /* Slightly darker bamboo green */
+}
+
+.quick-links-actions {
+    margin-top: var(--spacing-unit-sm); /* Space below "Add Link" button */
+    margin-bottom: var(--spacing-unit-md); /* Space above the list of links */
+    display: flex;
+    gap: var(--spacing-unit-sm);
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+/* Ensure buttons within actions container don't have excessive bottom margin
+   if they are already spaced by the flex gap or general button margins */
+.quick-links-actions .btn {
+    margin-bottom: 0;
+}
+
+
+#quick-links-list {
+    /* This is now a container for headers and sections, not a grid itself */
+    display: block;
+    margin-bottom: var(--spacing-unit-md);
+}
+
+.quick-link-category-header {
+    font-size: var(--font-size-md); /* Was var(--font-size-lg) in previous spec, using md for h5 */
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin-top: var(--spacing-unit-lg);
+    margin-bottom: var(--spacing-unit-sm);
+    padding: var(--spacing-unit-xs) 0; /* Adjusted padding */
+    border-bottom: var(--border-thin);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color var(--transition-speed); /* For hover effect */
+}
+
+.quick-link-category-header:hover {
+    background-color: rgba(0,0,0,0.03); /* Subtle hover for clickability */
+}
+
+.quick-link-category-header .toggle-icon {
+    font-size: var(--font-size-sm);
+    margin-left: var(--spacing-unit-sm); /* Space out icon */
+    transition: transform var(--transition-speed); /* Smooth rotation */
+}
+
+/* Styles for the section containing links of a category */
+.quick-link-category-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-unit-sm);
+    padding-top: var(--spacing-unit-sm); /* Add some space below header */
+    /* transition: all var(--transition-speed); */ /* Avoid animating height/display directly for performance */
+}
+
+.quick-link-category-section.collapsed {
+    display: none;
+}
+
+/* Individual link items - existing styles are fine */
+.quick-link-item {
+    padding: var(--spacing-unit-sm);
+    background-color: var(--color-primary-warm-white-1);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+    /* Ensure 'all' includes transform and background-color, or list them explicitly */
+    transition: transform var(--transition-speed), background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.quick-link-item a { /* Style the anchor within the item */
+    display: block; /* Make the anchor fill the item for better click area */
+    padding: inherit; /* Inherit padding from .quick-link-item if needed, or set specific padding */
+    text-decoration: none;
+    color: inherit; /* Inherit text color from parent */
+    border-radius: inherit; /* Inherit border-radius */
+    transition: transform var(--transition-speed), background-color var(--transition-speed); /* Add transition to the anchor as well */
+}
+
+
+.quick-link-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-soft);
+}
+
+/* Active state for the link itself (anchor tag) */
+.quick-link-item a:active {
+    transform: scale(0.97); /* Slight scale down for the content */
+    background-color: var(--color-secondary-zen-grey); /* Subtle background change on the anchor */
+}
+
+.quick-link-item-icon { /* Placeholder for icon style */
+    font-size: var(--font-size-xl); /* Example size */
+    margin-bottom: var(--spacing-unit-xs);
+    color: var(--color-secondary-bamboo-green); /* Example color */
+}
+/* Ensure controls are not affected by anchor's active state if they are outside the <a> */
+/* If controls are inside <a>, their styles might need adjustment or they should be outside. */
+/* Current JS has controls outside the main content anchor, appended to 'item', so they should be fine. */
+}
+
+.quick-link-item-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-xs);
+    word-break: break-all; /* Prevent long names from breaking layout */
+}
+
+.quick-link-item-category {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+}
+
+#quick-links-empty-state {
+    text-align: center;
+    padding: var(--spacing-unit-xl) var(--spacing-unit-md); /* Increased padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--color-secondary-zen-grey); /* Subtle dashed border */
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-unit-md); /* Add some margin from other elements if list is empty */
+}
+
+#quick-links-empty-state div[style*="font-size: 48px"] { /* Target the unicode icon div */
+    color: var(--color-secondary-bamboo-green); /* Color the icon */
+    opacity: 0.7; /* Slightly muted */
+}
+
+#quick-links-empty-state p {
+    font-size: var(--font-size-md);
+    color: var(--color-text-deep-charcoal); /* Ensure good contrast */
+    margin-bottom: var(--spacing-unit-lg); /* Increased margin for button */
+    line-height: var(--line-height-body);
+}
+
+/* Modal Styles */
+#quick-link-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    display: flex; /* Changed from none to flex for easier centering with JS toggle */
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    opacity: 0; /* Initially hidden, controlled by .visible class */
+    visibility: hidden; /* Initially hidden */
+    transition: opacity var(--transition-speed), visibility var(--transition-speed);
+}
+
+#quick-link-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#quick-link-modal form { /* Style the form container inside modal */
+    background-color: var(--color-primary-warm-white-1);
+    padding: var(--spacing-unit-lg);
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px; /* Max width for the modal content */
+    position: relative; /* For positioning the close button */
+}
+
+#quick-link-modal-title {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-lg);
+    text-align: center;
+}
+
+#close-modal-btn {
+    position: absolute;
+    top: var(--spacing-unit-md);
+    right: var(--spacing-unit-md);
+    font-size: var(--font-size-xl);
+    color: var(--color-secondary-zen-grey);
+    cursor: pointer;
+    transition: color var(--transition-speed);
+}
+
+#close-modal-btn:hover {
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form div {
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#quick-link-form label {
+    display: block;
+    margin-bottom: var(--spacing-unit-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form input[type="text"],
+#quick-link-form input[type="url"],
+#quick-link-form select {
+    width: 100%;
+    padding: var(--spacing-unit-sm);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-md);
+    font-family: var(--font-primary);
+    background-color: var(--color-primary-warm-white-1);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form input[type="text"]:focus,
+#quick-link-form input[type="url"]:focus,
+#quick-link-form select:focus {
+    outline: none;
+    border-color: var(--color-secondary-bamboo-green);
+    box-shadow: 0 0 0 2px var(--color-accent-sunset-orange);
+}
+
+#quick-link-form div:last-child { /* Container for buttons */
+    margin-top: var(--spacing-unit-lg);
+    text-align: right; /* Align buttons to the right */
+}
+
+#quick-link-form button {
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    margin-left: var(--spacing-unit-sm);
+}
+
+#quick-link-form button[type="submit"] {
+    background-color: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+}
+
+#quick-link-form button[type="submit"]:hover,
+#quick-link-form button[type="submit"]:focus {
+    background-color: #7aa87a;
+}
+
+#quick-link-form button[type="button"] { /* Cancel button */
+    background-color: var(--color-secondary-zen-grey);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form button[type="button"]:hover,
+#quick-link-form button[type="button"]:focus {
+    background-color: #c0c0c0;
+}
+
+/* Ensure the empty state button also has sufficient margin if it's the only element after text */
+#quick-links-empty-state #add-link-empty-state-btn {
+    margin-bottom: 0; /* Remove default bottom margin from general #add-link-btn if any */
+}
+
+/* Responsiveness for Quick Links */
+@media (max-width: 767px) {
+    .quick-link-category-section {
+        /* Ensures single column layout on typical mobile screens */
+        grid-template-columns: 1fr;
+        gap: var(--spacing-unit-sm); /* A slightly larger gap might be better for single column */
+    }
+
+    /* Further adjustments for very small screens if needed, e.g., less padding on items */
+    /* @media (max-width: 360px) { ... } */
+
+    .quick-link-item-name {
+        font-size: var(--font-size-xs); /* Smaller font for item name on mobile */
+    }
+
+    #quick-link-modal form {
+        padding: var(--spacing-unit-md);
+        width: 95%; /* Slightly more width on small screens */
+    }
+
+    #quick-link-modal-title {
+        font-size: var(--font-size-lg);
+    }
+
+    #quick-link-form button {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: var(--spacing-unit-sm);
+    }
+    #quick-link-form div:last-child {
+      display: flex;
+      flex-direction: column-reverse; /* Stack buttons, Save on bottom for easier reach */
+    }
+}
+
+/* Styles for Drag and Drop */
+.quick-link-item.dragging {
+    opacity: 0.5;
+    background: var(--color-secondary-zen-grey);
+    /* Optional: Add a border or stronger visual cue */
+    /* border: 2px dashed var(--color-secondary-bamboo-green) !important; */
+}
+
+/* Optional: Style for the list when an item is being dragged over it */
+/*
+.quick-links-list.drag-over {
+    border: 2px dashed var(--color-secondary-bamboo-green);
+    background-color: rgba(143, 188, 143, 0.1);
+}
+*/
