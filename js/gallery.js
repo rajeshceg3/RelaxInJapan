@@ -72,12 +72,16 @@ function initializeGallery() {
     imageInfoOverlayElement = document.getElementById('image-info-overlay');
     galleryControlsElement = document.getElementById('gallery-controls');
 
+    // Add null check for essential elements
+    if (!backgroundGalleryElement || !categoryFilterElement || !toggleRotationBtn || !nextImageBtn || !prevImageBtn || !imageInfoOverlayElement || !galleryControlsElement) {
+        console.error("One or more gallery DOM elements are missing. Initialization aborted.");
+        return; // Stop initialization if elements are missing
+    }
+
     imageInfoOverlayElement.setAttribute('aria-live', 'polite');
 
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         console.log("Reduced motion is preferred. CSS handles transition disabling.");
-        // Optionally, JS could alter animation behavior here too.
-        // For example, set imageGalleryState.userPreferences.transitionDuration = 10;
     }
 
     // Create the two image containers for cross-fading
@@ -91,23 +95,7 @@ function initializeGallery() {
     currentVisibleContainer = bgImageContainer1; // Start with container 1
 
     populateCategoryFilter();
-
-    // Load saved preferences from localStorage
-    const savedCategory = localStorage.getItem('sereneDashboard_selectedCategory');
-    if (savedCategory) {
-        imageGalleryState.selectedCategory = savedCategory;
-        // Update the dropdown to reflect the loaded category
-        if (categoryFilterElement) categoryFilterElement.value = savedCategory;
-    }
-
-    const savedRotationState = localStorage.getItem('sereneDashboard_rotationState');
-    if (savedRotationState) {
-        imageGalleryState.isPlaying = savedRotationState === 'resumed';
-        if (toggleRotationBtn) {
-            toggleRotationBtn.textContent = imageGalleryState.isPlaying ? 'Pause' : 'Resume';
-            toggleRotationBtn.setAttribute('aria-label', imageGalleryState.isPlaying ? 'Pause image rotation' : 'Resume image rotation');
-        }
-    }
+    loadUserPreferences(); // MODIFIED: Call new function
 
     loadInitialImage();
 
@@ -375,17 +363,21 @@ function handleToggleRotation() {
     if (imageGalleryState.isPlaying) {
         stopRotation();
         imageGalleryState.isPlaying = false;
-        toggleRotationBtn.textContent = 'Resume';
-        toggleRotationBtn.setAttribute('aria-label', 'Resume image rotation');
-        localStorage.setItem('sereneDashboard_rotationState', 'paused');
+        if (toggleRotationBtn) { // Add null check
+            toggleRotationBtn.textContent = 'Resume';
+            toggleRotationBtn.setAttribute('aria-label', 'Resume image rotation');
+        }
+        saveUserPreferences(); // MODIFIED: Call new function
     } else {
         imageGalleryState.isPlaying = true;
         crossfadeToNextImage().then(() => {
              if(imageGalleryState.isPlaying) startRotation();
         });
-        toggleRotationBtn.textContent = 'Pause';
-        toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
-        localStorage.setItem('sereneDashboard_rotationState', 'resumed');
+        if (toggleRotationBtn) { // Add null check
+            toggleRotationBtn.textContent = 'Pause';
+            toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
+        }
+        saveUserPreferences(); // MODIFIED: Call new function
     }
 }
 
@@ -458,7 +450,7 @@ function handlePreviousImage() {
 
 function handleCategoryChange(event) {
     imageGalleryState.selectedCategory = event.target.value;
-    localStorage.setItem('sereneDashboard_selectedCategory', imageGalleryState.selectedCategory);
+    saveUserPreferences(); // MODIFIED: Call new function
     imageGalleryState.imageHistory = []; // Reset history for new category (AC4)
     imageGalleryState.currentImageIndex = -1; // Reset index
 
@@ -478,9 +470,70 @@ function handleControlsVisibility() {
     resetControlsHideTimer();
 }
 
+// Conditional export for Node.js/Jest environment
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    imageGalleryState,
+    galleryImages,
+    initializeGallery,
+    loadImage,
+    handleNextImage,
+    handlePreviousImage,
+    handleToggleRotation,
+    handleCategoryChange,
+    getNextImageObject,
+    crossfadeToNextImage,
+    startRotation,
+    stopRotation,
+    saveUserPreferences, // ADDED: Export new function
+    loadUserPreferences  // ADDED: Export new function
+  };
+}
+
+// --- User Preferences ---
+function saveUserPreferences() {
+    try {
+        localStorage.setItem('sereneDashboard_selectedCategory', imageGalleryState.selectedCategory);
+        localStorage.setItem('sereneDashboard_rotationState', imageGalleryState.isPlaying ? 'resumed' : 'paused');
+    } catch (error) {
+        console.error("Error saving user preferences to localStorage:", error);
+    }
+}
+
+function loadUserPreferences() {
+    try {
+        const savedCategory = localStorage.getItem('sereneDashboard_selectedCategory');
+        if (savedCategory) {
+            imageGalleryState.selectedCategory = savedCategory;
+            if (categoryFilterElement) categoryFilterElement.value = savedCategory;
+        }
+
+        const savedRotationState = localStorage.getItem('sereneDashboard_rotationState');
+        if (savedRotationState) {
+            // Ensure robust parsing of boolean state
+            if (typeof savedRotationState === 'string') {
+                 imageGalleryState.isPlaying = savedRotationState === 'resumed';
+            } else {
+                // Fallback or error for non-string value if necessary
+                imageGalleryState.isPlaying = true; // Default to playing
+            }
+            if (toggleRotationBtn) {
+                toggleRotationBtn.textContent = imageGalleryState.isPlaying ? 'Pause' : 'Resume';
+                toggleRotationBtn.setAttribute('aria-label', imageGalleryState.isPlaying ? 'Pause image rotation' : 'Resume image rotation');
+            }
+        }
+    } catch (error) {
+        console.error("Error loading user preferences from localStorage:", error);
+        // Keep default state if loading fails
+    }
+}
+
 function resetControlsHideTimer() {
     if (controlsHideTimeout) clearTimeout(controlsHideTimeout);
-    controlsHideTimeout = setTimeout(() => {
-        galleryControlsElement.classList.add('hidden');
-    }, 3000); // AC4: Hide after 3 seconds
+    // Add null check for galleryControlsElement
+    if (galleryControlsElement) {
+        controlsHideTimeout = setTimeout(() => {
+            galleryControlsElement.classList.add('hidden');
+        }, 3000); // AC4: Hide after 3 seconds
+    }
 }

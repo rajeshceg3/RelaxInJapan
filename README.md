@@ -86,6 +86,18 @@ These preferences are loaded when you next open the dashboard, allowing you to c
 2.  **Organize Files (Optional):** Move the image files to the corresponding category folders within `images/` for better organization.
 3.  **Update Category Filter:** The category filter dropdown is populated dynamically from the `galleryImages` array. No manual update to the HTML is needed for the filter itself.
 
+## Running Unit Tests
+
+The unit tests for this project are written using Jest, a delightful JavaScript Testing Framework.
+
+To run the tests, navigate to the root directory of the project in your terminal and execute the following command:
+
+```bash
+npx jest
+```
+
+This command will discover and run all test files (typically ending in `.test.js` or `.spec.js`) within the project.
+
 ## Future Ideas
 
 *   **Improved Preloading:** Enhance the image preloading logic for smoother transitions, especially on slower connections.
