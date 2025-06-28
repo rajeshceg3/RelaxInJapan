@@ -34,6 +34,19 @@
             <aside class="column column-widgets">
                 <h2>Widgets</h2>
                 <p>Widgets</p>
+    <div id="time-date-widget" role="timer" aria-live="polite" aria-atomic="true">
+        <div id="time-display" aria-label="Current time">
+            <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span> <span id="am-pm"></span>
+            <span id="timezone-abbr"></span>
+        </div>
+        <div id="date-display" aria-label="Current date"></div>
+        <button id="widget-settings-button" aria-label="Time widget settings" aria-haspopup="true" aria-expanded="false">&#9881;</button> <!-- Settings Icon -->
+        <div id="widget-settings-panel" class="hidden" role="region" aria-labelledby="settings-panel-title">
+            <h4 id="settings-panel-title">Widget Settings</h4>
+            <label for="time-format-toggle">24-Hour Format:</label>
+            <input type="checkbox" id="time-format-toggle">
+        </div>
+    </div>
             </aside>
         </main>
     </div>
@@ -50,5 +63,6 @@
         </div>
     </div>
     <script src="js/gallery.js"></script>
+    <script src="js/time-widget.js" defer></script>
 </body>
 </html>
