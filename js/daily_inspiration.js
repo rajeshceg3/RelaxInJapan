@@ -88,19 +88,71 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        selectDailyContent() {
-            // ... (existing selectDailyContent method remains the same)
+        selectDailyContent(targetSeason = null) {
             if (!this.content || this.content.length === 0) {
                 this.currentContent = null;
                 return;
             }
+
+            let seasonToFilterBy = targetSeason;
+
+            if (!seasonToFilterBy) { // If no targetSeason provided, get current actual season
+                if (typeof window.getCurrentSeason === 'function' && typeof window.selectedHemisphere !== 'undefined') {
+                    try {
+                        seasonToFilterBy = window.getCurrentSeason(window.selectedHemisphere);
+                        console.log("Daily Inspiration: Fetched current season for content - ", seasonToFilterBy);
+                    } catch (e) {
+                        console.error("Error getting current season for inspiration content:", e);
+                    }
+                } else {
+                    console.warn("Seasonal functions (getCurrentSeason or selectedHemisphere) not available for daily inspiration. Using all content.");
+                }
+            } else {
+                console.log("Daily Inspiration: Using target season for content - ", targetSeason);
+            }
+
+            let applicableContent = this.content; // Default to all content
+
+            if (seasonToFilterBy) {
+                const seasonalAndGeneralContent = this.content.filter(item => {
+                    const itemSeason = item.season ? item.season.toLowerCase() : null;
+                    const itemSeasonTags = Array.isArray(item.season_tags) ? item.season_tags.map(t => t.toLowerCase()) : [];
+
+                    const isGeneral = !itemSeason && itemSeasonTags.length === 0; // Truly general if no season info
+                    const isGeneralViaTag = itemSeasonTags.includes("general");
+                    const isSeasonalMatch = itemSeason === seasonToFilterBy.toLowerCase();
+                    const hasMatchingSeasonTag = itemSeasonTags.includes(seasonToFilterBy.toLowerCase());
+
+                    return isGeneral || isGeneralViaTag || isSeasonalMatch || hasMatchingSeasonTag;
+                });
+
+                if (seasonalAndGeneralContent.length > 0) {
+                    applicableContent = seasonalAndGeneralContent;
+                    console.log(`Daily Inspiration: Using ${applicableContent.length} items for season '${seasonToFilterBy}'.`);
+                } else {
+                    console.log(`Daily Inspiration: No specific or general content for season '${seasonToFilterBy}', falling back to all ${this.content.length} items.`);
+                    // Fallback to all content is already default (applicableContent = this.content)
+                }
+            }
+
             const now = new Date();
             const startOfYear = new Date(now.getFullYear(), 0, 0);
             const diff = now - startOfYear;
             const oneDay = 1000 * 60 * 60 * 24;
             const dayOfYear = Math.floor(diff / oneDay);
-            const contentIndex = (dayOfYear - 1) % this.content.length;
-            this.currentContent = this.content[contentIndex];
+
+            if (applicableContent.length > 0) {
+                const contentIndex = (dayOfYear - 1 + applicableContent.length) % applicableContent.length; // Ensure positive index
+                this.currentContent = applicableContent[contentIndex];
+            } else {
+                this.currentContent = null;
+            }
+        },
+
+        refreshContentForSeason(targetSeason = null) {
+            console.log(`Daily Inspiration: Refreshing content. Target season: ${targetSeason || 'current actual'}`);
+            this.selectDailyContent(targetSeason);
+            this.displayContent();
         },
 
         displayContent() {

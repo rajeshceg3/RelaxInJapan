@@ -55,10 +55,26 @@
     /* New UI Element Properties */
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
-    --box-shadow-soft: 0 2px 8px rgba(0,0,0,0.1);
+    --box-shadow-soft: 0 2px 8px rgba(0,0,0,0.15); /* Increased alpha for better visibility at low widget opacities */
     --border-thin: 1px solid var(--color-secondary-zen-grey);
     --transition-speed: 300ms ease-in-out;
     --focus-outline-color: var(--color-accent-sunset-orange);
+    --seasonal-filter-effect: none; /* Default seasonal filter */
+
+    /* Widget Appearance Variables */
+    --widget-opacity: 1;
+    --widget-background-blur: 0px;
+    --widget-backdrop-filter: blur(var(--widget-background-blur));
+    --widget-bg-alpha-value: 0.85; /* Default alpha for widget backgrounds */
+
+    /* Individual Widget Opacity Variables */
+    --time-widget-opacity: var(--widget-opacity);
+    --weather-widget-opacity: var(--widget-opacity);
+    --quick-links-opacity: var(--widget-opacity);
+    --daily-inspiration-opacity: var(--widget-opacity);
+    --meditation-timer-opacity: var(--widget-opacity);
+    --theme-customization-opacity: var(--widget-opacity);
+    --card-opacity: var(--widget-opacity); /* For general .card elements */
 }
 
 /* Minimal Reset */
@@ -74,6 +90,9 @@ body {
     line-height: var(--line-height-body);
     color: var(--color-text-deep-charcoal);
     background-color: var(--color-primary-warm-white-1);
+    /* General transitions for theme changes - will be overridden by more specific theme transitions if needed */
+    transition: background-color var(--transition-speed), color var(--transition-speed), filter var(--transition-speed);
+    filter: var(--seasonal-filter-effect); /* Apply the seasonal filter */
 }
 
 .dashboard-container {
@@ -87,6 +106,7 @@ body {
     color: var(--color-primary-warm-white-1);
     padding: var(--spacing-unit-md) 0;
     text-align: center;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 /* Mobile First: Stack columns by default */
@@ -99,9 +119,10 @@ body {
 
 .column {
     padding: var(--spacing-unit-md);
-    background: var(--color-primary-warm-white-2);
+    background: var(--current-widget-bg-color, var(--color-primary-warm-white-2)); /* Themed column bg */
     width: 100%; /* Full width for mobile */
     margin-bottom: var(--spacing-unit-md); /* Space between stacked columns */
+    transition: background-color var(--transition-speed);
 }
 
 .column:last-child {
@@ -173,6 +194,316 @@ body {
     }
 }
 
+/* --- Layout Templates --- */
+
+/* Traditional Grid Layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-traditional-grid {
+        flex-wrap: wrap; /* Ensure wrapping for tablet */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar,
+    .dashboard-main.layout-traditional-grid .column-content {
+        flex-basis: calc(50% - (var(--spacing-unit-md) / 2));
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar {
+        margin-right: var(--spacing-unit-md);
+        order: 1;
+    }
+    .dashboard-main.layout-traditional-grid .column-content {
+        margin-right: 0; /* No margin for the second item in 2-column row */
+        order: 2;
+    }
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0; /* Full width, no right margin */
+        margin-bottom: 0; /* No bottom margin if it's the last row */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-traditional-grid {
+        flex-wrap: nowrap; /* Revert to nowrap for desktop 3-column */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar,
+    .dashboard-main.layout-traditional-grid .column-content,
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        flex-basis: calc(33.3333% - (var(--spacing-unit-md) * 2 / 3)); /* Equal width, accounting for 2 gutters */
+        margin-bottom: 0; /* Reset bottom margin from tablet/mobile */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar {
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-content {
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        order: 3;
+        margin-right: 0; /* No margin for the last column in the row */
+    }
+}
+
+/* Minimalist Center Layout */
+/* Applies to all screen sizes when active */
+.dashboard-main.layout-minimalist-center .column-sidebar,
+.dashboard-main.layout-minimalist-center .column-widgets {
+    display: none !important; /* Ensure override */
+}
+
+.dashboard-main.layout-minimalist-center .column-content {
+    flex-basis: 80%;
+    max-width: 900px;
+    margin-left: auto !important;  /* Ensure override */
+    margin-right: auto !important; /* Ensure override */
+    margin-bottom: 0 !important; /* Reset any bottom margin */
+    order: 0 !important; /* Ensure it's the primary content regardless of original order */
+}
+/* Ensure .dashboard-main itself is still a flex container for centering */
+.dashboard-main.layout-minimalist-center {
+    /* flex-direction: row; by default from tablet+ or column on mobile */
+    justify-content: center; /* Centers the .column-content if flex-direction is row and content doesn't fill space */
+}
+
+/* Asymmetrical Zen Layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-asymmetrical-zen {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-sidebar {
+        flex-basis: calc(30% - var(--spacing-unit-md)); /* Account for its own margin-right */
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md); /* Space before widgets row */
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0; /* Last in this row */
+        margin-bottom: var(--spacing-unit-md); /* Space before widgets row */
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-widgets {
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0; /* Last item overall */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-asymmetrical-zen {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-sidebar {
+        flex-basis: 20%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-content {
+        flex-basis: 55%;
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-widgets {
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Seasonal Flow Layout */
+/* Mobile: Uses default stacked behavior. Widgets column hidden. */
+.dashboard-main.layout-seasonal-flow .column-widgets {
+    display: none !important;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-seasonal-flow {
+        flex-wrap: wrap; /* Allow stacking */
+    }
+    .dashboard-main.layout-seasonal-flow .column-sidebar {
+        flex-basis: 100%;
+        order: 1;
+        margin-right: 0; /* Full width */
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-seasonal-flow .column-content {
+        flex-basis: 100%;
+        order: 2;
+        margin-right: 0; /* Full width */
+        margin-bottom: 0;
+    }
+    /* .column-widgets remains display: none !important; */
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-seasonal-flow {
+        flex-wrap: nowrap; /* Side-by-side */
+    }
+    .dashboard-main.layout-seasonal-flow .column-sidebar {
+        flex-basis: 30%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-seasonal-flow .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+    /* .column-widgets remains display: none !important; */
+}
+
+/* --- Season-Specific Sub-Layouts for Seasonal Flow --- */
+
+/* Spring Flow (.layout-sf-spring) - Asymmetrical Zen like */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-sf-spring {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-sf-spring .column-sidebar {
+        flex-basis: calc(30% - var(--spacing-unit-md));
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-spring .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-spring .column-widgets {
+        display: block !important; /* Overrides .layout-seasonal-flow hiding widgets */
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-sf-spring {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-sf-spring .column-sidebar {
+        flex-basis: 20%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-spring .column-content {
+        flex-basis: 55%;
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-spring .column-widgets {
+        display: block !important; /* Overrides .layout-seasonal-flow hiding widgets */
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Summer Flow (.layout-sf-summer) - Default-like layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-sf-summer {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-sf-summer .column-sidebar {
+        flex-basis: 100%; /* Default tablet: sidebar full width */
+        order: 1;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-summer .column-content {
+        flex-basis: calc(60% - (var(--spacing-unit-md) / 2)); /* Default tablet: content 60% */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-summer .column-widgets {
+        display: block !important;
+        flex-basis: calc(40% - (var(--spacing-unit-md) / 2)); /* Default tablet: widgets 40% */
+        order: 3;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md); /* Or 0 if it's the very last item */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-sf-summer {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-sf-summer .column-sidebar {
+        flex-basis: 25%; /* Default desktop */
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-summer .column-content {
+        flex-basis: 50%; /* Default desktop */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-summer .column-widgets {
+        display: block !important;
+        flex-basis: 25%; /* Default desktop */
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Autumn Flow (.layout-sf-autumn) - Content focused, two-column */
+.dashboard-main.layout-sf-autumn .column-widgets {
+    display: none !important; /* Hide widgets always for this layout */
+}
+@media (min-width: 768px) { /* Tablet and Desktop */
+    .dashboard-main.layout-sf-autumn {
+        flex-wrap: nowrap; /* Side-by-side for tablet and desktop */
+    }
+    .dashboard-main.layout-sf-autumn .column-sidebar {
+        flex-basis: 25%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin as it's side-by-side */
+    }
+    .dashboard-main.layout-sf-autumn .column-content {
+        flex-basis: 75%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Winter Flow (.layout-sf-winter) - Minimalist Center like */
+.dashboard-main.layout-sf-winter .column-sidebar,
+.dashboard-main.layout-sf-winter .column-widgets {
+    display: none !important;
+}
+.dashboard-main.layout-sf-winter .column-content {
+    flex-basis: 80% !important; /* Ensure these override defaults */
+    max-width: 900px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 0 !important;
+    order: 0 !important;
+}
+.dashboard-main.layout-sf-winter {
+    justify-content: center !important;
+}
+
+
 /* Component Styles */
 
 /* Button Styling */
@@ -232,13 +563,39 @@ a:focus-visible { /* Using focus-visible for better accessibility */
     text-decoration: none; /* Optional: remove underline on focus if outline is enough */
 }
 
+/* General Widget Styling */
+/* Applies to elements with the .widget class (e.g., #time-date-widget, #theme-customization-panel) */
+.widget {
+    /* Default background if --current-widget-bg-color is not RGBA or suitable for transparency */
+    /* This provides a base that allows backdrop-filter to show through. */
+    /* Themes should ideally set --current-widget-bg-color to an rgba value for full control. */
+    background-color: rgba(248, 246, 240, var(--widget-bg-alpha-value)); /* Fallback from --color-primary-warm-white-2 */
+
+    /* Apply theme-specific widget background color. This will override the above if set. */
+    background-color: var(--current-widget-bg-color, rgba(248, 246, 240, var(--widget-bg-alpha-value)));
+
+    opacity: var(--widget-opacity);
+    -webkit-backdrop-filter: var(--widget-backdrop-filter);
+    backdrop-filter: var(--widget-backdrop-filter);
+
+    /* Base transition for opacity. Specific widgets handle their own bg/border/color transitions. */
+    /* Note: backdrop-filter itself doesn't transition smoothly typically; the blur value change is instant. */
+    transition: opacity var(--transition-speed) ease-in-out;
+    /* Individual widgets should ensure they have .widget class in HTML */
+}
+
+
 /* Card Styling */
 .card {
     padding: var(--spacing-unit-md);
     background-color: var(--color-primary-warm-white-1);
     border-radius: var(--border-radius-md);
     box-shadow: var(--box-shadow-soft);
-    border: var(--border-thin);
+    border: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); /* Themed border */
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1)); /* Themed background */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
+    opacity: var(--card-opacity); /* Use specific card opacity */
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), opacity var(--transition-speed);
 }
 
 /* Horizontal Rule / Divider Styling */
@@ -390,7 +747,8 @@ body {
     text-align: center;
     margin-bottom: var(--spacing-unit-md);
     box-shadow: var(--box-shadow-soft); /* Added for better visual separation */
-    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    opacity: var(--time-widget-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
 }
 
 #time-display,
@@ -533,7 +891,8 @@ body {
     margin-bottom: var(--spacing-unit-md);
     box-shadow: var(--box-shadow-soft);
     text-align: center;
-    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    opacity: var(--weather-widget-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
 }
 
 /* Current Weather Display */
@@ -708,40 +1067,115 @@ body {
 }
 
 /* Weather-Influenced Theming */
-body {
-    /* Add transition for properties that will change */
+/* body transitions are now defined above, with --transition-speed.
+   The 2.5s transition for weather themes might need a separate class or reconsideration
+   if both types of themes (manual and weather-driven) are to coexist with different speeds.
+   For now, standardizing to --transition-speed as per current task.
+*/
+/*
+body.weather-theme-active {
     transition: background-color 2.5s ease-in-out, color 2.5s ease-in-out;
 }
+*/
 
 /* Define classes to be applied to the body */
 .theme-sunny {
     --current-bg-color: #FFFBF0; /* Warmer white, slightly brighter */
     --current-accent-color: #FFA726; /* Warmer accent */
     --current-text-color: #3E2723; /* Slightly warmer dark text */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
 }
 
 .theme-rainy {
     --current-bg-color: #E3F2FD; /* Cooler, slightly muted blueish white */
     --current-accent-color: #64B5F6; /* Cooler accent */
     --current-text-color: #37474F; /* Cooler dark text */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
 }
 
 .theme-snowy {
     --current-bg-color: #F5FAFA; /* Crisp, clean white with cool undertone */
     --current-accent-color: #AED5E0; /* Light icy blue accent */
     --current-text-color: #455A64;
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
 }
 
 .theme-cloudy {
     --current-bg-color: #F0F2F5; /* Neutral, softer off-white */
     --current-accent-color: #A0A0B0; /* Muted grey/blue accent */
     --current-text-color: #4A4A4A;
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
 }
 
 .theme-night {
     --current-bg-color: #2C3E50; /* Darker, subdued (example) */
     --current-accent-color: #536D8A; /* Muted dark blue/grey accent */
     --current-text-color: #B0BEC5; /* Lighter text for dark bg */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+/* --- Japanese-Inspired Color Palettes --- */
+.theme-sakura { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #FFF0F5; /* Soft Pink */
+    --current-text-color: #5D4037; /* Warm Brown */
+    --current-accent-color: #F080A0; /* Stronger Pink for better contrast with light text */
+    --current-widget-bg-color: #FDF5F7; /* Lighter Pink */
+    --current-border-color: #E6A4B4; /* Darker Pink */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-momiji { /* Autumn seasonal theme */
+    --current-bg-color: #FFF3E0; /* Light Orange/Yellow */
+    --current-text-color: #4E342E; /* Deep Brown */
+    --current-accent-color: #FF7043; /* Deep Orange */
+    --current-widget-bg-color: #FFF9F2; /* Very Light Orange */
+    --current-border-color: #E65100; /* Strong Orange/Red */
+    --seasonal-filter-effect: sepia(0.2) saturate(1.1) brightness(1.0);
+}
+
+.theme-yuki { /* Winter seasonal theme */
+    --current-bg-color: #F0F8FF; /* Alice Blue (Cool White) */
+    --current-text-color: #455A64; /* Cool Dark Grey/Blue */
+    --current-accent-color: #70B8D8; /* Slightly deeper Sky Blue for better contrast */
+    --current-widget-bg-color: #F8FAFC; /* Very Light Cool Grey */
+    --current-border-color: #B0C4DE; /* Light Steel Blue */
+    --seasonal-filter-effect: grayscale(0.1) brightness(1.0) contrast(1.05);
+}
+
+.theme-haru { /* Spring seasonal theme */
+    --current-bg-color: #F0FFF0; /* Honeydew (Light Green) */
+    --current-text-color: #2E7D32; /* Dark Green */
+    --current-accent-color: #5CB85C; /* Darker Green for better contrast with light text */
+    --current-widget-bg-color: #F5FFF5; /* Very Light Green */
+    --current-border-color: #66CDAA; /* Medium Aquamarine */
+    --seasonal-filter-effect: brightness(1.05) saturate(1.1);
+}
+
+.theme-dento { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #F5F5DC; /* Beige (Earth Tone) */
+    --current-text-color: #5D4037; /* Brown */
+    --current-accent-color: #8D6E63; /* Slightly darker Muted Brown/Grey for better contrast */
+    --current-widget-bg-color: #FAF8F0; /* Lighter Beige */
+    --current-border-color: #795548; /* Deeper Brown */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-seki { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #E0E0E0; /* Light Grey */
+    --current-text-color: #212121; /* Near Black */
+    --current-accent-color: #757575; /* Medium Grey */
+    --current-widget-bg-color: #EEEEEE; /* Very Light Grey */
+    --current-border-color: #616161; /* Dark Grey */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-natsu { /* Summer seasonal theme */
+    --current-bg-color: #E0F7FA; /* Light Cyan - Sky/Sea */
+    --current-text-color: #004D40; /* Dark Teal - Deep Water/Lush Greenery */
+    --current-accent-color: #0277BD; /* Vibrant Blue - Ocean */
+    --current-widget-bg-color: #FFFFFF; /* White - Clouds/Sand */
+    --current-border-color: #80DEEA; /* Medium Cyan - Waves */
+    --seasonal-filter-effect: brightness(1.1) saturate(1.05);
 }
 
 /* Apply these variables to relevant elements */
@@ -752,70 +1186,145 @@ body {
 
 .dashboard-header {
     background: var(--current-accent-color, var(--color-secondary-bamboo-green));
-    transition: background-color 2.5s ease-in-out;
+    /* color transition is now on the main .dashboard-header rule */
 }
 
-/* Example: Other elements that might adapt */
-/*
+/* Apply themed properties to columns and cards */
 .column {
-    background: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
-    transition: background-color 2.5s ease-in-out;
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    /* Other column properties like text color can be themed if needed */
 }
+
 .card {
-    border-color: var(--current-accent-color, var(--color-secondary-zen-grey));
-    transition: border-color 2.5s ease-in-out;
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1));
+    border-color: var(--current-border-color, var(--color-secondary-zen-grey));
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+    /* Transitions are on the main .card rule */
 }
-*/
+
+
+/* Update specific widgets to use new theme variables and ensure transitions */
+
+#time-date-widget {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--widget-accent-color, var(--color-secondary-zen-grey)));
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#time-date-widget, #time-date-widget * { /* Ensure child elements also pick up themed text color */
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children of time-date-widget might need their own color vars if different from current-text-color */
+#time-display #seconds, #time-display #timezone-abbr {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey)); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+
+
+#weather-widget {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--color-secondary-zen-grey));
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#weather-widget, #weather-widget * { /* Ensure child elements also pick up themed text color */
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children of weather-widget might need their own color vars */
+#weather-last-updated, .forecast-day .condition-small {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey)); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+
+
+#quick-links-panel {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--border-thin)); /* border-thin is '1px solid var(--color-secondary-zen-grey)' */
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#quick-links-panel, #quick-links-panel *, #quick-links-panel a {
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children like category name might need different color */
+.quick-link-item-category {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey));
+    transition: color var(--transition-speed);
+}
+/* Quick link items themselves might need their own background if different from panel */
+.quick-link-item {
+    background-color: var(--current-bg-color, var(--color-primary-warm-white-1)); /* e.g. main background for items */
+    border-color: var(--current-border-color, var(--border-thin));
+    /* Transitions are already on .quick-link-item */
+}
+
+
+#daily-inspiration-widget {
+    background-color: var(--current-widget-bg-color, #f9f9f9);
+    border-color: var(--current-border-color, var(--shadow-sm, #ccc)); /* Assuming border should also theme, using a fallback */
+    opacity: var(--daily-inspiration-opacity); /* Specific opacity */
+    /* Add opacity to transition, complementing any existing if this rule is expanded, or relying on .widget */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
+}
+#daily-inspiration-widget, #daily-inspiration-widget * {
+   color: var(--current-text-color, #333);
+}
+/* Specific children might need different color vars */
+#inspiration-type-indicator, #inspiration-romaji-text, #inspiration-explanation, #inspiration-source {
+    color: var(--current-text-color-muted, #777); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+#inspiration-japanese-text {
+    color: var(--current-text-color-strong, var(--current-text-color, #222)); /* Example for strong text */
+    transition: color var(--transition-speed);
+}
+
+
+#theme-customization-panel {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--border-thin));
+    opacity: var(--theme-customization-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out, opacity var(--transition-speed) ease-in-out;
+}
+#theme-customization-panel, #theme-customization-panel * {
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+
+/* Ensure specific text elements inside widgets that were already individually transitioned maintain that */
+/* This is mostly covered by widget * selector, but specific overrides can be maintained if needed */
 
 /* --- Quick Links Panel Styles --- */
 #quick-links-panel {
     padding: var(--spacing-unit-md);
     margin-bottom: var(--spacing-unit-md);
-    background-color: var(--color-primary-warm-white-2);
-    border: var(--border-thin);
+    /* background-color set by theme variable above */
+    /* border set by theme variable above */
     box-shadow: var(--box-shadow-soft);
     border-radius: var(--border-radius-md);
-    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    opacity: var(--quick-links-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
 }
 
-#quick-links-panel h3,
-#quick-links-panel .quick-link-category-header,
-#quick-links-panel .quick-link-item-name,
-#quick-links-panel .quick-link-item-category,
-#quick-links-empty-state p {
-    transition: color var(--transition-speed) ease;
+/* Child elements of quick-links-panel that need specific color transitions if not covered by blanket panel color rule */
+/* Most are covered by `#quick-links-panel *` or specific theme variable applications. */
+/* Example: if #quick-links-panel h3 needed a different color than --current-text-color */
+/* #quick-links-panel h3 { color: var(--some-other-variable); transition: color var(--transition-speed); } */
+
+/* Buttons like #add-link-btn use .btn styles which already have transitions.
+   If their colors are themed directly by --current-accent-color, it will transition.
+   Currently, they use specific colors like --color-secondary-bamboo-green.
+   If these buttons should also change with themes, their CSS should be:
+   background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+   color: var(--current-accent-text-color, var(--color-primary-warm-white-1));
+   border-color: var(--current-accent-color, transparent);
+   The existing .btn transition will handle the smoothness.
+*/
+#add-link-btn, #add-link-empty-state-btn {
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+    color: var(--color-primary-warm-white-1); /* Assuming accent buttons have light text */
+    /* transition is already on .btn which is on these elements */
+}
+#add-link-btn:hover, #add-link-empty-state-btn:hover {
+     filter: brightness(90%); /* General hover for themed button */
 }
 
-#quick-links-panel h3 {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-deep-charcoal);
-    margin-bottom: var(--spacing-unit-md);
-}
-
-#add-link-btn,
-#add-link-empty-state-btn {
-    /* Using existing button styles */
-    display: inline-block;
-    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
-    font-family: var(--font-primary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: var(--border-radius-sm);
-    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
-    background-color: var(--color-secondary-bamboo-green);
-    color: var(--color-primary-warm-white-1);
-    margin-bottom: var(--spacing-unit-md);
-}
-
-#add-link-btn:hover,
-#add-link-empty-state-btn:hover,
-#add-link-btn:focus,
-#add-link-empty-state-btn:focus {
-    background-color: #7aa87a; /* Slightly darker bamboo green */
-}
 
 .quick-links-actions {
     margin-top: var(--spacing-unit-sm); /* Space below "Add Link" button */
@@ -1136,24 +1645,12 @@ body {
 */
 
 /* Daily Inspiration Widget Styles */
-#daily-inspiration-widget {
-    background-color: var(--widget-background-color, #f9f9f9);
-    padding: var(--spacing-unit-md, 15px);
-    border-radius: var(--border-radius-md, 8px);
-    box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
-    margin-bottom: var(--spacing-unit-lg, 20px);
-    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
-}
-
-#daily-inspiration-widget h3,
-#daily-inspiration-widget #inspiration-type-indicator,
-#daily-inspiration-widget #inspiration-japanese-text,
-#daily-inspiration-widget #inspiration-romaji-text,
-#daily-inspiration-widget #inspiration-english-text,
-#daily-inspiration-widget #inspiration-explanation,
-#daily-inspiration-widget #inspiration-source {
-    transition: color var(--transition-speed) ease;
-}
+/* Daily Inspiration Widget specific text elements are handled by the general rules above. */
+/* For example, #daily-inspiration-widget * will set text color and it will transition. */
+/* If specific elements like #inspiration-japanese-text need a *different* themed color,
+   they'd need: color: var(--some-other-theme-variable); transition: color var(--transition-speed);
+   but the current setup should cover most cases by inheriting themed --current-text-color.
+*/
 
 #daily-inspiration-widget h3 {
     margin-top: 0;
@@ -1283,20 +1780,7 @@ body {
 }
 
 /* Theme Customization Panel Styles */
-#theme-customization-panel {
-    padding: var(--spacing-unit-md);
-    margin-top: var(--spacing-unit-lg);
-    background-color: var(--color-primary-warm-white-2);
-    border: var(--border-thin);
-    box-shadow: var(--box-shadow-soft);
-    border-radius: var(--border-radius-md);
-    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out;
-}
-
-#theme-customization-panel h3,
-#theme-customization-panel h4 {
-    transition: color var(--transition-speed) ease-in-out;
-}
+/* Theme Customization Panel specific text elements are handled by the general rules above. */
 
 #theme-customization-panel h3 {
     font-size: var(--font-size-lg);
@@ -1330,41 +1814,22 @@ body {
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.preview-widget-example {
-    padding: var(--spacing-unit-md);
-    border: 1px dashed var(--color-secondary-zen-grey);
-    border-radius: var(--border-radius-sm);
-    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out;
-}
+/* Preview area elements:
+   .preview-widget-example already has transitions for background-color and border-color.
+   .preview-text already has transition for color.
+   Buttons inside preview (.preview-button-primary, .preview-button-secondary) will rely on
+   the base .btn class transitions, which cover background-color, color, and border-color.
+   The CSS rules for these preview buttons correctly apply the --current-* variables.
+   No further changes seem needed here specifically for transitions, as they are inherited
+   or already applied.
+ */
 
-.preview-text {
-    color: var(--color-text-deep-charcoal); /* Ensure this uses theme variable */
-    margin-bottom: var(--spacing-unit-sm);
-    transition: color var(--transition-speed) ease-in-out;
-}
-
-/* Ensure preview elements use the theme variables */
-.preview-widget-example .preview-text {
-    color: var(--current-text-color, var(--color-text-deep-charcoal));
-}
-
-.preview-widget-example .preview-button-primary {
-    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
-    color: var(--color-primary-warm-white-1);
-    border-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
-}
-
-.preview-widget-example .preview-button-primary:hover {
-    /* Define a slightly darker version of current-accent-color or a fixed hover color */
-    filter: brightness(90%);
-}
-
-.preview-widget-example .preview-button-secondary {
-    background-color: var(--color-secondary-zen-grey); /* This should also be themed */
-    color: var(--current-text-color, var(--color-text-deep-charcoal));
-    border-color: var(--color-secondary-zen-grey);
-}
-
-.preview-widget-example .preview-button-secondary:hover {
-    filter: brightness(90%);
+/* Meditation Timer Widget Styles */
+#meditation-timer-widget {
+    /* Inherits .widget styles for backdrop, default opacity transition, etc. */
+    /* Add specific opacity control. */
+    opacity: var(--meditation-timer-opacity);
+    /* If it needs other specific transitions not covered by .widget, add them here. */
+    /* For example, if its bg color is set directly and not via --current-widget-bg-color */
+    /* transition: background-color var(--transition-speed), opacity var(--transition-speed); */
 }
