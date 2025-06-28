@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serene Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/meditation-timer.css">
 </head>
 <body>
     <div id="background-gallery"></div>
@@ -123,6 +124,102 @@
             </form>
         </div>
     </div>
+
+    <!-- New Meditation Timer Widget -->
+    <div id="meditation-timer-widget" class="widget">
+        <h3>Meditation Timer</h3>
+        <div class="timer-display">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring-bg" cx="100" cy="100" r="90" stroke-width="10" fill="transparent"/>
+                <circle class="progress-ring-circle" cx="100" cy="100" r="90" stroke-width="10" fill="transparent"
+                        stroke-dasharray="565.48" stroke-dashoffset="565.48"/> {/* Circumference = 2 * PI * r */}
+            </svg>
+            <span id="time-text">00:00</span>
+        </div>
+        <div class="timer-controls">
+            <button id="meditation-play-btn" aria-label="Play">Play</button>
+            <button id="meditation-pause-btn" aria-label="Pause">Pause</button>
+            <button id="meditation-stop-btn" aria-label="Stop">Stop</button>
+        </div>
+        <div class="meditation-presets">
+            <button class="preset-btn" data-duration="300">5 min</button>
+            <button class="preset-btn" data-duration="600">10 min</button>
+            <button class="preset-btn" data-duration="900">15 min</button>
+            <button class="preset-btn" data-duration="1800">30 min</button>
+            <input type="number" id="custom-duration-input" min="1" max="60" placeholder="Mins (1-60)">
+            <button id="custom-duration-btn">Set Custom</button>
+        </div>
+
+        <div id="pomodoro-phase-display" class="widget-subsection-title" style="display: none;"></div>
+
+        <div class="pomodoro-controls widget-section">
+            <button id="toggle-pomodoro-btn">Enable Pomodoro</button>
+            <div id="pomodoro-settings" class="hidden">
+                <label for="pomodoro-work-input">Work (min):</label>
+                <input type="number" id="pomodoro-work-input" value="25" min="15" max="45">
+
+                <label for="pomodoro-short-break-input">Short Break (min):</label>
+                <input type="number" id="pomodoro-short-break-input" value="5" min="3" max="10">
+
+                <label for="pomodoro-long-break-input">Long Break (min):</label>
+                <input type="number" id="pomodoro-long-break-input" value="15" min="10" max="30">
+
+                <label for="pomodoro-cycles-input">Cycles before Long Break:</label>
+                <input type="number" id="pomodoro-cycles-input" value="4" min="2" max="6">
+            </div>
+        </div>
+
+        <div class="widget-section sound-settings">
+            <h4>Sound Options</h4>
+            <div class="sound-selection">
+                <label for="bell-sound-select">Bell Sound:</label>
+                <select id="bell-sound-select">
+                    <option value="silent">Silent</option>
+                    <option value="audio/temple-bell.mp3">Temple Bell</option>
+                    <option value="audio/wind-chime.mp3">Wind Chime</option>
+                    <option value="audio/singing-bowl.mp3">Singing Bowl</option>
+                    <option value="audio/mokugyo.mp3">Mokugyo</option>
+                </select>
+                <button id="preview-sound-btn" aria-label="Preview selected sound">&#128266;</button>
+            </div>
+            <div class="volume-control">
+                <label for="volume-slider">Volume:</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+            </div>
+        </div>
+
+        <div class="widget-section ambient-sound-settings">
+            <h4>Ambient Sounds</h4>
+            <div id="ambient-sounds-list">
+                <!-- Ambient sounds will be populated by JavaScript -->
+            </div>
+            <!-- <button id="manage-ambient-sounds-btn" style="display:none;">Manage Ambient Sounds</button> -->
+        </div>
+
+        <div id="breathing-guide-container" class="widget-section hidden"> <!-- Initially hidden -->
+            <h4>Breathing Guide</h4>
+            <div id="breathing-anim-area">
+                <div id="breathing-circle"></div>
+                <div id="breathing-text"></div> <!-- To display Inhale, Hold, Exhale -->
+            </div>
+            <div class="breathing-guide-controls">
+                <label for="breathing-pattern-select">Pattern:</label>
+                <select id="breathing-pattern-select">
+                    <option value="4-2-6">Balanced (4-2-6)</option> <!-- Inhale-Hold-Exhale -->
+                    <option value="4-4-4">Equal (4-4-4)</option>
+                    <option value="4-7-8">Relaxing (4-7-8)</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <div id="custom-breathing-pattern-inputs" class="hidden">
+                    <input type="number" id="inhale-time" min="1" placeholder="In (s)">
+                    <input type="number" id="hold-time" min="0" placeholder="Hold (s)">
+                    <input type="number" id="exhale-time" min="1" placeholder="Out (s)">
+                </div>
+                <button id="toggle-breathing-guide-btn">Show Guide</button>
+            </div>
+        </div>
+        <!-- More sections will be added here later -->
+    </div>
             </aside>
         </main>
     </div>
@@ -142,5 +239,6 @@
     <script src="js/time-widget.js" defer></script>
     <script src="js/weather-widget.js" defer></script>
     <script src="js/quick-links.js" defer></script>
+    <script src="js/meditation-timer.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,435 @@
+/* Basic styles for the meditation timer widget */
+#meditation-timer-widget {
+    background-color: #f4f4f0; /* Light beige/off-white */
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#meditation-timer-widget h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: normal; /* Or a more elegant font if available */
+}
+
+.timer-display {
+    font-size: 48px; /* Large countdown display */
+    color: #2c3e50; /* Dark slate blue */
+    margin-bottom: 20px;
+    padding: 0; /* Adjusted padding as SVG takes space */
+    background-color: #fff;
+    border-radius: 50%; /* Make it circular */
+    width: 200px;      /* Fixed width */
+    height: 200px;     /* Fixed height */
+    /* line-height: 160px; /* Vertically center text (adjust with font size) */
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    position: relative; /* For positioning children absolutely */
+    display: flex; /* To help center the text if needed */
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Start the progress from the top */
+}
+
+.progress-ring-bg {
+    stroke: #e0e0e0; /* Light grey track */
+}
+
+.progress-ring-circle {
+    stroke: #7d9a89; /* Muted green progress */
+    stroke-linecap: round; /* Or butt, depending on desired look */
+    transition: stroke-dashoffset 0.35s linear;
+}
+
+#time-text {
+    position: relative; /* Ensure it's above the SVG */
+    z-index: 1;
+    font-size: 48px; /* Ensure this is still applied */
+    color: #2c3e50;
+    /* Remove line-height if flex centering is used, or adjust as needed */
+}
+
+.timer-controls button {
+    background-color: #7d9a89; /* Muted green */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.timer-controls button:hover {
+    background-color: #688271; /* Darker muted green */
+}
+
+/* Add specific styles for play, pause, stop if needed, or use icons later */
+#meditation-play-btn {}
+#meditation-pause-btn {}
+#meditation-stop-btn {}
+
+/* Styles for preset and custom duration controls */
+.meditation-presets {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping if too many items */
+    justify-content: center;
+    gap: 10px; /* Space between items */
+}
+
+.preset-btn, #custom-duration-btn {
+    background-color: #a1b5a7; /* A slightly different shade of green or complementary color */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.preset-btn:hover, #custom-duration-btn:hover {
+    background-color: #8fa897;
+}
+
+#custom-duration-input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100px; /* Adjust as needed */
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Pomodoro Styles */
+.widget-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0; /* Lighter separator */
+}
+
+.widget-subsection-title { /* For #pomodoro-phase-display */
+    font-size: 1em; /* Or var(--font-size-md) */
+    color: #3a5a40; /* Darker green for phase text */
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#pomodoro-settings {
+    display: grid;
+    /* Decided to use 2 columns explicitly for more control */
+    grid-template-columns: 1fr 1fr;
+    /* grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); */
+    gap: 12px; /* Row and column gap */
+    padding: 15px;
+    background-color: #f0f0f0; /* Light grey background for settings */
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+
+#pomodoro-settings label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.85em; /* Or var(--font-size-sm) */
+    color: #444;
+    font-weight: 500;
+    /* Make label span full width if needed, or align text if grid causes misalignment */
+    grid-column: 1 / -1; /* Make labels span both columns if input is not directly under */
+}
+#pomodoro-settings input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 0.9em;
+    grid-column: 1 / -1; /* Make inputs span both columns */
+    margin-bottom: 8px; /* Add some space between input groups */
+}
+
+/* If you want label and input on the same line for wider screens, adjust grid-template-columns and remove grid-column span for labels/inputs */
+/* For example:
+@media (min-width: 400px) { #pomodoro-settings { grid-template-columns: auto 1fr; }
+#pomodoro-settings label { grid-column: auto; text-align: right; margin-right: 10px;}
+#pomodoro-settings input[type="number"] { grid-column: auto; margin-bottom: 0;} }
+*/
+
+
+#toggle-pomodoro-btn {
+    display: block;
+    width: 80%;
+    max-width: 250px;
+    margin: 10px auto 15px auto; /* Centered, added bottom margin */
+    padding: 10px 15px;
+    background-color: #8aabb0; /* Distinct color for Pomodoro toggle */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em; /* Or var(--font-size-md) */
+    transition: background-color 0.3s ease;
+}
+
+#toggle-pomodoro-btn:hover {
+    background-color: #7a9aa0;
+}
+
+#pomodoro-phase-display { /* Already partially styled by .widget-subsection-title */
+    margin-top: 15px; /* Space from timer display or presets */
+    /* display: none; /* Controlled by JS and .hidden */
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Sound Settings Styles */
+.sound-settings {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #eaf0e6; /* Very light green, distinct from pomodoro settings */
+    border-radius: 8px;
+    border: 1px solid #d8e0d2;
+}
+
+.sound-settings h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #3a5a40; /* Consistent dark green for titles */
+    font-weight: 500;
+}
+
+.sound-selection, .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between label, select/slider, and button */
+    margin-bottom: 10px;
+    justify-content: space-between; /* Push elements apart a bit */
+}
+
+.sound-selection label, .volume-control label {
+    font-size: 0.9em; /* var(--font-size-sm) */
+    color: #333;
+    flex-shrink: 0; /* Prevent label from shrinking too much */
+}
+
+#bell-sound-select {
+    flex-grow: 1; /* Allow select to take available space */
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+    background-color: #fff; /* Ensure select background is white */
+}
+
+#preview-sound-btn {
+    padding: 8px 10px;
+    background-color: #a1b5a7; /* Similar to preset buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em; /* For the speaker icon */
+    line-height: 1; /* Ensure icon is centered */
+}
+
+#preview-sound-btn:hover {
+    background-color: #8fa897;
+}
+
+#volume-slider {
+    flex-grow: 1;
+    cursor: pointer;
+    /* Basic styling, browser defaults are often okay but can be customized */
+    /* Accent color for the track/thumb can be set if desired */
+    /* accent-color: #7d9a89; */
+}
+
+/* Ambient Sound Settings Styles */
+.ambient-sound-settings {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #e6f0ea; /* Slightly different light green/blue */
+    border-radius: 8px;
+    border: 1px solid #d2e0d8;
+}
+
+.ambient-sound-settings h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #3a5a40;
+    font-weight: 500;
+}
+
+#ambient-sounds-list {
+    display: grid;
+    gap: 12px; /* Space between ambient sound rows */
+}
+
+.ambient-sound-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* Checkbox, Label, Slider */
+    /* For better alignment with checkbox and slider, consider:
+       grid-template-columns: min-content 1fr min-content;
+       This makes the first and last columns only as wide as their content.
+    */
+    gap: 10px; /* Horizontal gap between elements in a row */
+    align-items: center; /* Vertical alignment */
+    padding: 10px;
+    background-color: #f0f5f0; /* Slightly lighter than parent for item distinction */
+    border-radius: 6px;
+    border: 1px solid #e0e5e0;
+}
+
+.ambient-sound-item label {
+    font-size: 0.9em; /* var(--font-size-sm) */
+    color: #333;
+    cursor: pointer; /* Make it clear it's clickable with the checkbox */
+    margin-left: 5px; /* Space from checkbox */
+}
+
+.ambient-sound-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0; /* Reset default margins if any */
+    justify-self: start; /* Align checkbox to the start of its grid cell */
+}
+
+.ambient-sound-item input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+    min-width: 80px; /* Ensure slider is not too small */
+    /* accent-color: #7d9a89; */ /* Consistent accent for sliders */
+}
+
+/* Breathing Guide Styles */
+#breathing-guide-container {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f0f8ff; /* AliceBlue or similar light, calming color */
+    border-radius: 8px;
+    border: 1px solid #d6e4f0;
+}
+
+#breathing-guide-container h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #4682b4; /* SteelBlue */
+    font-weight: 500;
+}
+
+#breathing-anim-area {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#breathing-circle {
+    width: 50px; /* Initial size */
+    height: 50px;
+    background-color: #add8e6; /* LightBlue */
+    border-radius: 50%;
+    transform-origin: center center;
+    transform: scale(1); /* Explicitly set initial scale */
+    /* Animation will be applied via JS */
+}
+
+#breathing-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333; /* Darker text for contrast */
+    font-size: 1em; /* var(--font-size-md) */
+    font-weight: bold;
+    text-align: center;
+    width: 100%; /* Ensure text can wrap if needed */
+}
+
+.breathing-guide-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.breathing-guide-controls label { /* Specific label styling for this section if needed */
+    font-size: 0.9em;
+    color: #333;
+    margin-bottom: -5px; /* Reduce gap if label is for select directly above */
+}
+
+
+.breathing-guide-controls select,
+.breathing-guide-controls input[type="number"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+    max-width: 200px; /* Limit width of inputs/select */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+#custom-breathing-pattern-inputs {
+    display: flex;
+    gap: 8px; /* Increased gap a bit */
+    justify-content: center; /* Center the inputs */
+    width: 100%; /* Allow it to take space for centering */
+}
+
+#custom-breathing-pattern-inputs input[type="number"] {
+    width: 70px; /* Slightly wider inputs for seconds */
+    text-align: center;
+    padding: 8px 4px; /* Adjust padding for smaller width */
+}
+
+#toggle-breathing-guide-btn {
+    padding: 8px 15px;
+    background-color: #b0c4de; /* LightSteelBlue */
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 5px; /* Add some space above the button */
+}
+
+#toggle-breathing-guide-btn:hover {
+    background-color: #a0b4ce;
+}
+
+/* CSS Animations (durations will be set by JS) */
+@keyframes inhaleAnimation {
+    from { transform: scale(1); }
+    to { transform: scale(3); }
+}
+
+@keyframes exhaleAnimation {
+    from { transform: scale(3); }
+    to { transform: scale(1); }
+}
