@@ -370,5 +370,19 @@
     <script src="js/widget-customizer.js" defer></script>
     <script src="js/layout-switcher.js" defer></script>
     <script src="js/theme-switcher.js" defer></script>
+
+    <!-- Lightbox Structure -->
+    <div id="lightbox-overlay" class="lightbox-hidden">
+        <div id="lightbox-container">
+            <img id="lightbox-image" src="" alt="Lightbox Image">
+            <button id="lightbox-close-btn" aria-label="Close lightbox">&times;</button>
+            <div id="lightbox-info">
+                <!-- Image title and other details will go here -->
+            </div>
+            <!-- Optional: Navigation buttons for lightbox gallery -->
+            <button id="lightbox-prev-btn" class="lightbox-nav-btn" aria-label="Previous image (lightbox)">&lt;</button>
+            <button id="lightbox-next-btn" class="lightbox-nav-btn" aria-label="Next image (lightbox)">&gt;</button>
+        </div>
+    </div>
 </body>
 </html>
