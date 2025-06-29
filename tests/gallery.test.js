@@ -2053,4 +2053,162 @@ describe('Gallery Logic', () => {
       expect(imageGalleryState.wasPlayingBeforeHidden).toBe(false); // Should remain false
     });
   });
+
+  describe('setSeasonalCategoryFilter', () => {
+    const {
+        setSeasonalCategoryFilter,
+        imageGalleryState,
+        // galleryImages, // Not directly used by setSeasonalCategoryFilter logic itself but by its callees
+        // initializeGallery // Not calling initializeGallery directly in these unit tests
+    } = gallery;
+
+    let populateCategoryFilterSpy, saveUserPreferencesSpy, stopRotationSpy, crossfadeToNextImageSpy, startRotationSpy;
+    let mockCategoryFilterElement; // To simulate DOM element
+
+    beforeEach(() => {
+        // Reset imageGalleryState for each test
+        imageGalleryState.selectedCategory = 'all';
+        imageGalleryState.imageHistory = [{ id: 'someimage' }];
+        imageGalleryState.currentImageIndex = 0;
+        imageGalleryState.isPlaying = true;
+        imageGalleryState.userPreferences.autoRotate = true;
+
+        // Mock DOM elements that setSeasonalCategoryFilter might interact with
+        // The categoryFilterElement is used by populateCategoryFilter.
+        // setSeasonalCategoryFilter itself checks for its existence.
+        document.body.innerHTML = '<select id="category-filter"></select>';
+        mockCategoryFilterElement = document.getElementById('category-filter');
+        gallery.categoryFilterElement = mockCategoryFilterElement; // Ensure the module uses this mock
+
+        // Spies for functions called by setSeasonalCategoryFilter
+        populateCategoryFilterSpy = jest.spyOn(gallery, 'populateCategoryFilter').mockImplementation(() => {});
+        saveUserPreferencesSpy = jest.spyOn(gallery, 'saveUserPreferences').mockImplementation(() => {});
+        stopRotationSpy = jest.spyOn(gallery, 'stopRotation').mockImplementation(() => {});
+        crossfadeToNextImageSpy = jest.spyOn(gallery, 'crossfadeToNextImage').mockResolvedValue(undefined); // Simulate success
+        startRotationSpy = jest.spyOn(gallery, 'startRotation').mockImplementation(() => {});
+
+        // Spy on console.log and console.warn as the function uses them
+        // jest.spyOn(console, 'log').mockImplementation(() => {}); // Already spied in outer scope
+        // jest.spyOn(console, 'warn').mockImplementation(() => {}); // Already spied in outer scope
+        // Re-spy them here if more specific control or clear is needed per test.
+        // For now, assuming outer scope spies are sufficient if not cleared by other test suites' afterEach.
+        // Let's re-spy them to be safe and ensure they are clean for this suite.
+        jest.spyOn(console, 'log').mockImplementation(() => {}).mockClear();
+        jest.spyOn(console, 'warn').mockImplementation(() => {}).mockClear();
+
+
+        // Restore original function if it was spied on with mockImplementation elsewhere
+        // This is important if setSeasonalCategoryFilter itself could be a spy from other tests.
+        // However, setSeasonalCategoryFilter is usually directly imported and called.
+        // If it's a method on `gallery` object that might be spied, then:
+        // if (gallery.setSeasonalCategoryFilter && gallery.setSeasonalCategoryFilter.mockRestore) {
+        //     gallery.setSeasonalCategoryFilter.mockRestore();
+        // }
+        // Since it's destructured, this check is less relevant unless `gallery.setSeasonalCategoryFilter` was the spied target.
+    });
+
+    afterEach(() => {
+        document.body.innerHTML = ''; // Clean up DOM
+        // Restore console spies if they were created specifically for this suite
+        // This is important if outer spies are not to be affected or if we want clean slate.
+        // jest.restoreAllMocks() in the main afterEach should handle these if they are on `console`.
+        // However, explicit restoration is safer.
+        if (console.log.mockRestore) console.log.mockRestore();
+        if (console.warn.mockRestore) console.warn.mockRestore();
+        // Re-apply global console spies if they were cleared by mockRestore
+        // This is tricky. The main beforeEach sets them up.
+        // If we .mockRestore() here, they are gone for subsequent suites.
+        // Better to rely on .mockClear() in beforeEach if re-spying, or ensure main spies are not restored.
+        // For now, let's assume main jest.restoreAllMocks() handles console spies correctly
+        // by restoring original implementations, and main beforeEach re-spies them.
+        // So, no explicit restore here might be fine, or use mockClear() in beforeEach.
+        // The provided solution had .mockRestore() in afterEach, which might be too aggressive.
+        // Let's stick to mockClear() in beforeEach for spies created here.
+        // The global spies on console.log/warn are set in the main describe's beforeEach.
+        // We should not .mockRestore() them here, but rather ensure our specific suite's calls are tracked.
+        // The `jest.spyOn(console, 'log').mockImplementation(() => {}).mockClear();` in beforeEach is good.
+    });
+
+    const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
+
+    validSeasons.forEach(season => {
+        test(`should correctly process valid season: ${season} (when playing)`, async () => {
+            imageGalleryState.isPlaying = true;
+            imageGalleryState.userPreferences.autoRotate = true;
+
+            await setSeasonalCategoryFilter(season);
+
+            expect(imageGalleryState.selectedCategory).toBe('seasons');
+            expect(populateCategoryFilterSpy).toHaveBeenCalled();
+            expect(saveUserPreferencesSpy).toHaveBeenCalled();
+            expect(imageGalleryState.imageHistory).toEqual([]);
+            expect(imageGalleryState.currentImageIndex).toBe(-1);
+            expect(stopRotationSpy).toHaveBeenCalled();
+            expect(crossfadeToNextImageSpy).toHaveBeenCalled();
+            // Ensure async operations from crossfade complete before checking startRotation
+            // Flushing microtask queue
+            await Promise.resolve();
+            expect(startRotationSpy).toHaveBeenCalled();
+            expect(console.log).toHaveBeenCalledWith(`Setting seasonal category filter for season: ${season}`);
+            expect(console.log).toHaveBeenCalledWith(`Gallery category set to 'seasons' for ${season}.`);
+        });
+
+        test(`should correctly process valid season: ${season} (when paused)`, async () => {
+            imageGalleryState.isPlaying = false;
+            imageGalleryState.userPreferences.autoRotate = true; // autoRotate can be true, but isPlaying is false
+
+            await setSeasonalCategoryFilter(season);
+
+            expect(imageGalleryState.selectedCategory).toBe('seasons');
+            expect(populateCategoryFilterSpy).toHaveBeenCalled();
+            expect(saveUserPreferencesSpy).toHaveBeenCalled();
+            expect(imageGalleryState.imageHistory).toEqual([]);
+            expect(imageGalleryState.currentImageIndex).toBe(-1);
+            expect(stopRotationSpy).toHaveBeenCalled();
+            expect(crossfadeToNextImageSpy).toHaveBeenCalled();
+            await Promise.resolve(); // Flush microtask queue
+            expect(startRotationSpy).not.toHaveBeenCalled(); // Should not start if was paused
+            expect(console.log).toHaveBeenCalledWith(`Setting seasonal category filter for season: ${season}`);
+            expect(console.log).toHaveBeenCalledWith(`Gallery category set to 'seasons' for ${season}.`);
+        });
+    });
+
+    test('should not change category or call functions for an invalid season', async () => {
+        const invalidSeason = 'notARealSeason';
+        const initialSelectedCategory = imageGalleryState.selectedCategory;
+        // Spies are reset in beforeEach, so no need to mockClear them here individually.
+
+        await setSeasonalCategoryFilter(invalidSeason);
+
+        expect(imageGalleryState.selectedCategory).toBe(initialSelectedCategory);
+        expect(console.warn).toHaveBeenCalledWith(`Invalid season provided to setSeasonalCategoryFilter: ${invalidSeason}`);
+        expect(populateCategoryFilterSpy).not.toHaveBeenCalled();
+        expect(saveUserPreferencesSpy).not.toHaveBeenCalled();
+        expect(stopRotationSpy).not.toHaveBeenCalled();
+        expect(crossfadeToNextImageSpy).not.toHaveBeenCalled();
+        expect(startRotationSpy).not.toHaveBeenCalled();
+    });
+
+    test('should handle missing categoryFilterElement gracefully and log warning', async () => {
+        gallery.categoryFilterElement = null; // Simulate missing element
+        const season = 'spring'; // Use a valid season for the rest of the logic
+        imageGalleryState.isPlaying = true;
+        imageGalleryState.userPreferences.autoRotate = true;
+
+        await setSeasonalCategoryFilter(season);
+
+        expect(console.warn).toHaveBeenCalledWith("categoryFilterElement not found, cannot update UI for seasonal filter.");
+        expect(populateCategoryFilterSpy).not.toHaveBeenCalled(); // Because of the null check
+
+        // Verify other actions still occur
+        expect(imageGalleryState.selectedCategory).toBe('seasons'); // Core logic should still set this
+        expect(saveUserPreferencesSpy).toHaveBeenCalled();
+        expect(imageGalleryState.imageHistory).toEqual([]);
+        expect(imageGalleryState.currentImageIndex).toBe(-1);
+        expect(stopRotationSpy).toHaveBeenCalled();
+        expect(crossfadeToNextImageSpy).toHaveBeenCalled();
+        await Promise.resolve(); // For async operations from crossfade if any
+        expect(startRotationSpy).toHaveBeenCalled(); // Should be called if playing and autoRotate true
+    });
+  });
 });
