@@ -11,6 +11,7 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   **Manual Navigation:** Users can pause rotation and navigate to the next or previous image.
 *   **Category Filtering:** Images can be filtered by categories (e.g., Nature, Architecture, Seasons, Culture).
 *   **Image Information Overlay:** Displays the title and location of the current image.
+*   **Lightbox Mode:** Click on the image information (title and location) to view a larger version of the current image in a modal overlay. Navigate between images within the lightbox using previous/next buttons, or close it with a dedicated button or the Escape key.
 *   **Responsive Controls:** Gallery controls (pause, next, previous, category filter) are available and auto-hide when not in use.
 *   **Reduced Motion Accessibility:** Respects user preference for reduced motion.
 *   **User Preferences:** Remembers your last selected image category and whether image rotation was paused or active across sessions.
@@ -40,6 +41,7 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
     *   Use the dropdown menu to select an image category. The gallery will then only display images from the selected category. Select "All Categories" to see images from all categories.
 *   **Image Information:**
     *   The title and location of the current image are displayed in an overlay.
+*   **Viewing Images in Lightbox:** Click on the image information (title and location) that appears over the background image. This will open a lightbox showing a larger version of the image. You can navigate to the previous or next image within the lightbox using the provided arrow buttons, or close the lightbox using the close button (×) or by pressing the Escape key.
 *   **Controls Visibility:**
     *   Move your mouse over the page to show the gallery controls. They will automatically hide after a few seconds of inactivity.
 
@@ -153,7 +155,6 @@ This command will discover and run all test files (typically ending in `.test.js
 ## Future Ideas
 
 *   **Improved Preloading:** Enhance the image preloading logic for smoother transitions, especially on slower connections.
-*   **Lightbox Mode:** Implement a lightbox view for images, allowing users to see a larger version of the image with more details.
 *   **Admin Interface:** Create an admin interface for easier management of images and categories without directly editing the JavaScript file.
 *   **API Integration:** Fetch image data from an external API instead of a local array.
 *   **Advanced Animation & Transitions:** Explore more sophisticated image transition effects.
