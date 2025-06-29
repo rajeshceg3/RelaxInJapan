@@ -9,7 +9,8 @@ const imageGalleryState = {
     transitionDuration: 2000, // ms
     rotationInterval: 300000, // 5 minutes in ms
     preferredCategories: ['all']
-  }
+  },
+  wasPlayingBeforeHidden: false
 };
 
 const galleryImages = [
@@ -342,15 +343,18 @@ function rotateToNextImage(forceSkip = false) { // forceSkip can be used by erro
 // --- Utility ---
 function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
-        // Option: Could pause rotation or stop preloading
-        // stopRotation(); // Example: Pause when tab is not active
-    } else {
-        // Option: Resume rotation if it was paused
-        // if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
-        //    startRotation();
-        // }
-        // Ensure current image is still valid or refresh
-        // preloadNextImage(); // Refresh preload when tab becomes visible
+        // Check if image rotation is currently active
+        if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
+            imageGalleryState.wasPlayingBeforeHidden = true;
+            stopRotation();
+        }
+    } else if (document.visibilityState === 'visible') {
+        // Check if image rotation was active before the page was hidden
+        if (imageGalleryState.wasPlayingBeforeHidden) {
+            startRotation();
+            preloadNextImage(); // Ensure the next image is ready
+        }
+        imageGalleryState.wasPlayingBeforeHidden = false;
     }
 }
 
