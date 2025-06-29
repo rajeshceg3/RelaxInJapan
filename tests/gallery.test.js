@@ -2212,3 +2212,57 @@ describe('Gallery Logic', () => {
     });
   });
 });
+
+describe('stopRotation', () => {
+  // Spy for console.log, already part of the main setup, but ensure it's clear for this suite
+  let consoleLogSpy;
+  let clearIntervalSpy;
+
+  beforeEach(() => {
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+    // NOTE: We cannot directly access or set gallery.js's internal `rotationIntervalId`.
+    // Tests will focus on the observable behaviors: `clearInterval` being called and logging.
+  });
+
+  // afterEach is not strictly necessary here as jest.restoreAllMocks() in the main
+  // afterEach should handle restoring spies on `console` and `global`.
+
+  test('should call clearInterval and log a message', () => {
+    // Call stopRotation directly
+    gallery.stopRotation();
+
+    // Check that clearInterval was called.
+    // If no interval was set internally in gallery.js, rotationIntervalId would be null,
+    // and clearInterval(null) is a valid no-op.
+    expect(clearIntervalSpy).toHaveBeenCalled();
+    // We cannot assert `toHaveBeenCalledWith(specificId)` without access to the internal ID.
+    // Knowing it's called is the primary check.
+
+    expect(consoleLogSpy).toHaveBeenCalledWith('Image rotation stopped.');
+  });
+
+  test('calling stopRotation multiple times should consistently call clearInterval and log', () => {
+    gallery.stopRotation(); // First call
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(1);
+    expect(consoleLogSpy).toHaveBeenCalledTimes(1);
+    expect(consoleLogSpy).toHaveBeenLastCalledWith('Image rotation stopped.');
+
+    gallery.stopRotation(); // Second call
+    // clearInterval should be called again (even if with null if already stopped).
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(2);
+    expect(consoleLogSpy).toHaveBeenCalledTimes(2);
+    expect(consoleLogSpy).toHaveBeenLastCalledWith('Image rotation stopped.');
+    // No error should be thrown.
+  });
+
+  test('calling stopRotation when no interval is presumed active should not cause errors', () => {
+    // This test case emphasizes that even if the internal state (rotationIntervalId) is null,
+    // stopRotation should execute without error.
+    gallery.stopRotation();
+
+    expect(clearIntervalSpy).toHaveBeenCalled(); // Called, possibly with null.
+    expect(consoleLogSpy).toHaveBeenCalledWith('Image rotation stopped.');
+    // The main expectation is that no JavaScript error is thrown during execution.
+  });
+});
