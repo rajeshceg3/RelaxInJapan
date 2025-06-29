@@ -105,6 +105,13 @@
                             <input type="range" id="card-opacity-slider" class="individual-opacity-slider" data-widget-var="--card-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
                             <span class="individual-opacity-value">100%</span></div>
                     </div>
+                    <div id="theme-settings-management" style="margin-top: var(--spacing-unit-lg); border-top: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); padding-top: var(--spacing-unit-lg);">
+                        <h4>Theme Settings Management:</h4>
+                        <input type="file" id="import-theme-settings" accept=".json" style="display: none;">
+                        <button id="import-theme-btn" class="btn btn-secondary" style="margin-right: var(--spacing-unit-xs);">Import Settings</button>
+                        <button id="export-theme-btn" class="btn btn-secondary" style="margin-right: var(--spacing-unit-xs);">Export Settings</button>
+                        <button id="reset-all-settings-btn" class="btn btn-danger">Reset All Settings</button>
+                    </div>
                     <div id="theme-preview-area" aria-labelledby="theme-preview-title">
                         <h4 id="theme-preview-title">Preview:</h4>
                         <div class="preview-widget-example card">
