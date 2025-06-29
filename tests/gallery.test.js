@@ -9,6 +9,11 @@ const {
     // Functions like populateCategoryFilter, loadInitialImage, etc.,
     // will be spied on gallery object itself (e.g., gallery.populateCategoryFilter)
     // and don't need to be destructured here if initializeGallery is the main function under test.
+    openLightbox, // Added for lightbox tests
+    closeLightbox, // Added for lightbox tests
+    // handleLightboxEscape is not directly tested via export but through dispatchEvent
+    showNextImageInLightbox, // Added for lightbox tests
+    showPreviousImageInLightbox // Added for lightbox tests
 } = gallery;
 
 // Mock localStorage
@@ -2264,5 +2269,243 @@ describe('stopRotation', () => {
     expect(clearIntervalSpy).toHaveBeenCalled(); // Called, possibly with null.
     expect(consoleLogSpy).toHaveBeenCalledWith('Image rotation stopped.');
     // The main expectation is that no JavaScript error is thrown during execution.
+  });
+});
+
+describe('Lightbox Functionality', () => {
+  beforeEach(() => {
+    // Set up mock HTML for the gallery and lightbox elements
+    document.body.innerHTML = `
+        <div id="background-gallery"></div>
+        <div id="image-info-overlay"></div>
+        <select id="category-filter"></select>
+        <button id="toggle-rotation"></button>
+        <button id="prev-image"></button>
+        <button id="next-image"></button>
+        <div id="gallery-controls"></div>
+
+        <!-- Lightbox Structure -->
+        <div id="lightbox-overlay" class="lightbox-hidden">
+            <div id="lightbox-container">
+                <img id="lightbox-image" src="" alt="Lightbox Image">
+                <button id="lightbox-close-btn">&times;</button>
+                <div id="lightbox-info"></div>
+                <button id="lightbox-prev-btn" class="lightbox-nav-btn">&lt;</button>
+                <button id="lightbox-next-btn" class="lightbox-nav-btn">&gt;</button>
+            </div>
+        </div>
+    `;
+
+    // Reset relevant parts of imageGalleryState
+    imageGalleryState.currentImageIndex = -1;
+    imageGalleryState.isPlaying = true;
+    imageGalleryState.selectedCategory = 'all';
+    imageGalleryState.imageHistory = [];
+    imageGalleryState.transitionInProgress = false;
+    imageGalleryState.wasPlayingBeforeLightbox = false;
+    // currentLightboxImageIndexInFilteredList is a global let, not part of imageGalleryState
+    // It will be reset by closeLightbox or when lightbox opens.
+
+    // Mock console methods if not already globally mocked or if specific behavior is needed
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+
+    // Initialize gallery to cache DOM elements, including lightbox ones.
+    // This is crucial as lightbox functions rely on these cached elements.
+    initializeGallery();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = ''; // Clean up DOM
+    // Restore any global mocks if they were changed, though jest.restoreAllMocks in main describe should handle most.
+    // If initializeGallery adds event listeners to document, they should be cleaned up if necessary,
+    // but Jest's JSDOM environment usually isolates tests.
+  });
+
+  test('should open lightbox with correct image and info', () => {
+      imageGalleryState.currentImageIndex = 0;
+      const currentImage = galleryImages[imageGalleryState.currentImageIndex];
+
+      openLightbox(currentImage);
+
+      const lightboxOverlay = document.getElementById('lightbox-overlay');
+      const lightboxImage = document.getElementById('lightbox-image');
+      const lightboxInfo = document.getElementById('lightbox-info');
+
+      expect(lightboxOverlay.classList.contains('lightbox-visible')).toBe(true);
+      expect(lightboxOverlay.classList.contains('lightbox-hidden')).toBe(false);
+      expect(lightboxImage.src).toContain(currentImage.path);
+      expect(lightboxImage.alt).toBe(currentImage.title);
+      expect(lightboxInfo.textContent).toContain(currentImage.title);
+      expect(lightboxInfo.textContent).toContain(currentImage.location);
+      expect(document.body.classList.contains('lightbox-active-body')).toBe(true);
+
+      closeLightbox(); // Clean up for other tests
+  });
+
+  test('should close lightbox when close button is clicked', () => {
+      imageGalleryState.currentImageIndex = 0;
+      openLightbox(galleryImages[0]); // Open it first
+
+      document.getElementById('lightbox-close-btn').click();
+
+      const lightboxOverlay = document.getElementById('lightbox-overlay');
+      expect(lightboxOverlay.classList.contains('lightbox-hidden')).toBe(true);
+      expect(lightboxOverlay.classList.contains('lightbox-visible')).toBe(false);
+      expect(document.body.classList.contains('lightbox-active-body')).toBe(false);
+  });
+
+  test('should close lightbox when Escape key is pressed', () => {
+      imageGalleryState.currentImageIndex = 0;
+      openLightbox(galleryImages[0]); // Open it first
+
+      const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+      document.dispatchEvent(escapeEvent); // handleLightboxEscape listens on document
+
+      const lightboxOverlay = document.getElementById('lightbox-overlay');
+      expect(lightboxOverlay.classList.contains('lightbox-hidden')).toBe(true);
+      expect(lightboxOverlay.classList.contains('lightbox-visible')).toBe(false);
+      expect(document.body.classList.contains('lightbox-active-body')).toBe(false);
+  });
+
+  describe('Lightbox Navigation', () => {
+    beforeEach(() => {
+        // Ensure category is 'all' so getFilteredImages() uses the full galleryImages list
+        imageGalleryState.selectedCategory = 'all';
+        // Initialize gallery to ensure lightbox DOM elements are cached
+        // and currentLightboxImageIndexInFilteredList is ready to be set by openLightbox
+        // initializeGallery(); // Already called in outer describe's beforeEach
+    });
+
+    test('should show next image in lightbox', () => {
+        openLightbox(galleryImages[0]); // Open with the first image
+
+        showNextImageInLightbox();
+
+        const lightboxImage = document.getElementById('lightbox-image');
+        expect(lightboxImage.src).toContain(galleryImages[1].path);
+        expect(lightboxImage.alt).toBe(galleryImages[1].title);
+
+        closeLightbox();
+    });
+
+    test('should show previous image in lightbox', () => {
+        openLightbox(galleryImages[1]); // Open with the second image
+
+        showPreviousImageInLightbox();
+
+        const lightboxImage = document.getElementById('lightbox-image');
+        expect(lightboxImage.src).toContain(galleryImages[0].path);
+        expect(lightboxImage.alt).toBe(galleryImages[0].title);
+
+        closeLightbox();
+    });
+
+    test('should loop to first image when showing next from last image', () => {
+        const lastImageIndex = galleryImages.length - 1;
+        openLightbox(galleryImages[lastImageIndex]); // Open with the last image
+
+        showNextImageInLightbox(); // Should loop to first
+
+        const lightboxImage = document.getElementById('lightbox-image');
+        expect(lightboxImage.src).toContain(galleryImages[0].path);
+        closeLightbox();
+    });
+
+    test('should loop to last image when showing previous from first image', () => {
+        openLightbox(galleryImages[0]); // Open with the first image
+
+        showPreviousImageInLightbox(); // Should loop to last
+
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lastImageIndex = galleryImages.length - 1;
+        expect(lightboxImage.src).toContain(galleryImages[lastImageIndex].path);
+        closeLightbox();
+    });
+  });
+
+  describe('Gallery Rotation with Lightbox', () => {
+    // Mock stopRotation and startRotation to check if they are called
+    // These spies need to be on the `gallery` object if they are methods, or global if global.
+    // Assuming they are part of the `gallery` module export for this test.
+    let stopRotationSpy, startRotationSpy;
+
+    beforeEach(() => {
+        // These spies are on the `gallery` object itself.
+        stopRotationSpy = jest.spyOn(gallery, 'stopRotation').mockImplementation(() => {
+            // Simulate stopRotation's effect on isPlaying if openLightbox relies on it
+            // imageGalleryState.isPlaying = false;
+            // Note: openLightbox now directly sets isPlaying = false after calling stopRotation.
+        });
+        startRotationSpy = jest.spyOn(gallery, 'startRotation').mockImplementation(() => {
+            // imageGalleryState.isPlaying = true;
+        });
+
+        imageGalleryState.isPlaying = true; // Default to playing
+        imageGalleryState.wasPlayingBeforeLightbox = false;
+        imageGalleryState.userPreferences.autoRotate = true; // Ensure auto-rotate is on
+    });
+
+    afterEach(() => {
+        // Restore spies to their original implementations or the global mocks
+        stopRotationSpy.mockRestore();
+        startRotationSpy.mockRestore();
+    });
+
+    test('should pause gallery rotation when lightbox opens (if gallery was playing)', () => {
+        imageGalleryState.isPlaying = true;
+
+        openLightbox(galleryImages[0]);
+
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(true);
+        expect(stopRotationSpy).toHaveBeenCalled();
+        expect(imageGalleryState.isPlaying).toBe(false); // openLightbox should set this
+
+        closeLightbox(); // Clean up
+    });
+
+    test('should not try to pause gallery rotation if it was already paused', () => {
+        imageGalleryState.isPlaying = false;
+
+        openLightbox(galleryImages[0]);
+
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(false);
+        expect(stopRotationSpy).not.toHaveBeenCalled(); // Because it wasn't playing
+        expect(imageGalleryState.isPlaying).toBe(false); // Remains false
+
+        closeLightbox();
+    });
+
+    test('should resume gallery rotation when lightbox closes (if it was playing before)', () => {
+        imageGalleryState.isPlaying = true; // Simulate it was playing
+        openLightbox(galleryImages[0]); // This will set wasPlayingBeforeLightbox = true and isPlaying = false
+
+        // Pre-condition check
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(true);
+        expect(imageGalleryState.isPlaying).toBe(false);
+
+        closeLightbox();
+
+        expect(imageGalleryState.isPlaying).toBe(true); // Should be restored by closeLightbox
+        expect(startRotationSpy).toHaveBeenCalled();
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(false); // Reset by closeLightbox
+    });
+
+    test('should not resume gallery rotation if it was not playing before lightbox', () => {
+        imageGalleryState.isPlaying = false; // Simulate it was NOT playing
+        openLightbox(galleryImages[0]); // This will set wasPlayingBeforeLightbox = false
+
+        // Pre-condition check
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(false);
+        expect(imageGalleryState.isPlaying).toBe(false);
+
+        closeLightbox();
+
+        expect(imageGalleryState.isPlaying).toBe(false); // Should remain false
+        expect(startRotationSpy).not.toHaveBeenCalled();
+        expect(imageGalleryState.wasPlayingBeforeLightbox).toBe(false); // Still false
+    });
   });
 });

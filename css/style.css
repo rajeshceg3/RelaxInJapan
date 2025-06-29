@@ -1833,3 +1833,110 @@ body {
     /* For example, if its bg color is set directly and not via --current-widget-bg-color */
     /* transition: background-color var(--transition-speed), opacity var(--transition-speed); */
 }
+
+/* --- Lightbox Styles --- */
+#lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex; /* Used by default, will be overridden by .lightbox-hidden */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's above other content like gallery controls */
+}
+
+.lightbox-hidden {
+    display: none !important; /* Ensure it overrides the flex display from #lightbox-overlay */
+}
+
+.lightbox-visible {
+    display: flex !important; /* To make it visible, overriding .lightbox-hidden */
+}
+
+#lightbox-container {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1)); /* Themed background */
+    padding: var(--spacing-unit-lg, 20px); /* Use spacing variable with fallback */
+    border-radius: var(--border-radius-md, 8px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); /* Themed border */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+}
+
+#lightbox-image {
+    max-width: 100%;
+    max-height: calc(80vh - 100px); /* Adjusted to use vh and give space for info/buttons */
+    object-fit: contain;
+    border-radius: var(--border-radius-sm, 4px);
+    margin-bottom: var(--spacing-unit-md, 15px); /* Space between image and info */
+    border: 1px solid var(--current-border-color, transparent); /* Optional themed border for image */
+    transition: border-color var(--transition-speed);
+}
+
+#lightbox-close-btn {
+    position: absolute;
+    top: var(--spacing-unit-sm, 10px);   /* Use spacing variable */
+    right: var(--spacing-unit-md, 15px); /* Use spacing variable */
+    font-size: 2rem; /* Consider using a font-size variable if available, e.g., var(--font-size-xxl) */
+    color: var(--current-text-color, var(--color-text-secondary, #555)); /* Themed text */
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 var(--spacing-unit-xs); /* Minimal padding for easier clicking */
+    transition: color var(--transition-speed);
+}
+
+#lightbox-close-btn:hover {
+    color: var(--current-accent-color, var(--color-accent-sakura-pink)); /* Themed hover */
+}
+
+#lightbox-info {
+    text-align: center;
+    color: var(--current-text-color, var(--color-text-primary, #333)); /* Themed text */
+    font-size: var(--font-size-md, 1rem);
+    margin-bottom: var(--spacing-unit-sm, 10px); /* Space before nav buttons if they appear */
+    /* Transition for color is inherited from container or applied directly if specific */
+}
+
+.lightbox-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+    cursor: pointer;
+    z-index: 1001; /* Above overlay, potentially above image if it overlaps */
+    border-radius: var(--border-radius-sm, 4px);
+    font-size: 1.5rem; /* Consider var(--font-size-xl) */
+    display: none; /* Initially hidden, shown by JS if multiple images */
+    transition: background-color var(--transition-speed);
+}
+
+.lightbox-nav-btn:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+#lightbox-prev-btn {
+    left: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+}
+
+#lightbox-next-btn {
+    right: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+}
+
+/* When lightbox is active, prevent scrolling on the body */
+body.lightbox-active-body {
+    overflow: hidden;
+}
