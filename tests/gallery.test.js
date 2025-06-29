@@ -1948,6 +1948,15 @@ describe('Gallery Logic', () => {
 
       imageGalleryState.isPlaying = true;
       imageGalleryState.userPreferences.autoRotate = true;
+      imageGalleryState.wasPlayingBeforeHidden = false; // Reset this state
+
+      // Spies are reset by the main beforeEach's jest.restoreAllMocks()
+      // and re-initialized in this suite's beforeEach or the main one.
+      // Explicitly reset calls for these specific spies if needed, but usually covered.
+      stopRotationSpy.mockClear();
+      startRotationSpy.mockClear();
+      preloadNextImageSpy.mockClear();
+
 
       if (gallery.handleVisibilityChange.mockRestore) {
         gallery.handleVisibilityChange.mockRestore();
@@ -1964,38 +1973,84 @@ describe('Gallery Logic', () => {
       }
     });
 
-    test('Tab Hidden - Current code does NOT pause rotation', () => {
+    test('Rotation active, tab becomes hidden', () => {
+      imageGalleryState.isPlaying = true;
+      imageGalleryState.userPreferences.autoRotate = true;
       Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
 
       handleVisibilityChange();
 
-      expect(stopRotationSpy).not.toHaveBeenCalled();
+      expect(stopRotationSpy).toHaveBeenCalled();
+      expect(imageGalleryState.wasPlayingBeforeHidden).toBe(true);
+      expect(startRotationSpy).not.toHaveBeenCalled();
     });
 
-    test('Tab Becomes Visible - Current code does NOT resume rotation or preload', () => {
-      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+    test('Rotation was active, tab becomes hidden then visible', () => {
+      imageGalleryState.isPlaying = true;
+      imageGalleryState.userPreferences.autoRotate = true;
 
+      // Simulate tab hidden
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+      handleVisibilityChange();
+
+      // Simulate tab visible
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+      handleVisibilityChange();
+
+      expect(startRotationSpy).toHaveBeenCalled();
+      expect(preloadNextImageSpy).toHaveBeenCalled();
+      expect(imageGalleryState.wasPlayingBeforeHidden).toBe(false);
+    });
+
+    test('Rotation paused by user, tab becomes hidden then visible', () => {
+      imageGalleryState.isPlaying = false; // User paused it
+      imageGalleryState.userPreferences.autoRotate = true;
+
+      // Simulate tab hidden
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+      handleVisibilityChange();
+
+      expect(stopRotationSpy).not.toHaveBeenCalled();
+      expect(imageGalleryState.wasPlayingBeforeHidden).toBe(false);
+
+      // Simulate tab visible
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
       handleVisibilityChange();
 
       expect(startRotationSpy).not.toHaveBeenCalled();
       expect(preloadNextImageSpy).not.toHaveBeenCalled();
     });
 
-    test('No Action if Rotation is Off or Paused Manually - Current code reflects this by doing nothing', () => {
-      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
-      imageGalleryState.isPlaying = false; // Manually paused
-      imageGalleryState.userPreferences.autoRotate = true;
-
-      handleVisibilityChange();
-
-      expect(startRotationSpy).not.toHaveBeenCalled();
-
+    test('Auto-rotate preference is off, tab becomes hidden then visible', () => {
       imageGalleryState.isPlaying = true;
       imageGalleryState.userPreferences.autoRotate = false; // Auto-rotate off
 
+      // Simulate tab hidden
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
       handleVisibilityChange();
 
-      expect(startRotationSpy).not.toHaveBeenCalled(); // Still not called
+      expect(stopRotationSpy).not.toHaveBeenCalled();
+      expect(imageGalleryState.wasPlayingBeforeHidden).toBe(false);
+
+      // Simulate tab visible
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+      handleVisibilityChange();
+
+      expect(startRotationSpy).not.toHaveBeenCalled();
+      expect(preloadNextImageSpy).not.toHaveBeenCalled();
+    });
+
+    test('Tab becomes visible, but wasn\'t playing before hidden', () => {
+      imageGalleryState.isPlaying = false; // e.g. was manually paused before hide OR initial state
+      imageGalleryState.userPreferences.autoRotate = true;
+      imageGalleryState.wasPlayingBeforeHidden = false; // Explicitly set
+
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+      handleVisibilityChange();
+
+      expect(startRotationSpy).not.toHaveBeenCalled();
+      expect(preloadNextImageSpy).not.toHaveBeenCalled();
+      expect(imageGalleryState.wasPlayingBeforeHidden).toBe(false); // Should remain false
     });
   });
 });
