@@ -98,6 +98,11 @@
                         <div style="margin-bottom: var(--spacing-unit-xs);"><label for="meditation-timer-opacity-slider">Meditation Timer:</label>
                             <input type="range" id="meditation-timer-opacity-slider" class="individual-opacity-slider" data-widget-var="--meditation-timer-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
                             <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);">
+                            <label for="journaling-widget-opacity-slider">Journaling Widget:</label>
+                            <input type="range" id="journaling-widget-opacity-slider" class="individual-opacity-slider" data-widget-var="--journaling-widget-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span>
+                        </div>
                         <div style="margin-bottom: var(--spacing-unit-xs);"><label for="theme-customization-opacity-slider">Theme Panel:</label>
                             <input type="range" id="theme-customization-opacity-slider" class="individual-opacity-slider" data-widget-var="--theme-customization-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
                             <span class="individual-opacity-value">100%</span></div>
@@ -352,6 +357,42 @@
         </div>
         <!-- More sections will be added here later -->
     </div>
+<!-- Journaling Widget START -->
+<div id="journaling-widget" class="widget" role="complementary" aria-labelledby="journaling-widget-title">
+    <h3 id="journaling-widget-title">My Journal</h3>
+    <div id="journal-entry-area">
+        <textarea id="journal-text-input" placeholder="Write your thoughts for today..." aria-label="Journal Entry Text Area"></textarea>
+        <div id="journal-mood-selector" role="group" aria-labelledby="journal-mood-title">
+            <span id="journal-mood-title" class="visually-hidden">Select your mood:</span>
+            <button class="mood-btn" data-mood="😊" aria-label="Happy">😊</button>
+            <button class="mood-btn" data-mood="🙂" aria-label="Content">🙂</button>
+            <button class="mood-btn" data-mood="😐" aria-label="Neutral">😐</button>
+            <button class="mood-btn" data-mood="😕" aria-label="Confused">😕</button>
+            <button class="mood-btn" data-mood="😟" aria-label="Worried">😟</button>
+            <button class="mood-btn" data-mood="😢" aria-label="Sad">😢</button>
+        </div>
+        <button id="journal-save-btn" class="btn btn-primary">Save Entry</button>
+    </div>
+    <div id="journal-history-area">
+        <h4>Past Entries</h4>
+        <div id="journal-current-entry-display">
+            <p id="journal-entry-date-display" class="journal-meta">Date: ---</p>
+            <p id="journal-entry-mood-display" class="journal-meta">Mood: ---</p>
+            <div id="journal-entry-text-display" class="journal-text-content">
+                <p>No entry selected or available.</p>
+            </div>
+        </div>
+        <div id="journal-navigation-controls" class="widget-controls">
+            <button id="journal-prev-entry-btn" aria-label="Previous entry" title="Previous entry">&#9664;</button>
+            <input type="date" id="journal-date-picker" aria-label="Select entry by date">
+            <button id="journal-next-entry-btn" aria-label="Next entry" title="Next entry">&#9654;</button>
+        </div>
+        <div id="journal-empty-state" style="display: none; text-align: center; padding: var(--spacing-unit-md);">
+            <p>Your journal is empty. Write your first entry!</p>
+        </div>
+    </div>
+</div>
+<!-- Journaling Widget END -->
             </aside>
         </main>
     </div>
@@ -377,6 +418,7 @@
     <script src="js/widget-customizer.js" defer></script>
     <script src="js/layout-switcher.js" defer></script>
     <script src="js/theme-switcher.js" defer></script>
+    <script src="js/journaling-widget.js" defer></script>
 
     <!-- Lightbox Structure -->
     <div id="lightbox-overlay" class="lightbox-hidden">

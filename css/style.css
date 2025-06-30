@@ -1940,3 +1940,161 @@ body {
 body.lightbox-active-body {
     overflow: hidden;
 }
+
+/* Journaling Widget Styles */
+#journaling-widget {
+    opacity: var(--journaling-widget-opacity, var(--widget-opacity, 1));
+    /* Standard widget spacing if it's a direct child of .column-widgets */
+    /* If it's inside another card/widget container, these might not be needed */
+}
+
+#journal-entry-area {
+    margin-bottom: var(--spacing-unit-md);
+    border-bottom: 1px solid var(--current-border-color, var(--color-border)); /* Use theme variable */
+    padding-bottom: var(--spacing-unit-md);
+}
+
+#journal-text-input {
+    width: 100%;
+    min-height: 100px; /* Adjust as needed */
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    background-color: var(--current-bg-secondary, var(--color-background-secondary)); /* Use theme variable */
+    color: var(--current-text-primary, var(--color-text-primary)); /* Use theme variable */
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    resize: vertical; /* Allow vertical resizing */
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#journal-mood-selector {
+    display: flex;
+    gap: var(--spacing-unit-xs);
+    margin-bottom: var(--spacing-unit-md);
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.mood-btn {
+    background-color: transparent;
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-unit-xs) var(--spacing-unit-sm);
+    font-size: 1.2rem; /* Adjust emoji size */
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: var(--current-text-secondary, var(--color-text-secondary)); /* For potential text alternatives if emojis fail */
+}
+
+.mood-btn:hover,
+.mood-btn:focus {
+    border-color: var(--current-primary-accent, var(--color-primary-accent)); /* Use theme variable */
+    background-color: var(--current-bg-hover, var(--color-background-hover)); /* Use theme variable */
+}
+
+.mood-btn.selected {
+    background-color: var(--current-primary-accent, var(--color-primary-accent));
+    border-color: var(--current-primary-accent, var(--color-primary-accent));
+    color: var(--current-text-on-primary, var(--color-text-on-primary)); /* Ensure contrast */
+}
+
+#journal-save-btn {
+    /* Uses existing .btn .btn-primary styles, additional specific styles if needed */
+    display: block; /* Make it full width or adjust as needed */
+    width: 100%;
+    margin-top: var(--spacing-unit-sm);
+}
+
+#journal-history-area h4 {
+    margin-bottom: var(--spacing-unit-sm);
+    font-weight: bold;
+    color: var(--current-text-primary, var(--color-text-primary));
+}
+
+#journal-current-entry-display {
+    background-color: var(--current-bg-secondary, var(--color-background-secondary));
+    padding: var(--spacing-unit-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-unit-md);
+    border: 1px solid var(--current-border-color, var(--color-border));
+}
+
+.journal-meta {
+    font-size: var(--font-size-sm);
+    color: var(--current-text-secondary, var(--color-text-secondary));
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#journal-entry-text-display {
+    min-height: 50px; /* Ensure it has some height even when empty */
+    padding-top: var(--spacing-unit-xs);
+    line-height: 1.6;
+    color: var(--current-text-primary, var(--color-text-primary));
+    white-space: pre-wrap; /* Preserve line breaks from textarea */
+    word-wrap: break-word; /* Prevent long words from overflowing */
+}
+
+
+#journal-navigation-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-unit-sm);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#journal-navigation-controls button {
+    /* Uses existing .btn styles if applicable, or define specific ones */
+    padding: var(--spacing-unit-xs) var(--spacing-unit-sm);
+    background-color: var(--current-bg-button, var(--color-button-background));
+    color: var(--current-text-button, var(--color-button-text));
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+}
+
+#journal-navigation-controls button:hover,
+#journal-navigation-controls button:focus {
+    background-color: var(--current-bg-button-hover, var(--color-button-background-hover));
+    border-color: var(--current-primary-accent, var(--color-primary-accent));
+}
+
+
+#journal-date-picker {
+    flex-grow: 1;
+    padding: var(--spacing-unit-xs);
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    background-color: var(--current-bg-input, var(--color-input-background));
+    color: var(--current-text-input, var(--color-input-text));
+    font-family: inherit;
+}
+
+#journal-empty-state p {
+    color: var(--current-text-secondary, var(--color-text-secondary));
+    font-style: italic;
+}
+
+/* Ensure widget structure is consistent (if using .widget class from style.css) */
+/* .widget #journaling-widget { ... } might be needed if nesting is different */
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #journal-mood-selector {
+        gap: 5px; /* Smaller gap for mood buttons */
+    }
+
+    .mood-btn {
+        font-size: 1rem; /* Slightly smaller emojis */
+        padding: 5px 8px;
+    }
+
+    #journal-navigation-controls {
+        flex-direction: column; /* Stack controls vertically */
+    }
+
+    #journal-date-picker {
+        width: 100%; /* Full width for date picker */
+        margin-top: var(--spacing-unit-xs);
+        margin-bottom: var(--spacing-unit-xs);
+    }
+}

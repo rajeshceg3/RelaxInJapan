@@ -15,6 +15,7 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   **Responsive Controls:** Gallery controls (pause, next, previous, category filter) are available and auto-hide when not in use.
 *   **Reduced Motion Accessibility:** Respects user preference for reduced motion.
 *   **User Preferences:** Remembers your last selected image category and whether image rotation was paused or active across sessions.
+*   **Journaling Widget:** Allows users to write and save daily journal entries with optional mood tracking. Entries are stored locally and can be navigated by date.
 
 ## How to Use
 
@@ -44,6 +45,16 @@ The Serene Dashboard is a web application that displays a rotating gallery of im
 *   **Viewing Images in Lightbox:** Click on the image information (title and location) that appears over the background image. This will open a lightbox showing a larger version of the image. You can navigate to the previous or next image within the lightbox using the provided arrow buttons, or close the lightbox using the close button (×) or by pressing the Escape key.
 *   **Controls Visibility:**
     *   Move your mouse over the page to show the gallery controls. They will automatically hide after a few seconds of inactivity.
+
+### Using the Journaling Widget
+
+*   **Writing an Entry:** Type your thoughts into the text area provided in the "My Journal" widget.
+*   **Selecting a Mood (Optional):** Click on one of the emoji icons below the text area to associate a mood with your entry. Click again or select another to change it.
+*   **Saving an Entry:** Click the "Save Entry" button. If an entry for the current day already exists, it will be updated. Otherwise, a new entry for today will be created.
+*   **Viewing Past Entries:**
+    *   Use the "Previous" and "Next" arrow buttons to navigate through your entries chronologically.
+    *   Select a specific date using the date picker to jump directly to that day's entry (if one exists).
+*   **Data Storage:** Journal entries are saved in your browser's local storage.
 
 ### User Preferences
 The gallery automatically saves the following settings to your browser's local storage:
