@@ -171,9 +171,9 @@ This command will discover and run all test files (typically ending in `.test.js
 *   **Advanced Animation & Transitions:** Explore more sophisticated image transition effects.
 *   **Unit Tests:** Add JavaScript unit tests to ensure the gallery logic functions as expected.
 
-## CI/CD Pipeline (Conceptual Setup)
+## CI/CD Pipeline
 
-Setting up a CI/CD (Continuous Integration/Continuous Delivery) pipeline can automate testing and deployment. Here's a conceptual outline using GitHub Actions:
+A CI/CD (Continuous Integration/Continuous Delivery) pipeline has been set up for this project using GitHub Actions to automate testing and deployment.
 
 1.  **Prerequisites:**
     *   Project hosted on GitHub.
@@ -189,65 +189,38 @@ Setting up a CI/CD (Continuous Integration/Continuous Delivery) pipeline can aut
 
     on:
       push:
-        branches: [ main ] # Trigger on pushes to the main branch
+        branches: [ main ]
       pull_request:
-        branches: [ main ] # Trigger on pull requests to main
+        branches: [ main ]
 
     jobs:
       build-and-deploy:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
-          # Add steps for linting, testing, building if applicable.
-          # For this simple static site, we might just deploy.
+          - name: Set up Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '18'
 
-          # Example: Lint HTML/CSS/JS (if linters are configured)
-          # - name: Lint Code
-          #   run: |
-          #     # Ensure linters are installed (e.g., via npm install --save-dev eslint stylelint html-validate)
-          #     # For JavaScript (ESLint):
-          #     # npx eslint .
-          #     # For CSS (Stylelint):
-          #     # npx stylelint "**/*.css"
-          #     # For HTML (html-validate):
-          #     # npx html-validate ./**/*.html
+          - name: Install dependencies
+            run: npm install
 
-          # Example: Run Tests (if tests are added)
-          # - name: Run Tests
-          #   run: |
-          #     # Ensure Jest is installed (e.g., via npm install --save-dev jest)
-          #     # Running tests with Jest is crucial for verifying functionality:
-          #     # npx jest
+          - name: Run Tests
+            run: npx jest
 
-          # Example: Generate Code Coverage Report
+          # Optional: Generate Code Coverage Report (as mentioned in README)
           # - name: Generate Code Coverage
-          #   run: |
-          #     # Jest can generate code coverage reports:
-          #     # npx jest --coverage
-          #     # This helps identify untested parts of the code. Aim for higher coverage.
+          #   run: npx jest --coverage
 
-          # Example: Static Analysis for Performance and Accessibility
-          # - name: Lighthouse Scan
-          #   run: |
-          #     # Install Lighthouse CLI (e.g., npm install --save-dev @lhci/cli)
-          #     # and configure it (e.g., lhci wizard).
-          #     # Then run Lighthouse:
-          #     # lhci autorun
-          #     # Or use browser developer tools for manual checks.
-          #     # These tools help identify opportunities to improve loading speed,
-          #     # accessibility (WCAG compliance), and SEO.
-
-          # Example: Deploy to GitHub Pages
           - name: Deploy to GitHub Pages
             uses: peaceiris/actions-gh-pages@v3
             if: github.ref == 'refs/heads/main' # Only deploy on push to main
             with:
               github_token: ${{ secrets.GITHUB_TOKEN }}
-              publish_dir: ./ # Assuming index.html is in the root
-
-          # Add other deployment steps for services like Netlify/Vercel if needed
+              publish_dir: ./
     ```
 
 4.  **Explanation:**
@@ -255,7 +228,7 @@ Setting up a CI/CD (Continuous Integration/Continuous Delivery) pipeline can aut
     *   **`jobs`**: Defines a set of tasks to execute.
     *   **`build-and-deploy`**: A specific job that runs on an `ubuntu-latest` runner.
     *   **`steps`**:
-        *   `actions/checkout@v3`: Checks out your repository code.
+        *   `actions/checkout@v4`: Checks out your repository code.
         *   **(Optional) Linting:** Incorporate linters for code quality. Specific examples for a pipeline step:
             *   **JavaScript (ESLint):** Run `npx eslint .` (assuming ESLint is configured, e.g., via `.eslintrc.js` and dependencies in `package.json`).
             *   **CSS (Stylelint):** Run `npx stylelint "**/*.css"` (assuming Stylelint is configured, e.g., via `.stylelintrc.js` and dependencies).
@@ -272,7 +245,7 @@ Setting up a CI/CD (Continuous Integration/Continuous Delivery) pipeline can aut
     *   **Install Linters/Testers:** If you add linting or testing, include their configurations (e.g., `.eslintrc.js`, `stylelint.config.js`, test files) and ensure they are installed (e.g., via `npm install`).
     *   **Build Process:** For more complex projects, you might have a build step (e.g., using Webpack, Parcel) that generates optimized static assets into a `dist` folder. The `publish_dir` would then be set to that folder.
 
-This CI/CD setup provides a basic framework. The provided YAML is a foundational example and should be expanded based on specific project needs, potentially including different environments (e.g., staging, production), more sophisticated testing strategies, or more complex deployment workflows.
+This CI/CD setup automates the testing and deployment process. The workflow includes steps for checking out code, setting up Node.js, installing dependencies, running tests, and deploying the application to GitHub Pages on pushes to the main branch. It can be further customized and expanded based on future project needs.
 
 ## License
 
