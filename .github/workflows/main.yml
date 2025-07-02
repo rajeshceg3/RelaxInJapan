@@ -1,0 +1,36 @@
+name: CI/CD Pipeline for Serene Dashboard
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Updated to a more recent version
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4 # Updated to a more recent version
+        with:
+          node-version: '18' # Specify a Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npx jest
+
+      # Optional: Generate Code Coverage Report (as mentioned in README)
+      # - name: Generate Code Coverage
+      #   run: npx jest --coverage
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main' # Only deploy on push to main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ # Assuming index.html is in the root

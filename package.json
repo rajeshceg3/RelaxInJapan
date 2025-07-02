@@ -1,0 +1,19 @@
+{
+  "name": "relaxinjapan",
+  "version": "1.0.0",
+  "description": "Serene Dashboard - Image Gallery",
+  "main": "index.html",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "dashboard",
+    "image-gallery",
+    "serenity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
