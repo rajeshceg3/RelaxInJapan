@@ -10,6 +10,21 @@
 </head>
 <body>
     <div id="background-gallery"></div>
+    <div class="background-svg-container" id="background-svg-animations">
+        <!-- SVGs will be injected here by JavaScript or defined statically -->
+        <!-- Example static SVGs (can be moved to JS for dynamic loading) -->
+        <svg class="svg-mount-fuji" viewBox="0 0 200 100" preserveAspectRatio="xMidYMax meet">
+            <path d="M0 100 L60 100 L100 20 L140 100 L200 100 L200 100 L0 100 Z" fill="rgba(100, 100, 120, 0.3)"/>
+            <path d="M70 100 L100 40 L130 100 Z" fill="rgba(200, 200, 210, 0.5)"/>
+        </svg>
+        <svg class="svg-sakura-branch" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+            <path d="M50 100 C 40 80, 30 70, 10 60" stroke="rgba(80,50,50,0.3)" stroke-width="3" fill="none"/>
+            <circle cx="10" cy="60" r="5" fill="rgba(255,182,193,0.4)"/>
+            <circle cx="20" cy="65" r="4" fill="rgba(255,182,193,0.4)"/>
+            <circle cx="30" cy="75" r="6" fill="rgba(255,182,193,0.4)"/>
+        </svg>
+        <!-- Add more SVGs like torii gates, enso circles later -->
+    </div>
     <div class="dashboard-container">
         <header class="dashboard-header">
             <h1>Serene Dashboard</h1>
@@ -396,8 +411,28 @@
             <!-- Image title and location will appear here -->
         </div>
     </div>
+
+    <!-- Main Audio Player Section -->
+    <div id="main-audio-player-container" class="widget glassmorphism-panel player-initially-hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000;">
+        <div id="track-info-display">
+            <span id="current-track-name">Track Name</span> - <span id="current-track-artist">Artist</span>
+            <div><span id="current-track-time">0:00</span> / <span id="current-track-duration">0:00</span></div>
+            <progress id="track-progress-bar" value="0" max="100" style="width: 100%;"></progress>
+        </div>
+        <div id="audio-controls" style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+            <button id="audio-prev-btn" aria-label="Previous Track" style="margin-right: 10px;">&#9664;&#9664;</button> <!-- << -->
+            <button id="audio-play-pause-btn" aria-label="Play" style="margin-right: 10px;">&#9654;</button> <!-- Play Icon -->
+            <button id="audio-next-btn" aria-label="Next Track" style="margin-right: 10px;">&#9654;&#9654;</button> <!-- >> -->
+            <input type="range" id="audio-volume-slider" min="0" max="1" step="0.01" value="0.5" aria-label="Volume" style="width: 100px; margin-right: 10px;">
+            <button id="audio-mute-btn" aria-label="Mute">&#128266;</button> <!-- Speaker Icon -->
+        </div>
+    </div>
+    <!-- End Main Audio Player Section -->
+
     <script src="js/seasonal-engine.js" defer></script>
     <script src="js/gallery.js" defer></script>
+    <script src="js/main-audio-player.js" defer></script> <!-- Added Main Audio Player JS -->
+    <script src="js/visual-system.js" defer></script> <!-- Added Visual System JS -->
     <script src="js/daily_inspiration.js" defer></script>
     <script src="js/time-widget.js" defer></script>
     <script src="js/weather-widget.js" defer></script>

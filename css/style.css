@@ -75,6 +75,11 @@
     --meditation-timer-opacity: var(--widget-opacity);
     --theme-customization-opacity: var(--widget-opacity);
     --card-opacity: var(--widget-opacity); /* For general .card elements */
+
+    /* Variables for dynamic background */
+    --dynamic-bg-color1: var(--color-background-main, #F5F5F5); /* Fallback to a light grey */
+    --dynamic-bg-color2: var(--color-background-alt, #E0E0E0); /* Fallback to a slightly darker grey */
+    --dynamic-bg-transition-speed: 3s; /* Speed of the color transition itself */
 }
 
 /* Minimal Reset */
@@ -612,7 +617,17 @@ hr {
 body {
     /* Fallback background color if gallery fails or before it loads */
     background-color: #F5F5F5; /* Soft grey */
+    /* Ensure body transitions its background smoothly for the dynamic color changes */
+    transition: background var(--dynamic-bg-transition-speed) ease-in-out, color var(--transition-speed), filter var(--transition-speed);
 }
+
+/* Class to apply gradient background, potentially overriding #background-gallery if active */
+.dynamic-gradient-background {
+    background: linear-gradient(135deg, var(--dynamic-bg-color1), var(--dynamic-bg-color2));
+    /* Ensure this takes precedence if #background-gallery is also applying a background */
+    /* z-index might be needed if #background-gallery uses images that should be behind this gradient */
+}
+
 
 #background-gallery {
     position: fixed;
@@ -2096,5 +2111,234 @@ body.lightbox-active-body {
         width: 100%; /* Full width for date picker */
         margin-top: var(--spacing-unit-xs);
         margin-bottom: var(--spacing-unit-xs);
+    }
+}
+
+/* SVG Styles for Background Illustrations */
+.background-svg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2; /* Behind gallery (-1) and content (0+) */
+    overflow: hidden;
+    pointer-events: none; /* Ensure SVGs don't interfere with mouse events */
+}
+
+.background-svg-container svg {
+    position: absolute;
+    opacity: 0; /* Start hidden, fade in with JS */
+    transition: opacity 2.5s ease-in-out, transform 60s linear; /* Long transform for slow drift */
+    /* Default styles, can be overridden by specific SVG classes or JS */
+    width: 200px; /* Example default size */
+    height: 200px; /* Example default size */
+}
+
+/* Example specific SVG styling - can be expanded */
+.svg-mount-fuji {
+    width: 30%;
+    bottom: 0;
+    left: 5%;
+    transform: translateX(0) translateY(0); /* Initial position for animation */
+}
+
+.svg-sakura-branch {
+    width: 20%;
+    top: 5%;
+    right: 5%;
+    transform: rotate(0deg); /* Initial rotation */
+}
+
+.svg-torii-gate {
+    width: 15%;
+    bottom: 10%;
+    right: 10%;
+}
+
+.svg-enso-circle {
+    width: 10%;
+    top: 15%;
+    left: 10%;
+}
+
+/* Main Audio Player Specific Styles */
+.player-initially-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* .player-visible could be used if needed, but removing hidden and relying on default visibility is fine */
+/* For example:
+.player-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+*/
+
+#main-audio-player-container {
+    /* Already has .widget for base theming and positioning from inline styles */
+    /* Class .glassmorphism-panel should apply the glassmorphism effect */
+    /* Add transition for opacity and visibility for auto-hide */
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    /* Default theme variable for widget background with alpha */
+    background-color: var(--current-widget-bg-color, rgba(248, 246, 240, 0.75)); /* Example with 0.75 alpha */
+    backdrop-filter: blur(10px); /* Standard blur for glassmorphism */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--current-border-color, rgba(255, 255, 255, 0.18)); /* Light border for glass effect */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
+}
+
+#main-audio-player-container.hidden-by-inactive {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Prevent interaction when hidden */
+}
+
+#track-info-display {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#track-info-display span {
+    display: inline-block; /* Or block if they should be on separate lines */
+    transition: opacity 0.3s ease-in-out; /* For fade-in/out text animations */
+}
+
+#track-progress-bar {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 4px;
+    background-color: var(--current-border-color, #ccc); /* Themed track background */
+    overflow: hidden; /* Ensures progress fill stays within bounds */
+}
+
+#track-progress-bar::-webkit-progress-bar {
+    background-color: var(--current-border-color, #ccc);
+    border-radius: 4px;
+}
+
+#track-progress-bar::-webkit-progress-value {
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed progress fill */
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+#track-progress-bar::-moz-progress-bar {
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed progress fill */
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+#audio-controls button {
+    background: transparent;
+    border: none;
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed icon/text color */
+    font-size: 20px; /* Adjust icon size */
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+#audio-controls button:hover {
+    color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed hover */
+}
+
+#audio-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100px; /* Or specific width */
+    height: 5px;
+    background: var(--current-border-color, #ccc); /* Themed slider track */
+    border-radius: 3px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s, background-color .3s ease;
+}
+
+#audio-volume-slider:hover {
+    opacity: 1;
+}
+
+#audio-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed thumb */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color .3s ease;
+}
+
+#audio-volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed thumb */
+    border-radius: 50%;
+    cursor: pointer;
+    border: none; /* Important for Firefox */
+    transition: background-color .3s ease;
+}
+
+/* Mobile Responsiveness for Main Audio Player */
+@media (max-width: 767px) {
+    #main-audio-player-container {
+        /* Make it full width with some horizontal padding */
+        width: calc(100% - 20px); /* Full width minus some margin */
+        left: 10px;
+        right: 10px;
+        transform: translateX(0);
+        bottom: 10px;
+        padding: 10px;
+    }
+
+    #audio-controls {
+        /* Ensure controls can wrap if needed, and justify space */
+        flex-wrap: wrap;
+        justify-content: space-around; /* Distribute space better on small screens */
+    }
+
+    #audio-controls button {
+        font-size: 22px; /* Slightly larger icons for easier touch */
+        padding: 8px;   /* Slightly larger padding */
+    }
+
+    #audio-volume-slider {
+        width: 80px; /* Slightly reduce width if needed, or let flexbox handle it */
+    }
+
+    #track-info-display div { /* Container for time/duration */
+        font-size: var(--font-size-sm); /* Adjust font size for time/duration */
+    }
+}
+
+@media (max-width: 480px) {
+    #main-audio-player-container {
+        padding: 8px;
+    }
+
+    #track-info-display span { /* Track name, artist */
+        font-size: var(--font-size-sm);
+    }
+
+    #audio-controls button {
+        font-size: 20px; /* Readjust if 22px is too big for very small screens */
+        padding: 6px;
+    }
+
+    #audio-volume-slider {
+        /* Hide volume slider on very small screens if space is critical, show mute only */
+        /* display: none; */
+        /* Or make it take less space */
+        width: 70px;
+    }
+    /* Example: Simple Prev/Play/Next layout on very small screens */
+    #audio-controls {
+        gap: 5px; /* Reduce gap between buttons */
     }
 }
