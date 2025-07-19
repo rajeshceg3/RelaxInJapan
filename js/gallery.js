@@ -1,17 +1,14 @@
 const imageGalleryState = {
-  currentImageIndex: -1, // -1 indicates no image loaded initially
+  currentImageIndex: -1,
   isPlaying: true,
-  selectedCategory: 'all',
-  imageHistory: [], // To track recently shown images
+  imageHistory: [],
   transitionInProgress: false,
   userPreferences: {
     autoRotate: true,
     transitionDuration: 2000, // ms
     rotationInterval: 300000, // 5 minutes in ms
-    preferredCategories: ['all']
   },
   wasPlayingBeforeHidden: false,
-  wasPlayingBeforeLightbox: false // Added for lightbox
 };
 
 const galleryImages = [
@@ -51,14 +48,6 @@ const galleryImages = [
 // DOM Elements
 let backgroundGalleryElement;
 let bgImageContainer1, bgImageContainer2;
-let categoryFilterElement;
-let toggleRotationBtn, nextImageBtn, prevImageBtn, imageInfoOverlayElement, galleryControlsElement;
-let controlsHideTimeout = null;
-
-// Lightbox DOM Elements
-let lightboxOverlayElement, lightboxContainerElement, lightboxImageElement, lightboxCloseBtnElement, lightboxInfoElement;
-let lightboxPrevBtnElement, lightboxNextBtnElement;
-let currentLightboxImageIndexInFilteredList = -1; // For lightbox navigation
 
 let currentVisibleContainer;
 let rotationIntervalId = null;
@@ -66,21 +55,12 @@ let rotationIntervalId = null;
 // --- Initialization ---
 function initializeGallery() {
     try {
-        // Cache DOM elements
         backgroundGalleryElement = document.getElementById('background-gallery');
-        categoryFilterElement = document.getElementById('category-filter');
-        toggleRotationBtn = document.getElementById('toggle-rotation');
-        nextImageBtn = document.getElementById('next-image');
-        prevImageBtn = document.getElementById('prev-image');
-        imageInfoOverlayElement = document.getElementById('image-info-overlay');
-        galleryControlsElement = document.getElementById('gallery-controls');
 
-        if (!backgroundGalleryElement || !categoryFilterElement || !toggleRotationBtn || !nextImageBtn || !prevImageBtn || !imageInfoOverlayElement || !galleryControlsElement) {
-            console.error("One or more gallery DOM elements are missing. Initialization aborted.");
+        if (!backgroundGalleryElement) {
+            console.error("background-gallery element is missing. Initialization aborted.");
             return;
         }
-
-        imageInfoOverlayElement.setAttribute('aria-live', 'polite');
 
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             console.log("Reduced motion is preferred. CSS handles transition disabling.");
@@ -94,8 +74,6 @@ function initializeGallery() {
         backgroundGalleryElement.appendChild(bgImageContainer2);
         currentVisibleContainer = bgImageContainer1;
 
-        populateCategoryFilter();
-        loadUserPreferences();
         loadInitialImage();
 
         if (imageGalleryState.userPreferences.autoRotate && imageGalleryState.isPlaying) {
@@ -103,63 +81,9 @@ function initializeGallery() {
         }
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        toggleRotationBtn.addEventListener('click', handleToggleRotation);
-        nextImageBtn.addEventListener('click', handleNextImage);
-        prevImageBtn.addEventListener('click', handlePreviousImage);
-        categoryFilterElement.addEventListener('change', handleCategoryChange);
-        document.addEventListener('mousemove', handleControlsVisibility);
-        resetControlsHideTimer();
-
-        // Cache Lightbox DOM Elements
-        lightboxOverlayElement = document.getElementById('lightbox-overlay');
-        lightboxContainerElement = document.getElementById('lightbox-container');
-        lightboxImageElement = document.getElementById('lightbox-image');
-        lightboxCloseBtnElement = document.getElementById('lightbox-close-btn');
-        lightboxInfoElement = document.getElementById('lightbox-info');
-        lightboxPrevBtnElement = document.getElementById('lightbox-prev-btn');
-        lightboxNextBtnElement = document.getElementById('lightbox-next-btn');
-
-        if (!lightboxOverlayElement || !lightboxContainerElement || !lightboxImageElement || !lightboxCloseBtnElement) {
-            console.error("Essential lightbox DOM elements are missing. Lightbox functionality will be disabled.");
-        } else {
-            lightboxCloseBtnElement.addEventListener('click', closeLightbox);
-            if (imageInfoOverlayElement) {
-                imageInfoOverlayElement.addEventListener('click', () => {
-                    if (imageGalleryState.currentImageIndex !== -1 && galleryImages[imageGalleryState.currentImageIndex]) {
-                        openLightbox(galleryImages[imageGalleryState.currentImageIndex]);
-                    }
-                });
-                imageInfoOverlayElement.style.cursor = 'pointer';
-            } else {
-                console.warn("Image info overlay element not found. Cannot attach lightbox trigger.");
-            }
-
-            if (lightboxPrevBtnElement && lightboxNextBtnElement) {
-                lightboxPrevBtnElement.addEventListener('click', showPreviousImageInLightbox);
-                lightboxNextBtnElement.addEventListener('click', showNextImageInLightbox);
-            } else {
-                console.warn("Lightbox navigation buttons not found. Navigation will be disabled.");
-            }
-        }
     } catch (error) {
         console.error("Error during gallery initialization:", error);
-        if (galleryControlsElement) galleryControlsElement.classList.add('hidden');
-        if (imageInfoOverlayElement) imageInfoOverlayElement.classList.remove('visible');
     }
-}
-
-function populateCategoryFilter() {
-    const categories = ['all', ...new Set(galleryImages.map(img => img.category))];
-    categoryFilterElement.innerHTML = '';
-    categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-        if (category === imageGalleryState.selectedCategory) {
-            option.selected = true;
-        }
-        categoryFilterElement.appendChild(option);
-    });
 }
 
 async function loadInitialImage() {
@@ -188,12 +112,6 @@ async function loadImage(imageObject, containerElement, isPreload) {
         if (!isPreload) {
             containerElement.style.backgroundImage = `url('${imageObject.path}')`;
             containerElement.style.backgroundColor = '';
-            if (imageObject && imageObject.title && imageObject.location) {
-                imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
-                imageInfoOverlayElement.classList.add('visible');
-            } else {
-                imageInfoOverlayElement.classList.remove('visible');
-            }
         } else {
             console.log(`Preloaded: ${imageObject.title} from ${imageObject.path}`);
         }
@@ -213,7 +131,6 @@ function handleImageLoadError(containerElement) {
         containerElement.style.backgroundImage = 'none';
         containerElement.style.backgroundColor = '#E0E0E0';
     }
-    imageInfoOverlayElement.classList.remove('visible');
     if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
         console.log("Attempting to load next image after error...");
         stopRotation();
@@ -253,14 +170,10 @@ async function crossfadeToNextImage() {
 
 function getNextImageObject() {
     const availableImages = galleryImages.filter(img => {
-        const categoryMatch = imageGalleryState.selectedCategory === 'all' || img.category === imageGalleryState.selectedCategory;
-        if (!categoryMatch) return false;
         return !imageGalleryState.imageHistory.slice(-(12 - 1)).some(historicImg => historicImg.id === img.id);
     });
     if (availableImages.length === 0) {
-        const fallbackImages = galleryImages.filter(img =>
-            imageGalleryState.selectedCategory === 'all' || img.category === imageGalleryState.selectedCategory
-        );
+        const fallbackImages = galleryImages;
         if (fallbackImages.length === 0) return null;
         return fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
     }
@@ -302,12 +215,6 @@ function stopRotation() {
     console.log("Image rotation stopped.");
 }
 
-function rotateToNextImage(forceSkip = false) {
-    if (!imageGalleryState.transitionInProgress || forceSkip) {
-        crossfadeToNextImage();
-    }
-}
-
 function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
         if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
@@ -324,301 +231,3 @@ function handleVisibilityChange() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeGallery);
-
-function handleToggleRotation() {
-    if (imageGalleryState.isPlaying) {
-        stopRotation();
-        imageGalleryState.isPlaying = false;
-        if (toggleRotationBtn) {
-            toggleRotationBtn.textContent = 'Resume';
-            toggleRotationBtn.setAttribute('aria-label', 'Resume image rotation');
-        }
-    } else {
-        imageGalleryState.isPlaying = true;
-        crossfadeToNextImage().then(() => {
-            if (imageGalleryState.isPlaying) startRotation();
-        });
-        if (toggleRotationBtn) {
-            toggleRotationBtn.textContent = 'Pause';
-            toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
-        }
-    }
-    saveUserPreferences();
-}
-
-function handleNextImage() {
-    if (imageGalleryState.transitionInProgress) return;
-    stopRotation();
-    crossfadeToNextImage().then(() => {
-        if (imageGalleryState.isPlaying) {
-            startRotation();
-        }
-    });
-}
-
-function handlePreviousImage() {
-    if (imageGalleryState.transitionInProgress) return;
-    if (imageGalleryState.imageHistory.length < 2) {
-        console.log("No previous image in history.");
-        return;
-    }
-    stopRotation();
-    const previousImageObject = imageGalleryState.imageHistory[imageGalleryState.imageHistory.length - 2];
-    const currentImg = imageGalleryState.imageHistory.pop();
-    imageGalleryState.transitionInProgress = true;
-    const newVisibleContainer = (currentVisibleContainer === bgImageContainer1) ? bgImageContainer2 : bgImageContainer1;
-    const oldVisibleContainer = currentVisibleContainer;
-    loadImage(previousImageObject, newVisibleContainer, false).then(loadedImage => {
-        if (loadedImage) {
-            newVisibleContainer.classList.add('visible');
-            oldVisibleContainer.classList.remove('visible');
-            currentVisibleContainer = newVisibleContainer;
-            imageGalleryState.currentImageIndex = galleryImages.indexOf(previousImageObject);
-            if (currentImg) imageGalleryState.imageHistory.push(currentImg);
-            imageGalleryState.imageHistory.pop();
-            preloadNextImage();
-        } else {
-            if (currentImg) imageGalleryState.imageHistory.push(currentImg);
-        }
-        imageGalleryState.transitionInProgress = false;
-        if (imageGalleryState.isPlaying) {
-            startRotation();
-        }
-    });
-}
-
-function handleCategoryChange(event) {
-    imageGalleryState.selectedCategory = event.target.value;
-    saveUserPreferences();
-    imageGalleryState.imageHistory = [];
-    imageGalleryState.currentImageIndex = -1;
-    console.log(`Category changed to: ${imageGalleryState.selectedCategory}`);
-    stopRotation();
-    crossfadeToNextImage().then(() => {
-        if (imageGalleryState.isPlaying) {
-            startRotation();
-        }
-    });
-}
-
-function handleControlsVisibility() {
-    if (galleryControlsElement.classList.contains('hidden')) {
-        galleryControlsElement.classList.remove('hidden');
-    }
-    resetControlsHideTimer();
-}
-
-function setSeasonalCategoryFilter(season) {
-    console.log(`Setting seasonal category filter for season: ${season}`);
-    const validSeasons = ['spring', 'summer', 'autumn', 'winter'];
-    if (validSeasons.includes(season.toLowerCase())) {
-        imageGalleryState.selectedCategory = 'seasons';
-        console.log(`Gallery category set to 'seasons' for ${season}.`);
-        if (categoryFilterElement) {
-            populateCategoryFilter();
-        } else {
-            console.warn("categoryFilterElement not found, cannot update UI for seasonal filter.");
-        }
-        saveUserPreferences();
-        imageGalleryState.imageHistory = [];
-        imageGalleryState.currentImageIndex = -1;
-        stopRotation();
-        crossfadeToNextImage().then(() => {
-            if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
-                startRotation();
-            }
-        });
-    } else {
-        console.warn(`Invalid season provided to setSeasonalCategoryFilter: ${season}`);
-    }
-}
-
-// --- Lightbox Functions ---
-function getFilteredImages() {
-    if (imageGalleryState.selectedCategory === 'all') {
-        return [...galleryImages];
-    }
-    return galleryImages.filter(img => img.category === imageGalleryState.selectedCategory);
-}
-
-function openLightbox(imageObject) {
-    if (!imageObject || !imageObject.path || !lightboxOverlayElement) return;
-
-    document.removeEventListener('keydown', handleLightboxEscape); // Remove existing, if any
-
-    lightboxImageElement.src = imageObject.path;
-    lightboxImageElement.alt = imageObject.title || 'Enlarged image';
-
-    if (lightboxInfoElement) {
-        lightboxInfoElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
-    }
-
-    const filteredImages = getFilteredImages();
-    currentLightboxImageIndexInFilteredList = filteredImages.findIndex(img => img.id === imageObject.id);
-
-    if (!document.body.classList.contains('lightbox-active-body')) {
-        if (imageGalleryState.isPlaying) {
-            imageGalleryState.wasPlayingBeforeLightbox = true;
-            stopRotation();
-            imageGalleryState.isPlaying = false;
-        } else {
-            imageGalleryState.wasPlayingBeforeLightbox = false;
-        }
-        document.body.classList.add('lightbox-active-body');
-    }
-
-    lightboxOverlayElement.classList.remove('lightbox-hidden');
-    lightboxOverlayElement.classList.add('lightbox-visible');
-    document.addEventListener('keydown', handleLightboxEscape);
-
-    if (lightboxPrevBtnElement && lightboxNextBtnElement) {
-        if (filteredImages.length > 1) {
-            lightboxPrevBtnElement.style.display = 'block';
-            lightboxNextBtnElement.style.display = 'block';
-        } else {
-            lightboxPrevBtnElement.style.display = 'none';
-            lightboxNextBtnElement.style.display = 'none';
-        }
-    }
-}
-
-function closeLightbox() {
-    if (!lightboxOverlayElement) return;
-
-    lightboxOverlayElement.classList.add('lightbox-hidden');
-    lightboxOverlayElement.classList.remove('lightbox-visible');
-    document.body.classList.remove('lightbox-active-body');
-    currentLightboxImageIndexInFilteredList = -1;
-
-    document.removeEventListener('keydown', handleLightboxEscape);
-
-    if (imageGalleryState.wasPlayingBeforeLightbox) {
-        imageGalleryState.isPlaying = true;
-        if (toggleRotationBtn) {
-             toggleRotationBtn.textContent = 'Pause';
-             toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
-        }
-        startRotation();
-    }
-    imageGalleryState.wasPlayingBeforeLightbox = false;
-}
-
-function handleLightboxEscape(event) {
-    if (event.key === 'Escape') {
-        closeLightbox();
-    }
-}
-
-function showNextImageInLightbox() {
-    const filteredImages = getFilteredImages();
-    if (filteredImages.length === 0 || currentLightboxImageIndexInFilteredList === -1) return;
-
-    currentLightboxImageIndexInFilteredList = (currentLightboxImageIndexInFilteredList + 1) % filteredImages.length;
-    const nextImageObject = filteredImages[currentLightboxImageIndexInFilteredList];
-
-    if (nextImageObject && nextImageObject.path && lightboxImageElement) {
-         lightboxImageElement.src = nextImageObject.path;
-         lightboxImageElement.alt = nextImageObject.title || 'Enlarged image';
-         if (lightboxInfoElement) {
-             lightboxInfoElement.innerHTML = `<p><strong>${nextImageObject.title}</strong><br>${nextImageObject.location}</p>`;
-         }
-     } else {
-         console.error("Could not display next lightbox image.");
-     }
-}
-
-function showPreviousImageInLightbox() {
-    const filteredImages = getFilteredImages();
-    if (filteredImages.length === 0 || currentLightboxImageIndexInFilteredList === -1) return;
-
-    currentLightboxImageIndexInFilteredList = (currentLightboxImageIndexInFilteredList - 1 + filteredImages.length) % filteredImages.length;
-    const prevImageObject = filteredImages[currentLightboxImageIndexInFilteredList];
-
-    if (prevImageObject && prevImageObject.path && lightboxImageElement) {
-         lightboxImageElement.src = prevImageObject.path;
-         lightboxImageElement.alt = prevImageObject.title || 'Enlarged image';
-         if (lightboxInfoElement) {
-             lightboxInfoElement.innerHTML = `<p><strong>${prevImageObject.title}</strong><br>${prevImageObject.location}</p>`;
-         }
-     } else {
-         console.error("Could not display previous lightbox image.");
-     }
-}
-
-// --- User Preferences ---
-function saveUserPreferences() {
-    try {
-        localStorage.setItem('sereneDashboard_selectedCategory', imageGalleryState.selectedCategory);
-        localStorage.setItem('sereneDashboard_rotationState', imageGalleryState.isPlaying ? 'resumed' : 'paused');
-    } catch (error) {
-        console.error("Error saving user preferences to localStorage:", error);
-    }
-}
-
-function loadUserPreferences() {
-    try {
-        const savedCategory = localStorage.getItem('sereneDashboard_selectedCategory');
-        if (savedCategory) {
-            imageGalleryState.selectedCategory = savedCategory;
-            if (categoryFilterElement) categoryFilterElement.value = savedCategory;
-        }
-        const savedRotationState = localStorage.getItem('sereneDashboard_rotationState');
-        if (savedRotationState) {
-            if (typeof savedRotationState === 'string') {
-                 imageGalleryState.isPlaying = savedRotationState === 'resumed';
-            } else {
-                imageGalleryState.isPlaying = true;
-            }
-            if (toggleRotationBtn) {
-                toggleRotationBtn.textContent = imageGalleryState.isPlaying ? 'Pause' : 'Resume';
-                toggleRotationBtn.setAttribute('aria-label', imageGalleryState.isPlaying ? 'Pause image rotation' : 'Resume image rotation');
-            }
-        }
-    } catch (error) {
-        console.error("Error loading user preferences from localStorage:", error);
-    }
-}
-
-function resetControlsHideTimer() {
-    if (controlsHideTimeout) clearTimeout(controlsHideTimeout);
-    if (galleryControlsElement) {
-        controlsHideTimeout = setTimeout(() => {
-            galleryControlsElement.classList.add('hidden');
-        }, 3000);
-    }
-}
-
-// Conditional export for Node.js/Jest environment
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    imageGalleryState,
-    galleryImages,
-    initializeGallery,
-    loadImage,
-    handleNextImage,
-    handlePreviousImage,
-    handleToggleRotation,
-    handleCategoryChange,
-    getNextImageObject,
-    crossfadeToNextImage,
-    startRotation,
-    stopRotation,
-    saveUserPreferences,
-    loadUserPreferences,
-    setSeasonalCategoryFilter,
-    populateCategoryFilter,
-    loadInitialImage,
-    resetControlsHideTimer,
-    handleVisibilityChange,
-    handleControlsVisibility,
-    preloadNextImage,
-    handleImageLoadError,
-    // Lightbox functions
-    openLightbox,
-    closeLightbox,
-    handleLightboxEscape,
-    getFilteredImages,
-    showNextImageInLightbox,
-    showPreviousImageInLightbox
-  };
-}
