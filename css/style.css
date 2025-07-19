@@ -1,33 +1,84 @@
 /*
-  Serene Experience Styles
-  Version: 2.0.0
+  Serene Dashboard Styles
+  Version: 1.0.0
   Author: Jules (AI Assistant)
+
+  Performance Considerations:
+  - This CSS is structured for readability. For production, it should be minified.
+  - Current font stack relies on system fonts or future font loading:
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Georgia', serif;
+  - Graceful degradation should be ensured if custom fonts fail to load.
+  - Critical CSS inlining could be considered for larger applications.
+
+  Cross-Browser Compatibility:
+  - Primarily uses modern CSS features (Flexbox, Custom Properties) expected to work
+    in the latest 2 versions of major browsers (Chrome, Firefox, Safari, Edge).
+  - Vendor prefixes are generally avoided unless specifically required for a property
+    to meet compatibility targets.
+  - Test thoroughly on all supported browsers.
 */
 :root {
     /* Color Palette */
     --color-primary-warm-white-1: #FEFEFE;
+    --color-primary-warm-white-2: #F8F6F0;
+    --color-secondary-bamboo-green: #8FBC8F;
     --color-secondary-zen-grey: #D3D3D3;
-    --color-text-deep-charcoal: #2F2F2F;
     --color-accent-sakura-pink: #FFB7C5;
+    --color-accent-sunset-orange: #FFD4A3;
+    --color-text-deep-charcoal: #2F2F2F;
 
     /* Typography System */
     --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Georgia', serif;
     --font-family-japanese: 'Noto Sans JP', sans-serif;
+    --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 24px;
+    --font-size-xxl: 32px;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-semibold: 600;
+    --line-height-body: 1.4;
+    --line-height-heading: 1.2;
 
     /* Spacing Units */
+    --spacing-unit-xs: 4px;
     --spacing-unit-sm: 8px;
     --spacing-unit-md: 16px;
+    --spacing-unit-lg: 24px;
+    --spacing-unit-xl: 32px;
+    --spacing-unit-xxl: 48px;
 
     /* New UI Element Properties */
+    --border-radius-sm: 4px;
     --border-radius-md: 8px;
-    --box-shadow-soft: 0 2px 8px rgba(0,0,0,0.15);
+    --box-shadow-soft: 0 2px 8px rgba(0,0,0,0.15); /* Increased alpha for better visibility at low widget opacities */
+    --border-thin: 1px solid var(--color-secondary-zen-grey);
     --transition-speed: 300ms ease-in-out;
+    --focus-outline-color: var(--color-accent-sunset-orange);
+    --seasonal-filter-effect: none; /* Default seasonal filter */
+
+    /* Widget Appearance Variables */
+    --widget-opacity: 1;
+    --widget-background-blur: 0px;
+    --widget-backdrop-filter: blur(var(--widget-background-blur));
+    --widget-bg-alpha-value: 0.85; /* Default alpha for widget backgrounds */
+
+    /* Individual Widget Opacity Variables */
+    --time-widget-opacity: var(--widget-opacity);
+    --weather-widget-opacity: var(--widget-opacity);
+    --quick-links-opacity: var(--widget-opacity);
+    --daily-inspiration-opacity: var(--widget-opacity);
+    --meditation-timer-opacity: var(--widget-opacity);
+    --theme-customization-opacity: var(--widget-opacity);
+    --card-opacity: var(--widget-opacity); /* For general .card elements */
 
     /* Variables for dynamic background */
-    --dynamic-bg-color1: #F5F5F5; /* Fallback to a light grey */
-    --dynamic-bg-color2: #E0E0E0; /* Fallback to a slightly darker grey */
+    --dynamic-bg-color1: var(--color-background-main, #F5F5F5); /* Fallback to a light grey */
+    --dynamic-bg-color2: var(--color-background-alt, #E0E0E0); /* Fallback to a slightly darker grey */
     --dynamic-bg-transition-speed: 3s; /* Speed of the color transition itself */
 }
 
@@ -41,10 +92,524 @@
 body {
     font-family: var(--font-primary);
     font-size: var(--font-size-md);
-    line-height: 1.4;
+    line-height: var(--line-height-body);
     color: var(--color-text-deep-charcoal);
     background-color: var(--color-primary-warm-white-1);
+    /* General transitions for theme changes - will be overridden by more specific theme transitions if needed */
     transition: background-color var(--transition-speed), color var(--transition-speed), filter var(--transition-speed);
+    filter: var(--seasonal-filter-effect); /* Apply the seasonal filter */
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    background: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+    padding: var(--spacing-unit-md) 0;
+    text-align: center;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Mobile First: Stack columns by default */
+.dashboard-main {
+    display: flex;
+    flex-direction: column; /* Stack columns by default */
+    flex: 1;
+    padding: var(--spacing-unit-md);
+}
+
+.column {
+    padding: var(--spacing-unit-md);
+    background: var(--current-widget-bg-color, var(--color-primary-warm-white-2)); /* Themed column bg */
+    width: 100%; /* Full width for mobile */
+    margin-bottom: var(--spacing-unit-md); /* Space between stacked columns */
+    transition: background-color var(--transition-speed);
+}
+
+.column:last-child {
+    margin-bottom: 0; /* No margin for the last column in stacked view */
+}
+
+/* Tablet Layout (768px - 1023px) */
+@media (min-width: 768px) {
+    .dashboard-main {
+        flex-direction: row; /* Arrange columns side-by-side */
+        flex-wrap: wrap; /* Allow wrapping for tablet layout */
+    }
+
+    .column {
+        margin-right: 0; /* Reset horizontal margins for flex items */
+        margin-left: 0; /* Reset horizontal margins for flex items */
+    }
+
+    .column-sidebar {
+        flex-basis: 100%;
+        order: 1;
+        margin-bottom: var(--spacing-unit-md); /* Space below full-width sidebar */
+    }
+
+    .column-content {
+        flex-basis: calc(60% - (var(--spacing-unit-md) / 2)); /* 60% width, accounting for gutter */
+        order: 2;
+        margin-right: var(--spacing-unit-md); /* Gutter between content and widgets */
+        margin-bottom: var(--spacing-unit-md); /* Space if widgets wrap below */
+    }
+
+    .column-widgets {
+        flex-basis: calc(40% - (var(--spacing-unit-md) / 2)); /* 40% width, accounting for gutter */
+        order: 3;
+        margin-bottom: var(--spacing-unit-md); /* Space if it's the last item in a row */
+    }
+
+    /* Remove margin from the last element in a row if it's not also the overall last*/
+    .column-content:last-of-type, .column-widgets:last-of-type {
+        margin-right: 0;
+    }
+}
+
+/* Desktop Layout (1024px+) */
+@media (min-width: 1024px) {
+    .dashboard-main {
+        flex-wrap: nowrap; /* Prevent wrapping for the 3-column layout */
+    }
+
+    .column-sidebar {
+        flex-basis: 25%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+
+    .column-content {
+        flex-basis: 50%; /* Can also be flex-grow: 1 if others have fixed basis */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+
+    .column-widgets {
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0; /* No right margin for the last column */
+        margin-bottom: 0; /* No bottom margin in desktop layout */
+    }
+}
+
+/* --- Layout Templates --- */
+
+/* Traditional Grid Layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-traditional-grid {
+        flex-wrap: wrap; /* Ensure wrapping for tablet */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar,
+    .dashboard-main.layout-traditional-grid .column-content {
+        flex-basis: calc(50% - (var(--spacing-unit-md) / 2));
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar {
+        margin-right: var(--spacing-unit-md);
+        order: 1;
+    }
+    .dashboard-main.layout-traditional-grid .column-content {
+        margin-right: 0; /* No margin for the second item in 2-column row */
+        order: 2;
+    }
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0; /* Full width, no right margin */
+        margin-bottom: 0; /* No bottom margin if it's the last row */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-traditional-grid {
+        flex-wrap: nowrap; /* Revert to nowrap for desktop 3-column */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar,
+    .dashboard-main.layout-traditional-grid .column-content,
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        flex-basis: calc(33.3333% - (var(--spacing-unit-md) * 2 / 3)); /* Equal width, accounting for 2 gutters */
+        margin-bottom: 0; /* Reset bottom margin from tablet/mobile */
+    }
+    .dashboard-main.layout-traditional-grid .column-sidebar {
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-content {
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-traditional-grid .column-widgets {
+        order: 3;
+        margin-right: 0; /* No margin for the last column in the row */
+    }
+}
+
+/* Minimalist Center Layout */
+/* Applies to all screen sizes when active */
+.dashboard-main.layout-minimalist-center .column-sidebar,
+.dashboard-main.layout-minimalist-center .column-widgets {
+    display: none !important; /* Ensure override */
+}
+
+.dashboard-main.layout-minimalist-center .column-content {
+    flex-basis: 80%;
+    max-width: 900px;
+    margin-left: auto !important;  /* Ensure override */
+    margin-right: auto !important; /* Ensure override */
+    margin-bottom: 0 !important; /* Reset any bottom margin */
+    order: 0 !important; /* Ensure it's the primary content regardless of original order */
+}
+/* Ensure .dashboard-main itself is still a flex container for centering */
+.dashboard-main.layout-minimalist-center {
+    /* flex-direction: row; by default from tablet+ or column on mobile */
+    justify-content: center; /* Centers the .column-content if flex-direction is row and content doesn't fill space */
+}
+
+/* Asymmetrical Zen Layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-asymmetrical-zen {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-sidebar {
+        flex-basis: calc(30% - var(--spacing-unit-md)); /* Account for its own margin-right */
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md); /* Space before widgets row */
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0; /* Last in this row */
+        margin-bottom: var(--spacing-unit-md); /* Space before widgets row */
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-widgets {
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0; /* Last item overall */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-asymmetrical-zen {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-sidebar {
+        flex-basis: 20%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-content {
+        flex-basis: 55%;
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-asymmetrical-zen .column-widgets {
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Seasonal Flow Layout */
+/* Mobile: Uses default stacked behavior. Widgets column hidden. */
+.dashboard-main.layout-seasonal-flow .column-widgets {
+    display: none !important;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-seasonal-flow {
+        flex-wrap: wrap; /* Allow stacking */
+    }
+    .dashboard-main.layout-seasonal-flow .column-sidebar {
+        flex-basis: 100%;
+        order: 1;
+        margin-right: 0; /* Full width */
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-seasonal-flow .column-content {
+        flex-basis: 100%;
+        order: 2;
+        margin-right: 0; /* Full width */
+        margin-bottom: 0;
+    }
+    /* .column-widgets remains display: none !important; */
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-seasonal-flow {
+        flex-wrap: nowrap; /* Side-by-side */
+    }
+    .dashboard-main.layout-seasonal-flow .column-sidebar {
+        flex-basis: 30%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-seasonal-flow .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+    /* .column-widgets remains display: none !important; */
+}
+
+/* --- Season-Specific Sub-Layouts for Seasonal Flow --- */
+
+/* Spring Flow (.layout-sf-spring) - Asymmetrical Zen like */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-sf-spring {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-sf-spring .column-sidebar {
+        flex-basis: calc(30% - var(--spacing-unit-md));
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-spring .column-content {
+        flex-basis: 70%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-spring .column-widgets {
+        display: block !important; /* Overrides .layout-seasonal-flow hiding widgets */
+        flex-basis: 100%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-sf-spring {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-sf-spring .column-sidebar {
+        flex-basis: 20%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-spring .column-content {
+        flex-basis: 55%;
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-spring .column-widgets {
+        display: block !important; /* Overrides .layout-seasonal-flow hiding widgets */
+        flex-basis: 25%;
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Summer Flow (.layout-sf-summer) - Default-like layout */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablet */
+    .dashboard-main.layout-sf-summer {
+        flex-wrap: wrap;
+    }
+    .dashboard-main.layout-sf-summer .column-sidebar {
+        flex-basis: 100%; /* Default tablet: sidebar full width */
+        order: 1;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-summer .column-content {
+        flex-basis: calc(60% - (var(--spacing-unit-md) / 2)); /* Default tablet: content 60% */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: var(--spacing-unit-md);
+    }
+    .dashboard-main.layout-sf-summer .column-widgets {
+        display: block !important;
+        flex-basis: calc(40% - (var(--spacing-unit-md) / 2)); /* Default tablet: widgets 40% */
+        order: 3;
+        margin-right: 0;
+        margin-bottom: var(--spacing-unit-md); /* Or 0 if it's the very last item */
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    .dashboard-main.layout-sf-summer {
+        flex-wrap: nowrap;
+    }
+    .dashboard-main.layout-sf-summer .column-sidebar {
+        flex-basis: 25%; /* Default desktop */
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-summer .column-content {
+        flex-basis: 50%; /* Default desktop */
+        order: 2;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0;
+    }
+    .dashboard-main.layout-sf-summer .column-widgets {
+        display: block !important;
+        flex-basis: 25%; /* Default desktop */
+        order: 3;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Autumn Flow (.layout-sf-autumn) - Content focused, two-column */
+.dashboard-main.layout-sf-autumn .column-widgets {
+    display: none !important; /* Hide widgets always for this layout */
+}
+@media (min-width: 768px) { /* Tablet and Desktop */
+    .dashboard-main.layout-sf-autumn {
+        flex-wrap: nowrap; /* Side-by-side for tablet and desktop */
+    }
+    .dashboard-main.layout-sf-autumn .column-sidebar {
+        flex-basis: 25%;
+        order: 1;
+        margin-right: var(--spacing-unit-md);
+        margin-bottom: 0; /* No bottom margin as it's side-by-side */
+    }
+    .dashboard-main.layout-sf-autumn .column-content {
+        flex-basis: 75%;
+        order: 2;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Winter Flow (.layout-sf-winter) - Minimalist Center like */
+.dashboard-main.layout-sf-winter .column-sidebar,
+.dashboard-main.layout-sf-winter .column-widgets {
+    display: none !important;
+}
+.dashboard-main.layout-sf-winter .column-content {
+    flex-basis: 80% !important; /* Ensure these override defaults */
+    max-width: 900px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 0 !important;
+    order: 0 !important;
+}
+.dashboard-main.layout-sf-winter {
+    justify-content: center !important;
+}
+
+
+/* Component Styles */
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+
+.btn-primary {
+    background-color: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #7aa87a; /* Slightly darker bamboo green */
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary-zen-grey);
+    color: var(--color-text-deep-charcoal);
+    border-color: var(--color-secondary-zen-grey);
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #c0c0c0; /* Slightly darker zen grey */
+    border-color: #c0c0c0;
+}
+
+.btn:focus-visible { /* Using focus-visible for better accessibility */
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 2px;
+}
+
+/* Link Styling */
+a {
+    color: var(--color-secondary-bamboo-green);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+a:hover, a:focus {
+    color: #7aa87a; /* Slightly darker bamboo green */
+    text-decoration: underline;
+}
+
+a:focus-visible { /* Using focus-visible for better accessibility */
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 1px;
+    text-decoration: none; /* Optional: remove underline on focus if outline is enough */
+}
+
+/* General Widget Styling */
+/* Applies to elements with the .widget class (e.g., #time-date-widget, #theme-customization-panel) */
+.widget {
+    /* Default background if --current-widget-bg-color is not RGBA or suitable for transparency */
+    /* This provides a base that allows backdrop-filter to show through. */
+    /* Themes should ideally set --current-widget-bg-color to an rgba value for full control. */
+    background-color: rgba(248, 246, 240, var(--widget-bg-alpha-value)); /* Fallback from --color-primary-warm-white-2 */
+
+    /* Apply theme-specific widget background color. This will override the above if set. */
+    background-color: var(--current-widget-bg-color, rgba(248, 246, 240, var(--widget-bg-alpha-value)));
+
+    opacity: var(--widget-opacity);
+    -webkit-backdrop-filter: var(--widget-backdrop-filter);
+    backdrop-filter: var(--widget-backdrop-filter);
+
+    /* Base transition for opacity. Specific widgets handle their own bg/border/color transitions. */
+    /* Note: backdrop-filter itself doesn't transition smoothly typically; the blur value change is instant. */
+    transition: opacity var(--transition-speed) ease-in-out;
+    /* Individual widgets should ensure they have .widget class in HTML */
+}
+
+
+/* Card Styling */
+.card {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-1);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow-soft);
+    border: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); /* Themed border */
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1)); /* Themed background */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
+    opacity: var(--card-opacity); /* Use specific card opacity */
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), opacity var(--transition-speed);
+}
+
+/* Horizontal Rule / Divider Styling */
+hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-lg); /* Default margins for hr */
+    margin-bottom: var(--spacing-unit-lg); /* Default margins for hr */
 }
 
 /* --- Background Image Gallery Styles --- */
@@ -59,6 +624,8 @@ body {
 /* Class to apply gradient background, potentially overriding #background-gallery if active */
 .dynamic-gradient-background {
     background: linear-gradient(135deg, var(--dynamic-bg-color1), var(--dynamic-bg-color2));
+    /* Ensure this takes precedence if #background-gallery is also applying a background */
+    /* z-index might be needed if #background-gallery uses images that should be behind this gradient */
 }
 
 
@@ -83,17 +650,1468 @@ body {
     background-repeat: no-repeat;
     opacity: 0;
     transition: opacity 2s ease-in-out; /* AC3: 2-second cross-fade */
+    /* will-change: opacity; // Consider adding if performance issues arise */
 }
 
 #background-gallery .bg-image-container.visible {
     opacity: 1;
 }
 
+#gallery-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(47, 47, 47, 0.7); /* Dark semi-transparent background */
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow-soft);
+    display: flex;
+    gap: var(--spacing-unit-sm);
+    align-items: center;
+    z-index: 1000; /* Above other content */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+#gallery-controls.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#gallery-controls button,
+#gallery-controls select {
+    padding: var(--spacing-unit-xs) var(--spacing-unit-sm);
+    background-color: var(--color-primary-warm-white-2);
+    color: var(--color-text-deep-charcoal);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+#gallery-controls button:hover,
+#gallery-controls select:hover {
+    background-color: var(--color-secondary-zen-grey);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+#gallery-controls button:focus-visible,
+#gallery-controls select:focus-visible {
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 2px;
+}
+
+#category-filter {
+    min-width: 150px; /* Give the dropdown some space */
+}
+
+#image-info-overlay {
+    position: fixed;
+    bottom: 20px; /* Or adjust as needed */
+    left: 20px;
+    background-color: rgba(47, 47, 47, 0.7);
+    color: var(--color-primary-warm-white-1);
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+#image-info-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Accessibility: Reduced motion - Turn off transitions if user prefers */
 @media (prefers-reduced-motion: reduce) {
-  #background-gallery .bg-image-container {
+  #background-gallery .bg-image-container,
+  #gallery-controls,
+  #image-info-overlay {
     transition-duration: 0.01ms !important; /* Effectively disables the animation */
   }
+}
+
+/* Time Widget Styles */
+/* Seasonal Theme Variables for Time Widget */
+.time-widget-spring {
+    --widget-accent-color: var(--color-accent-sakura-pink); /* #FFB7C5 */
+}
+.time-widget-summer {
+    --widget-accent-color: var(--color-secondary-bamboo-green); /* #8FBC8F */
+}
+.time-widget-autumn {
+    --widget-accent-color: var(--color-accent-sunset-orange); /* #FFD4A3 */
+}
+.time-widget-winter {
+    --widget-accent-color: #ADD8E6; /* Light blue for cool, crisp tone */
+    /* Consider adding a new variable to :root if this blue is widely used */
+}
+
+#time-date-widget {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-2);
+    /* Using the seasonal accent color for the border, with fallback */
+    border: 1px solid var(--widget-accent-color, var(--color-secondary-zen-grey));
+    border-radius: var(--border-radius-md);
+    text-align: center;
+    margin-bottom: var(--spacing-unit-md);
+    box-shadow: var(--box-shadow-soft); /* Added for better visual separation */
+    opacity: var(--time-widget-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
+}
+
+#time-display,
+#time-display #seconds,
+#time-display #am-pm,
+#time-display #timezone-abbr,
+#date-display {
+    transition: color var(--transition-speed) ease;
+}
+
+#time-display {
+    /* Base font size for mobile (screens < 768px) */
+    font-size: 28px;
+    font-family: var(--font-primary);
+    color: var(--color-text-deep-charcoal);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#time-display #seconds {
+    font-size: 0.5em; /* Or var(--font-size-md) if preferred */
+    color: var(--color-secondary-zen-grey); /* Slightly less prominent */
+}
+
+#time-display #am-pm {
+    font-size: 0.5em; /* Or var(--font-size-md) */
+    margin-left: var(--spacing-unit-xs);
+}
+
+#time-display #timezone-abbr {
+    font-size: var(--font-size-xs); /* e.g., 12px */
+    /* Alternatively, use em for sizing relative to parent: font-size: 0.4em; */
+    margin-left: var(--spacing-unit-sm); /* e.g., 8px */
+    color: var(--color-secondary-zen-grey); /* Make it subtle */
+    /* vertical-align: middle; /* Adjust if needed based on visual alignment */
+}
+
+#date-display {
+    /* Base font size for mobile (screens < 768px) */
+    font-size: 14px;
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#widget-settings-button {
+    /* Basic styling, can be enhanced to match other buttons if needed */
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    background-color: var(--color-secondary-misty-rose); /* Using a secondary color */
+    color: var(--color-text-deep-charcoal);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-family: var(--font-secondary);
+    font-weight: var(--font-weight-regular);
+    float: right; /* Simple positioning for now */
+}
+
+#widget-settings-button:hover {
+    background-color: var(--color-accent-sunset-orange); /* Example hover effect */
+    color: var(--color-primary-warm-white-1);
+}
+
+/* Settings Panel Styles */
+.hidden {
+    display: none !important; /* Important to override other display properties if any */
+}
+
+#widget-settings-panel {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-1); /* Slightly different from widget bg */
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm); /* Smaller radius than widget */
+    margin-top: var(--spacing-unit-sm);
+    text-align: left; /* Override widget's center align for panel content */
+    box-shadow: var(--box-shadow-soft);
+}
+
+#widget-settings-panel h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit-md);
+    font-size: var(--font-size-md);
+    color: var(--color-text-deep-charcoal);
+    border-bottom: var(--border-thin);
+    padding-bottom: var(--spacing-unit-sm);
+}
+
+#widget-settings-panel label {
+    margin-right: var(--spacing-unit-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+}
+
+#widget-settings-panel input[type="checkbox"] {
+    /* Basic styling for checkbox, can be enhanced */
+    vertical-align: middle;
+}
+
+/* Ensure seasonal border overrides the default border if class is applied */
+.time-widget-spring,
+.time-widget-summer,
+.time-widget-autumn,
+.time-widget-winter {
+    border-color: var(--widget-accent-color);
+}
+
+/* Responsive Font Sizes for Time/Date Widget */
+@media (min-width: 768px) { /* Tablet */
+    #time-display {
+        font-size: 36px;
+    }
+    #date-display {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 1024px) { /* Desktop */
+    #time-display {
+        font-size: 48px;
+    }
+    #date-display {
+        font-size: 18px;
+    }
+}
+
+/* Color palette for weather icons */
+:root {
+  --weather-sun: #FFD700;
+  --weather-cloud: #B0C4DE;
+  --weather-rain: #4682B4;
+  --weather-snow: #F0F8FF;
+  --weather-storm: #483D8B;
+}
+
+/* Weather Widget Styles */
+#weather-widget {
+    padding: var(--spacing-unit-md);
+    background-color: var(--color-primary-warm-white-2);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-unit-md);
+    box-shadow: var(--box-shadow-soft);
+    text-align: center;
+    opacity: var(--weather-widget-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
+}
+
+/* Current Weather Display */
+#weather-location,
+#weather-temp-current,
+#weather-condition,
+#weather-temp-feels-like,
+#weather-humidity,
+#weather-wind,
+#weather-last-updated,
+.forecast-day .day-name,
+.forecast-day .temps,
+.forecast-day .condition-small {
+    transition: color var(--transition-speed) ease;
+}
+
+#weather-location {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#weather-temp-current {
+    font-size: 40px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin: var(--spacing-unit-sm) 0;
+}
+
+#weather-icon-current svg {
+    width: 48px;
+    height: 48px;
+    margin: var(--spacing-unit-sm) auto;
+    display: block;
+}
+
+#weather-condition {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#weather-temp-feels-like {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#weather-humidity,
+#weather-wind {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#weather-last-updated {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-sm);
+}
+
+/* Icon CSS Variables (from issue) */
+.weather-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+
+.weather-icon-small {
+    width: 24px;
+    height: 24px;
+}
+
+/* 5-Day Forecast Styling */
+#weather-forecast-daily {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-unit-md);
+    padding-top: var(--spacing-unit-md);
+    border-top: 1px solid var(--color-secondary-zen-grey);
+}
+
+.forecast-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    min-width: 50px;
+}
+
+.forecast-day .day-name {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+.forecast-day svg {
+    width: 24px;
+    height: 24px;
+    margin: var(--spacing-unit-xs) auto;
+}
+
+.forecast-day .temps {
+    margin-top: var(--spacing-unit-xs);
+}
+
+.forecast-day .condition-small {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+    margin-top: var(--spacing-unit-xs);
+}
+
+/* Today's forecast visual distinction - to be applied via JS */
+.forecast-day.today {
+    font-weight: var(--font-weight-semibold); /* Example distinction */
+    border: 1px solid var(--weather-sun); /* Example, can be more subtle */
+}
+
+/* Location Management Styling */
+#weather-location-search {
+    width: calc(100% - 40px - var(--spacing-unit-sm)); /* Full width minus button and gap */
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-unit-md);
+    font-size: var(--font-size-sm);
+}
+
+#weather-refresh-button {
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--color-secondary-zen-grey);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-primary-warm-white-1);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    line-height: 1;
+    margin-left: var(--spacing-unit-sm);
+    vertical-align: middle; /* Align with the input field */
+}
+
+#weather-location-search:focus,
+#weather-refresh-button:focus {
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+    #weather-forecast-daily {
+        flex-direction: column; /* Stack forecast days vertically */
+        align-items: stretch; /* Make items take full width */
+    }
+
+    .forecast-day {
+        flex-direction: row; /* Lay out day parts horizontally */
+        justify-content: space-between;
+        padding: var(--spacing-unit-sm) 0;
+        border-bottom: 1px solid var(--color-secondary-zen-grey);
+        width: 100%;
+    }
+
+    .forecast-day:last-child {
+        border-bottom: none;
+    }
+
+    .forecast-day svg {
+        margin-right: var(--spacing-unit-sm);
+    }
+
+    #weather-location-search {
+        width: calc(100% - 45px - var(--spacing-unit-sm)); /* Adjust for button size if different on mobile */
+    }
+}
+
+/* Weather-Influenced Theming */
+/* body transitions are now defined above, with --transition-speed.
+   The 2.5s transition for weather themes might need a separate class or reconsideration
+   if both types of themes (manual and weather-driven) are to coexist with different speeds.
+   For now, standardizing to --transition-speed as per current task.
+*/
+/*
+body.weather-theme-active {
+    transition: background-color 2.5s ease-in-out, color 2.5s ease-in-out;
+}
+*/
+
+/* Define classes to be applied to the body */
+.theme-sunny {
+    --current-bg-color: #FFFBF0; /* Warmer white, slightly brighter */
+    --current-accent-color: #FFA726; /* Warmer accent */
+    --current-text-color: #3E2723; /* Slightly warmer dark text */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+.theme-rainy {
+    --current-bg-color: #E3F2FD; /* Cooler, slightly muted blueish white */
+    --current-accent-color: #64B5F6; /* Cooler accent */
+    --current-text-color: #37474F; /* Cooler dark text */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+.theme-snowy {
+    --current-bg-color: #F5FAFA; /* Crisp, clean white with cool undertone */
+    --current-accent-color: #AED5E0; /* Light icy blue accent */
+    --current-text-color: #455A64;
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+.theme-cloudy {
+    --current-bg-color: #F0F2F5; /* Neutral, softer off-white */
+    --current-accent-color: #A0A0B0; /* Muted grey/blue accent */
+    --current-text-color: #4A4A4A;
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+.theme-night {
+    --current-bg-color: #2C3E50; /* Darker, subdued (example) */
+    --current-accent-color: #536D8A; /* Muted dark blue/grey accent */
+    --current-text-color: #B0BEC5; /* Lighter text for dark bg */
+    --seasonal-filter-effect: none; /* Reset for non-seasonal weather themes */
+}
+
+/* --- Japanese-Inspired Color Palettes --- */
+.theme-sakura { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #FFF0F5; /* Soft Pink */
+    --current-text-color: #5D4037; /* Warm Brown */
+    --current-accent-color: #F080A0; /* Stronger Pink for better contrast with light text */
+    --current-widget-bg-color: #FDF5F7; /* Lighter Pink */
+    --current-border-color: #E6A4B4; /* Darker Pink */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-momiji { /* Autumn seasonal theme */
+    --current-bg-color: #FFF3E0; /* Light Orange/Yellow */
+    --current-text-color: #4E342E; /* Deep Brown */
+    --current-accent-color: #FF7043; /* Deep Orange */
+    --current-widget-bg-color: #FFF9F2; /* Very Light Orange */
+    --current-border-color: #E65100; /* Strong Orange/Red */
+    --seasonal-filter-effect: sepia(0.2) saturate(1.1) brightness(1.0);
+}
+
+.theme-yuki { /* Winter seasonal theme */
+    --current-bg-color: #F0F8FF; /* Alice Blue (Cool White) */
+    --current-text-color: #455A64; /* Cool Dark Grey/Blue */
+    --current-accent-color: #70B8D8; /* Slightly deeper Sky Blue for better contrast */
+    --current-widget-bg-color: #F8FAFC; /* Very Light Cool Grey */
+    --current-border-color: #B0C4DE; /* Light Steel Blue */
+    --seasonal-filter-effect: grayscale(0.1) brightness(1.0) contrast(1.05);
+}
+
+.theme-haru { /* Spring seasonal theme */
+    --current-bg-color: #F0FFF0; /* Honeydew (Light Green) */
+    --current-text-color: #2E7D32; /* Dark Green */
+    --current-accent-color: #5CB85C; /* Darker Green for better contrast with light text */
+    --current-widget-bg-color: #F5FFF5; /* Very Light Green */
+    --current-border-color: #66CDAA; /* Medium Aquamarine */
+    --seasonal-filter-effect: brightness(1.05) saturate(1.1);
+}
+
+.theme-dento { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #F5F5DC; /* Beige (Earth Tone) */
+    --current-text-color: #5D4037; /* Brown */
+    --current-accent-color: #8D6E63; /* Slightly darker Muted Brown/Grey for better contrast */
+    --current-widget-bg-color: #FAF8F0; /* Lighter Beige */
+    --current-border-color: #795548; /* Deeper Brown */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-seki { /* Non-seasonal specific Japanese theme */
+    --current-bg-color: #E0E0E0; /* Light Grey */
+    --current-text-color: #212121; /* Near Black */
+    --current-accent-color: #757575; /* Medium Grey */
+    --current-widget-bg-color: #EEEEEE; /* Very Light Grey */
+    --current-border-color: #616161; /* Dark Grey */
+    --seasonal-filter-effect: none; /* No global filter for this specific theme */
+}
+
+.theme-natsu { /* Summer seasonal theme */
+    --current-bg-color: #E0F7FA; /* Light Cyan - Sky/Sea */
+    --current-text-color: #004D40; /* Dark Teal - Deep Water/Lush Greenery */
+    --current-accent-color: #0277BD; /* Vibrant Blue - Ocean */
+    --current-widget-bg-color: #FFFFFF; /* White - Clouds/Sand */
+    --current-border-color: #80DEEA; /* Medium Cyan - Waves */
+    --seasonal-filter-effect: brightness(1.1) saturate(1.05);
+}
+
+/* Apply these variables to relevant elements */
+body {
+    background-color: var(--current-bg-color, var(--color-primary-warm-white-1));
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+
+.dashboard-header {
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green));
+    /* color transition is now on the main .dashboard-header rule */
+}
+
+/* Apply themed properties to columns and cards */
+.column {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    /* Other column properties like text color can be themed if needed */
+}
+
+.card {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1));
+    border-color: var(--current-border-color, var(--color-secondary-zen-grey));
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+    /* Transitions are on the main .card rule */
+}
+
+
+/* Update specific widgets to use new theme variables and ensure transitions */
+
+#time-date-widget {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--widget-accent-color, var(--color-secondary-zen-grey)));
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#time-date-widget, #time-date-widget * { /* Ensure child elements also pick up themed text color */
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children of time-date-widget might need their own color vars if different from current-text-color */
+#time-display #seconds, #time-display #timezone-abbr {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey)); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+
+
+#weather-widget {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--color-secondary-zen-grey));
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#weather-widget, #weather-widget * { /* Ensure child elements also pick up themed text color */
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children of weather-widget might need their own color vars */
+#weather-last-updated, .forecast-day .condition-small {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey)); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+
+
+#quick-links-panel {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--border-thin)); /* border-thin is '1px solid var(--color-secondary-zen-grey)' */
+    /* Transitions for bg and border are already on the element. Text color transitions are on child elements. */
+}
+#quick-links-panel, #quick-links-panel *, #quick-links-panel a {
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+/* Specific children like category name might need different color */
+.quick-link-item-category {
+    color: var(--current-text-color-muted, var(--color-secondary-zen-grey));
+    transition: color var(--transition-speed);
+}
+/* Quick link items themselves might need their own background if different from panel */
+.quick-link-item {
+    background-color: var(--current-bg-color, var(--color-primary-warm-white-1)); /* e.g. main background for items */
+    border-color: var(--current-border-color, var(--border-thin));
+    /* Transitions are already on .quick-link-item */
+}
+
+
+#daily-inspiration-widget {
+    background-color: var(--current-widget-bg-color, #f9f9f9);
+    border-color: var(--current-border-color, var(--shadow-sm, #ccc)); /* Assuming border should also theme, using a fallback */
+    opacity: var(--daily-inspiration-opacity); /* Specific opacity */
+    /* Add opacity to transition, complementing any existing if this rule is expanded, or relying on .widget */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
+}
+#daily-inspiration-widget, #daily-inspiration-widget * {
+   color: var(--current-text-color, #333);
+}
+/* Specific children might need different color vars */
+#inspiration-type-indicator, #inspiration-romaji-text, #inspiration-explanation, #inspiration-source {
+    color: var(--current-text-color-muted, #777); /* Example for muted text */
+    transition: color var(--transition-speed);
+}
+#inspiration-japanese-text {
+    color: var(--current-text-color-strong, var(--current-text-color, #222)); /* Example for strong text */
+    transition: color var(--transition-speed);
+}
+
+
+#theme-customization-panel {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-2));
+    border-color: var(--current-border-color, var(--border-thin));
+    opacity: var(--theme-customization-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease-in-out, border-color var(--transition-speed) ease-in-out, opacity var(--transition-speed) ease-in-out;
+}
+#theme-customization-panel, #theme-customization-panel * {
+    color: var(--current-text-color, var(--color-text-deep-charcoal));
+}
+
+/* Ensure specific text elements inside widgets that were already individually transitioned maintain that */
+/* This is mostly covered by widget * selector, but specific overrides can be maintained if needed */
+
+/* --- Quick Links Panel Styles --- */
+#quick-links-panel {
+    padding: var(--spacing-unit-md);
+    margin-bottom: var(--spacing-unit-md);
+    /* background-color set by theme variable above */
+    /* border set by theme variable above */
+    box-shadow: var(--box-shadow-soft);
+    border-radius: var(--border-radius-md);
+    opacity: var(--quick-links-opacity); /* Specific opacity */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, color var(--transition-speed) ease, opacity var(--transition-speed) ease-in-out;
+}
+
+/* Child elements of quick-links-panel that need specific color transitions if not covered by blanket panel color rule */
+/* Most are covered by `#quick-links-panel *` or specific theme variable applications. */
+/* Example: if #quick-links-panel h3 needed a different color than --current-text-color */
+/* #quick-links-panel h3 { color: var(--some-other-variable); transition: color var(--transition-speed); } */
+
+/* Buttons like #add-link-btn use .btn styles which already have transitions.
+   If their colors are themed directly by --current-accent-color, it will transition.
+   Currently, they use specific colors like --color-secondary-bamboo-green.
+   If these buttons should also change with themes, their CSS should be:
+   background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+   color: var(--current-accent-text-color, var(--color-primary-warm-white-1));
+   border-color: var(--current-accent-color, transparent);
+   The existing .btn transition will handle the smoothness.
+*/
+#add-link-btn, #add-link-empty-state-btn {
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green));
+    color: var(--color-primary-warm-white-1); /* Assuming accent buttons have light text */
+    /* transition is already on .btn which is on these elements */
+}
+#add-link-btn:hover, #add-link-empty-state-btn:hover {
+     filter: brightness(90%); /* General hover for themed button */
+}
+
+
+.quick-links-actions {
+    margin-top: var(--spacing-unit-sm); /* Space below "Add Link" button */
+    margin-bottom: var(--spacing-unit-md); /* Space above the list of links */
+    display: flex;
+    gap: var(--spacing-unit-sm);
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+/* Ensure buttons within actions container don't have excessive bottom margin
+   if they are already spaced by the flex gap or general button margins */
+.quick-links-actions .btn {
+    margin-bottom: 0;
+}
+
+
+#quick-links-list {
+    /* This is now a container for headers and sections, not a grid itself */
+    display: block;
+    margin-bottom: var(--spacing-unit-md);
+}
+
+.quick-link-category-header {
+    font-size: var(--font-size-md); /* Was var(--font-size-lg) in previous spec, using md for h5 */
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin-top: var(--spacing-unit-lg);
+    margin-bottom: var(--spacing-unit-sm);
+    padding: var(--spacing-unit-xs) 0; /* Adjusted padding */
+    border-bottom: var(--border-thin);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color var(--transition-speed); /* For hover effect */
+}
+
+.quick-link-category-header:hover {
+    background-color: rgba(0,0,0,0.03); /* Subtle hover for clickability */
+}
+
+.quick-link-category-header .toggle-icon {
+    font-size: var(--font-size-sm);
+    margin-left: var(--spacing-unit-sm); /* Space out icon */
+    transition: transform var(--transition-speed); /* Smooth rotation */
+}
+
+/* Styles for the section containing links of a category */
+.quick-link-category-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-unit-sm);
+    padding-top: var(--spacing-unit-sm); /* Add some space below header */
+    /* transition: all var(--transition-speed); */ /* Avoid animating height/display directly for performance */
+}
+
+.quick-link-category-section.collapsed {
+    display: none;
+}
+
+/* Individual link items - existing styles are fine */
+.quick-link-item {
+    padding: var(--spacing-unit-sm);
+    background-color: var(--color-primary-warm-white-1);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+    /* Ensure 'all' includes transform and background-color, or list them explicitly */
+    transition: transform var(--transition-speed), background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.quick-link-item a { /* Style the anchor within the item */
+    display: block; /* Make the anchor fill the item for better click area */
+    padding: inherit; /* Inherit padding from .quick-link-item if needed, or set specific padding */
+    text-decoration: none;
+    color: inherit; /* Inherit text color from parent */
+    border-radius: inherit; /* Inherit border-radius */
+    transition: transform var(--transition-speed), background-color var(--transition-speed); /* Add transition to the anchor as well */
+}
+
+
+.quick-link-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-soft);
+}
+
+/* Active state for the link itself (anchor tag) */
+.quick-link-item a:active {
+    transform: scale(0.97); /* Slight scale down for the content */
+    background-color: var(--color-secondary-zen-grey); /* Subtle background change on the anchor */
+}
+
+.quick-link-item-icon { /* Placeholder for icon style */
+    font-size: var(--font-size-xl); /* Example size */
+    margin-bottom: var(--spacing-unit-xs);
+    color: var(--color-secondary-bamboo-green); /* Example color */
+}
+/* Ensure controls are not affected by anchor's active state if they are outside the <a> */
+/* If controls are inside <a>, their styles might need adjustment or they should be outside. */
+/* Current JS has controls outside the main content anchor, appended to 'item', so they should be fine. */
+}
+
+.quick-link-item-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-xs);
+    word-break: break-all; /* Prevent long names from breaking layout */
+}
+
+.quick-link-item-category {
+    font-size: var(--font-size-xs);
+    color: var(--color-secondary-zen-grey);
+}
+
+#quick-links-empty-state {
+    text-align: center;
+    padding: var(--spacing-unit-xl) var(--spacing-unit-md); /* Increased padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--color-secondary-zen-grey); /* Subtle dashed border */
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-unit-md); /* Add some margin from other elements if list is empty */
+}
+
+#quick-links-empty-state div[style*="font-size: 48px"] { /* Target the unicode icon div */
+    color: var(--color-secondary-bamboo-green); /* Color the icon */
+    opacity: 0.7; /* Slightly muted */
+}
+
+#quick-links-empty-state p {
+    font-size: var(--font-size-md);
+    color: var(--color-text-deep-charcoal); /* Ensure good contrast */
+    margin-bottom: var(--spacing-unit-lg); /* Increased margin for button */
+    line-height: var(--line-height-body);
+}
+
+/* Modal Styles */
+#quick-link-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    display: flex; /* Changed from none to flex for easier centering with JS toggle */
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    opacity: 0; /* Initially hidden, controlled by .visible class */
+    visibility: hidden; /* Initially hidden */
+    transition: opacity var(--transition-speed), visibility var(--transition-speed);
+}
+
+#quick-link-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#quick-link-modal form { /* Style the form container inside modal */
+    background-color: var(--color-primary-warm-white-1);
+    padding: var(--spacing-unit-lg);
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px; /* Max width for the modal content */
+    position: relative; /* For positioning the close button */
+}
+
+#quick-link-modal-title {
+    font-size: var(--font-size-xl);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-lg);
+    text-align: center;
+}
+
+#close-modal-btn {
+    position: absolute;
+    top: var(--spacing-unit-md);
+    right: var(--spacing-unit-md);
+    font-size: var(--font-size-xl);
+    color: var(--color-secondary-zen-grey);
+    cursor: pointer;
+    transition: color var(--transition-speed);
+}
+
+#close-modal-btn:hover {
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form div {
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#quick-link-form label {
+    display: block;
+    margin-bottom: var(--spacing-unit-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form input[type="text"],
+#quick-link-form input[type="url"],
+#quick-link-form select {
+    width: 100%;
+    padding: var(--spacing-unit-sm);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-md);
+    font-family: var(--font-primary);
+    background-color: var(--color-primary-warm-white-1);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form input[type="text"]:focus,
+#quick-link-form input[type="url"]:focus,
+#quick-link-form select:focus {
+    outline: none;
+    border-color: var(--color-secondary-bamboo-green);
+    box-shadow: 0 0 0 2px var(--color-accent-sunset-orange);
+}
+
+#quick-link-form div:last-child { /* Container for buttons */
+    margin-top: var(--spacing-unit-lg);
+    text-align: right; /* Align buttons to the right */
+}
+
+#quick-link-form button {
+    padding: var(--spacing-unit-sm) var(--spacing-unit-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    margin-left: var(--spacing-unit-sm);
+}
+
+#quick-link-form button[type="submit"] {
+    background-color: var(--color-secondary-bamboo-green);
+    color: var(--color-primary-warm-white-1);
+}
+
+#quick-link-form button[type="submit"]:hover,
+#quick-link-form button[type="submit"]:focus {
+    background-color: #7aa87a;
+}
+
+#quick-link-form button[type="button"] { /* Cancel button */
+    background-color: var(--color-secondary-zen-grey);
+    color: var(--color-text-deep-charcoal);
+}
+
+#quick-link-form button[type="button"]:hover,
+#quick-link-form button[type="button"]:focus {
+    background-color: #c0c0c0;
+}
+
+/* Ensure the empty state button also has sufficient margin if it's the only element after text */
+#quick-links-empty-state #add-link-empty-state-btn {
+    margin-bottom: 0; /* Remove default bottom margin from general #add-link-btn if any */
+}
+
+/* Responsiveness for Quick Links */
+@media (max-width: 767px) {
+    .quick-link-category-section {
+        /* Ensures single column layout on typical mobile screens */
+        grid-template-columns: 1fr;
+        gap: var(--spacing-unit-sm); /* A slightly larger gap might be better for single column */
+    }
+
+    /* Further adjustments for very small screens if needed, e.g., less padding on items */
+    /* @media (max-width: 360px) { ... } */
+
+    .quick-link-item-name {
+        font-size: var(--font-size-xs); /* Smaller font for item name on mobile */
+    }
+
+    #quick-link-modal form {
+        padding: var(--spacing-unit-md);
+        width: 95%; /* Slightly more width on small screens */
+    }
+
+    #quick-link-modal-title {
+        font-size: var(--font-size-lg);
+    }
+
+    #quick-link-form button {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: var(--spacing-unit-sm);
+    }
+    #quick-link-form div:last-child {
+      display: flex;
+      flex-direction: column-reverse; /* Stack buttons, Save on bottom for easier reach */
+    }
+}
+
+/* Styles for Drag and Drop */
+.quick-link-item.dragging {
+    opacity: 0.5;
+    background: var(--color-secondary-zen-grey);
+    /* Optional: Add a border or stronger visual cue */
+    /* border: 2px dashed var(--color-secondary-bamboo-green) !important; */
+}
+
+/* Optional: Style for the list when an item is being dragged over it */
+/*
+.quick-links-list.drag-over {
+    border: 2px dashed var(--color-secondary-bamboo-green);
+    background-color: rgba(143, 188, 143, 0.1);
+}
+*/
+
+/* Daily Inspiration Widget Styles */
+/* Daily Inspiration Widget specific text elements are handled by the general rules above. */
+/* For example, #daily-inspiration-widget * will set text color and it will transition. */
+/* If specific elements like #inspiration-japanese-text need a *different* themed color,
+   they'd need: color: var(--some-other-theme-variable); transition: color var(--transition-speed);
+   but the current setup should cover most cases by inheriting themed --current-text-color.
+*/
+
+#daily-inspiration-widget h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit-md, 15px);
+    font-size: var(--font-size-lg, 1.2em);
+    color: var(--text-color-strong, #333);
+    /* text-align: center; */ /* Optional: if title needs to be centered */
+}
+
+#inspiration-content-area {
+    text-align: left; /* Default, can be centered if design prefers */
+}
+
+#inspiration-type-indicator {
+    font-size: var(--font-size-xs, 0.8em);
+    color: var(--text-color-muted, #777);
+    margin-bottom: var(--spacing-unit-sm, 5px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#inspiration-japanese-text {
+    font-size: var(--font-size-xl, 1.4em); /* Larger for prominence */
+    font-family: var(--font-family-japanese, 'Noto Sans JP', sans-serif); /* Ensure Noto Sans JP is primary */
+    color: var(--text-color-headings, #222);
+    margin-bottom: var(--spacing-unit-xs, 5px);
+    line-height: 1.6;
+}
+
+#inspiration-romaji-text {
+    font-size: var(--font-size-sm, 0.9em);
+    color: var(--text-color-subtle, #555);
+    font-style: italic;
+    margin-bottom: var(--spacing-unit-md, 10px);
+    line-height: 1.5;
+}
+
+#inspiration-english-text {
+    font-size: var(--font-size-md, 1em);
+    color: var(--text-color-default, #444);
+    margin-bottom: var(--spacing-unit-md, 10px);
+    line-height: 1.6;
+}
+
+#inspiration-explanation {
+    font-size: var(--font-size-sm, 0.9em);
+    color: var(--text-color-muted, #666);
+    margin-bottom: var(--spacing-unit-sm, 5px);
+    line-height: 1.5;
+    border-left: 3px solid var(--accent-color-subtle, #eee); /* Subtle emphasis */
+    padding-left: var(--spacing-unit-sm, 10px);
+}
+
+#inspiration-source {
+    font-size: var(--font-size-xs, 0.8em);
+    color: var(--text-color-muted, #777);
+    font-style: italic;
+    text-align: right;
+    margin-top: var(--spacing-unit-md, 10px);
+}
+
+/* Error state styling for the widget */
+#daily-inspiration-widget.error-state #inspiration-japanese-text {
+    color: var(--error-color, #D32F2F); /* Or a muted error color */
+    font-size: var(--font-size-md, 1em);
+}
+
+/* css/style.css - Add this if not present, or append to existing utilities */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Styling for the new controls */
+#inspiration-controls {
+    margin-top: var(--spacing-unit-md, 15px);
+    padding-top: var(--spacing-unit-sm, 10px);
+    border-top: 1px solid var(--border-color-soft, #eee);
+    display: flex;
+    justify-content: space-between; /* Adjust as needed */
+    align-items: center;
+    font-size: var(--font-size-sm, 0.9em);
+}
+
+#inspiration-controls select,
+#inspiration-controls input[type="checkbox"] {
+    padding: var(--spacing-unit-xs, 5px);
+    border-radius: var(--border-radius-sm, 4px);
+    border: 1px solid var(--border-color-interactive, #ccc);
+    background-color: var(--input-background-color, #fff);
+    color: var(--text-color-default, #333);
+}
+
+.romaji-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-unit-xs, 5px);
+    cursor: pointer;
+}
+
+/* css/style.css - Append to existing #inspiration-controls styles or nearby */
+#inspiration-controls button {
+    background-color: transparent;
+    border: 1px solid var(--border-color-interactive, #ccc);
+    color: var(--text-color-default, #333);
+    padding: var(--spacing-unit-xs, 5px) var(--spacing-unit-sm, 8px);
+    border-radius: var(--border-radius-sm, 4px);
+    cursor: pointer;
+    font-size: var(--font-size-md, 1em); /* Ensure icons are reasonably sized */
+    line-height: 1; /* Prevent extra space if text were present */
+}
+
+#inspiration-controls button:hover {
+    background-color: var(--background-color-hover, #f0f0f0);
+    border-color: var(--border-color-hover, #bbb);
+}
+
+#inspiration-controls button:active {
+    background-color: var(--background-color-active, #e0e0e0);
+}
+
+/* Theme Customization Panel Styles */
+/* Theme Customization Panel specific text elements are handled by the general rules above. */
+
+#theme-customization-panel h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-deep-charcoal);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#palette-selection h4,
+#theme-preview-area h4 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+.palette-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-unit-sm);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+.theme-selector-btn {
+    /* Using existing .btn styles, but can add specific overrides if needed */
+    flex-grow: 1; /* Allow buttons to grow and fill space */
+}
+
+.theme-selector-btn[aria-pressed="true"] {
+    /* Style for the active/selected theme button */
+    background-color: var(--color-accent-sakura-pink); /* Example, this will be dynamic */
+    color: var(--color-primary-warm-white-1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Preview area elements:
+   .preview-widget-example already has transitions for background-color and border-color.
+   .preview-text already has transition for color.
+   Buttons inside preview (.preview-button-primary, .preview-button-secondary) will rely on
+   the base .btn class transitions, which cover background-color, color, and border-color.
+   The CSS rules for these preview buttons correctly apply the --current-* variables.
+   No further changes seem needed here specifically for transitions, as they are inherited
+   or already applied.
+ */
+
+/* Meditation Timer Widget Styles */
+#meditation-timer-widget {
+    /* Inherits .widget styles for backdrop, default opacity transition, etc. */
+    /* Add specific opacity control. */
+    opacity: var(--meditation-timer-opacity);
+    /* If it needs other specific transitions not covered by .widget, add them here. */
+    /* For example, if its bg color is set directly and not via --current-widget-bg-color */
+    /* transition: background-color var(--transition-speed), opacity var(--transition-speed); */
+}
+
+/* --- Lightbox Styles --- */
+#lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex; /* Used by default, will be overridden by .lightbox-hidden */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's above other content like gallery controls */
+}
+
+.lightbox-hidden {
+    display: none !important; /* Ensure it overrides the flex display from #lightbox-overlay */
+}
+
+.lightbox-visible {
+    display: flex !important; /* To make it visible, overriding .lightbox-hidden */
+}
+
+#lightbox-container {
+    background-color: var(--current-widget-bg-color, var(--color-primary-warm-white-1)); /* Themed background */
+    padding: var(--spacing-unit-lg, 20px); /* Use spacing variable with fallback */
+    border-radius: var(--border-radius-md, 8px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); /* Themed border */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+}
+
+#lightbox-image {
+    max-width: 100%;
+    max-height: calc(80vh - 100px); /* Adjusted to use vh and give space for info/buttons */
+    object-fit: contain;
+    border-radius: var(--border-radius-sm, 4px);
+    margin-bottom: var(--spacing-unit-md, 15px); /* Space between image and info */
+    border: 1px solid var(--current-border-color, transparent); /* Optional themed border for image */
+    transition: border-color var(--transition-speed);
+}
+
+#lightbox-close-btn {
+    position: absolute;
+    top: var(--spacing-unit-sm, 10px);   /* Use spacing variable */
+    right: var(--spacing-unit-md, 15px); /* Use spacing variable */
+    font-size: 2rem; /* Consider using a font-size variable if available, e.g., var(--font-size-xxl) */
+    color: var(--current-text-color, var(--color-text-secondary, #555)); /* Themed text */
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 var(--spacing-unit-xs); /* Minimal padding for easier clicking */
+    transition: color var(--transition-speed);
+}
+
+#lightbox-close-btn:hover {
+    color: var(--current-accent-color, var(--color-accent-sakura-pink)); /* Themed hover */
+}
+
+#lightbox-info {
+    text-align: center;
+    color: var(--current-text-color, var(--color-text-primary, #333)); /* Themed text */
+    font-size: var(--font-size-md, 1rem);
+    margin-bottom: var(--spacing-unit-sm, 10px); /* Space before nav buttons if they appear */
+    /* Transition for color is inherited from container or applied directly if specific */
+}
+
+.lightbox-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+    cursor: pointer;
+    z-index: 1001; /* Above overlay, potentially above image if it overlaps */
+    border-radius: var(--border-radius-sm, 4px);
+    font-size: 1.5rem; /* Consider var(--font-size-xl) */
+    display: none; /* Initially hidden, shown by JS if multiple images */
+    transition: background-color var(--transition-speed);
+}
+
+.lightbox-nav-btn:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+#lightbox-prev-btn {
+    left: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+}
+
+#lightbox-next-btn {
+    right: var(--spacing-unit-sm, 10px); /* Use spacing variable */
+}
+
+/* When lightbox is active, prevent scrolling on the body */
+body.lightbox-active-body {
+    overflow: hidden;
+}
+
+/* Journaling Widget Styles */
+#journaling-widget {
+    opacity: var(--journaling-widget-opacity, var(--widget-opacity, 1));
+    /* Standard widget spacing if it's a direct child of .column-widgets */
+    /* If it's inside another card/widget container, these might not be needed */
+}
+
+#journal-entry-area {
+    margin-bottom: var(--spacing-unit-md);
+    border-bottom: 1px solid var(--current-border-color, var(--color-border)); /* Use theme variable */
+    padding-bottom: var(--spacing-unit-md);
+}
+
+#journal-text-input {
+    width: 100%;
+    min-height: 100px; /* Adjust as needed */
+    padding: var(--spacing-unit-sm);
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    background-color: var(--current-bg-secondary, var(--color-background-secondary)); /* Use theme variable */
+    color: var(--current-text-primary, var(--color-text-primary)); /* Use theme variable */
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    resize: vertical; /* Allow vertical resizing */
+    margin-bottom: var(--spacing-unit-sm);
+}
+
+#journal-mood-selector {
+    display: flex;
+    gap: var(--spacing-unit-xs);
+    margin-bottom: var(--spacing-unit-md);
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.mood-btn {
+    background-color: transparent;
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-unit-xs) var(--spacing-unit-sm);
+    font-size: 1.2rem; /* Adjust emoji size */
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: var(--current-text-secondary, var(--color-text-secondary)); /* For potential text alternatives if emojis fail */
+}
+
+.mood-btn:hover,
+.mood-btn:focus {
+    border-color: var(--current-primary-accent, var(--color-primary-accent)); /* Use theme variable */
+    background-color: var(--current-bg-hover, var(--color-background-hover)); /* Use theme variable */
+}
+
+.mood-btn.selected {
+    background-color: var(--current-primary-accent, var(--color-primary-accent));
+    border-color: var(--current-primary-accent, var(--color-primary-accent));
+    color: var(--current-text-on-primary, var(--color-text-on-primary)); /* Ensure contrast */
+}
+
+#journal-save-btn {
+    /* Uses existing .btn .btn-primary styles, additional specific styles if needed */
+    display: block; /* Make it full width or adjust as needed */
+    width: 100%;
+    margin-top: var(--spacing-unit-sm);
+}
+
+#journal-history-area h4 {
+    margin-bottom: var(--spacing-unit-sm);
+    font-weight: bold;
+    color: var(--current-text-primary, var(--color-text-primary));
+}
+
+#journal-current-entry-display {
+    background-color: var(--current-bg-secondary, var(--color-background-secondary));
+    padding: var(--spacing-unit-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-unit-md);
+    border: 1px solid var(--current-border-color, var(--color-border));
+}
+
+.journal-meta {
+    font-size: var(--font-size-sm);
+    color: var(--current-text-secondary, var(--color-text-secondary));
+    margin-bottom: var(--spacing-unit-xs);
+}
+
+#journal-entry-text-display {
+    min-height: 50px; /* Ensure it has some height even when empty */
+    padding-top: var(--spacing-unit-xs);
+    line-height: 1.6;
+    color: var(--current-text-primary, var(--color-text-primary));
+    white-space: pre-wrap; /* Preserve line breaks from textarea */
+    word-wrap: break-word; /* Prevent long words from overflowing */
+}
+
+
+#journal-navigation-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-unit-sm);
+    margin-bottom: var(--spacing-unit-md);
+}
+
+#journal-navigation-controls button {
+    /* Uses existing .btn styles if applicable, or define specific ones */
+    padding: var(--spacing-unit-xs) var(--spacing-unit-sm);
+    background-color: var(--current-bg-button, var(--color-button-background));
+    color: var(--current-text-button, var(--color-button-text));
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+}
+
+#journal-navigation-controls button:hover,
+#journal-navigation-controls button:focus {
+    background-color: var(--current-bg-button-hover, var(--color-button-background-hover));
+    border-color: var(--current-primary-accent, var(--color-primary-accent));
+}
+
+
+#journal-date-picker {
+    flex-grow: 1;
+    padding: var(--spacing-unit-xs);
+    border: 1px solid var(--current-border-color, var(--color-border));
+    border-radius: var(--border-radius-sm);
+    background-color: var(--current-bg-input, var(--color-input-background));
+    color: var(--current-text-input, var(--color-input-text));
+    font-family: inherit;
+}
+
+#journal-empty-state p {
+    color: var(--current-text-secondary, var(--color-text-secondary));
+    font-style: italic;
+}
+
+/* Ensure widget structure is consistent (if using .widget class from style.css) */
+/* .widget #journaling-widget { ... } might be needed if nesting is different */
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #journal-mood-selector {
+        gap: 5px; /* Smaller gap for mood buttons */
+    }
+
+    .mood-btn {
+        font-size: 1rem; /* Slightly smaller emojis */
+        padding: 5px 8px;
+    }
+
+    #journal-navigation-controls {
+        flex-direction: column; /* Stack controls vertically */
+    }
+
+    #journal-date-picker {
+        width: 100%; /* Full width for date picker */
+        margin-top: var(--spacing-unit-xs);
+        margin-bottom: var(--spacing-unit-xs);
+    }
 }
 
 /* SVG Styles for Background Illustrations */
@@ -112,6 +2130,7 @@ body {
     position: absolute;
     opacity: 0; /* Start hidden, fade in with JS */
     transition: opacity 2.5s ease-in-out, transform 60s linear; /* Long transform for slow drift */
+    /* Default styles, can be overridden by specific SVG classes or JS */
     width: 200px; /* Example default size */
     height: 200px; /* Example default size */
 }
@@ -150,13 +2169,26 @@ body {
     pointer-events: none;
 }
 
+/* .player-visible could be used if needed, but removing hidden and relying on default visibility is fine */
+/* For example:
+.player-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+*/
+
 #main-audio-player-container {
+    /* Already has .widget for base theming and positioning from inline styles */
+    /* Class .glassmorphism-panel should apply the glassmorphism effect */
+    /* Add transition for opacity and visibility for auto-hide */
     transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-    background-color: rgba(248, 246, 240, 0.75); /* Example with 0.75 alpha */
-    backdrop-filter: blur(10px);
+    /* Default theme variable for widget background with alpha */
+    background-color: var(--current-widget-bg-color, rgba(248, 246, 240, 0.75)); /* Example with 0.75 alpha */
+    backdrop-filter: blur(10px); /* Standard blur for glassmorphism */
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18); /* Light border for glass effect */
-    color: var(--color-text-deep-charcoal);
+    border: 1px solid var(--current-border-color, rgba(255, 255, 255, 0.18)); /* Light border for glass effect */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed text */
 }
 
 #main-audio-player-container.hidden-by-inactive {
@@ -181,23 +2213,23 @@ body {
     -webkit-appearance: none;
     appearance: none;
     border-radius: 4px;
-    background-color: var(--color-secondary-zen-grey); /* Themed track background */
+    background-color: var(--current-border-color, #ccc); /* Themed track background */
     overflow: hidden; /* Ensures progress fill stays within bounds */
 }
 
 #track-progress-bar::-webkit-progress-bar {
-    background-color: var(--color-secondary-zen-grey);
+    background-color: var(--current-border-color, #ccc);
     border-radius: 4px;
 }
 
 #track-progress-bar::-webkit-progress-value {
-    background-color: var(--color-accent-sakura-pink); /* Themed progress fill */
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed progress fill */
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
 
 #track-progress-bar::-moz-progress-bar {
-    background-color: var(--color-accent-sakura-pink); /* Themed progress fill */
+    background-color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed progress fill */
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
@@ -205,7 +2237,7 @@ body {
 #audio-controls button {
     background: transparent;
     border: none;
-    color: var(--color-text-deep-charcoal); /* Themed icon/text color */
+    color: var(--current-text-color, var(--color-text-deep-charcoal)); /* Themed icon/text color */
     font-size: 20px; /* Adjust icon size */
     cursor: pointer;
     padding: 5px;
@@ -213,7 +2245,7 @@ body {
 }
 
 #audio-controls button:hover {
-    color: var(--color-accent-sakura-pink); /* Themed hover */
+    color: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed hover */
 }
 
 #audio-volume-slider {
@@ -221,7 +2253,7 @@ body {
     appearance: none;
     width: 100px; /* Or specific width */
     height: 5px;
-    background: var(--color-secondary-zen-grey); /* Themed slider track */
+    background: var(--current-border-color, #ccc); /* Themed slider track */
     border-radius: 3px;
     outline: none;
     opacity: 0.7;
@@ -237,7 +2269,7 @@ body {
     appearance: none;
     width: 15px;
     height: 15px;
-    background: var(--color-accent-sakura-pink); /* Themed thumb */
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed thumb */
     border-radius: 50%;
     cursor: pointer;
     transition: background-color .3s ease;
@@ -246,7 +2278,7 @@ body {
 #audio-volume-slider::-moz-range-thumb {
     width: 15px;
     height: 15px;
-    background: var(--color-accent-sakura-pink); /* Themed thumb */
+    background: var(--current-accent-color, var(--color-secondary-bamboo-green)); /* Themed thumb */
     border-radius: 50%;
     cursor: pointer;
     border: none; /* Important for Firefox */
@@ -300,9 +2332,12 @@ body {
     }
 
     #audio-volume-slider {
+        /* Hide volume slider on very small screens if space is critical, show mute only */
+        /* display: none; */
+        /* Or make it take less space */
         width: 70px;
     }
-
+    /* Example: Simple Prev/Play/Next layout on very small screens */
     #audio-controls {
         gap: 5px; /* Reduce gap between buttons */
     }
