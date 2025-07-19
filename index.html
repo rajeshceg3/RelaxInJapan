@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serene Experience</title>
+    <title>Serene Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/meditation-timer.css">
 </head>
 <body>
     <div id="background-gallery"></div>
     <div class="background-svg-container" id="background-svg-animations">
         <!-- SVGs will be injected here by JavaScript or defined statically -->
+        <!-- Example static SVGs (can be moved to JS for dynamic loading) -->
         <svg class="svg-mount-fuji" viewBox="0 0 200 100" preserveAspectRatio="xMidYMax meet">
             <path d="M0 100 L60 100 L100 20 L140 100 L200 100 L200 100 L0 100 Z" fill="rgba(100, 100, 120, 0.3)"/>
             <path d="M70 100 L100 40 L130 100 Z" fill="rgba(200, 200, 210, 0.5)"/>
@@ -22,6 +24,392 @@
             <circle cx="30" cy="75" r="6" fill="rgba(255,182,193,0.4)"/>
         </svg>
         <!-- Add more SVGs like torii gates, enso circles later -->
+    </div>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Serene Dashboard</h1>
+        </header>
+        <main class="dashboard-main">
+            <aside class="column column-sidebar">
+                <h2>Customization</h2>
+                <div id="theme-customization-panel" class="widget">
+                    <h3>Theme Customization</h3>
+                    <div id="palette-selection" aria-labelledby="palette-selection-title">
+                        <h4 id="palette-selection-title">Select a Color Palette:</h4>
+                        <div class="palette-buttons">
+                            <button class="btn theme-selector-btn" data-theme="default" aria-pressed="true">Default</button>
+                            <button class="btn theme-selector-btn" data-theme="sakura" aria-pressed="false">Sakura (Cherry Blossom)</button>
+                            <button class="btn theme-selector-btn" data-theme="momiji" aria-pressed="false">Momiji (Autumn Leaves)</button>
+                            <button class="btn theme-selector-btn" data-theme="yuki" aria-pressed="false">Yuki (Winter Snow)</button>
+                            <button class="btn theme-selector-btn" data-theme="haru" aria-pressed="false">Haru (Spring Garden)</button>
+                            <button class="btn theme-selector-btn" data-theme="dento" aria-pressed="false">Dentō (Traditional)</button>
+                            <button class="btn theme-selector-btn" data-theme="seki" aria-pressed="false">Seki (Zen Stone)</button>
+                            <button class="btn theme-selector-btn" data-theme="natsu" aria-pressed="false">Natsu (Summer)</button>
+                        </div>
+                    </div>
+                    <div style="margin-top: var(--spacing-unit-md); margin-bottom: var(--spacing-unit-md);">
+                        <input type="checkbox" id="seasonal-automation-toggle" style="margin-right: var(--spacing-unit-xs);">
+                        <label for="seasonal-automation-toggle">Enable Automatic Seasonal Theme</label>
+                    </div>
+                    <div style="margin-top: var(--spacing-unit-sm); margin-bottom: var(--spacing-unit-md);">
+                        <input type="radio" id="hemisphere-northern" name="hemisphere" value="northern" checked style="margin-left: var(--spacing-unit-md); margin-right: var(--spacing-unit-xs);">
+                        <label for="hemisphere-northern" style="margin-right: var(--spacing-unit-sm);">Northern Hemisphere</label>
+                        <input type="radio" id="hemisphere-southern" name="hemisphere" value="southern" style="margin-right: var(--spacing-unit-xs);">
+                        <label for="hemisphere-southern">Southern Hemisphere</label>
+                    </div>
+                    <div id="seasonal-preview-controls" style="margin-top: var(--spacing-unit-lg);">
+                        <h4 style="margin-bottom: var(--spacing-unit-xs);">Preview Seasons:</h4>
+                        <button id="preview-prev-season-btn" class="btn btn-secondary" style="margin-right: var(--spacing-unit-xs);">&lt; Prev Season</button>
+                        <button id="preview-next-season-btn" class="btn btn-secondary">Next Season &gt;</button>
+                        <button id="exit-seasonal-preview-btn" class="btn btn-secondary" style="display:none; margin-top: var(--spacing-unit-xs);">Exit Preview</button>
+                        <p id="seasonal-preview-info" style="font-size: var(--font-size-sm); margin-top: var(--spacing-unit-sm); min-height: 1.2em;"></p>
+                    </div>
+                    <div id="widget-appearance-controls" style="margin-top: var(--spacing-unit-lg); border-top: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); padding-top: var(--spacing-unit-lg);">
+                        <h4 style="margin-bottom: var(--spacing-unit-sm);">Widget Appearance:</h4>
+                        <div style="margin-bottom: var(--spacing-unit-sm);">
+                            <label for="global-widget-opacity-slider" style="display: block; margin-bottom: var(--spacing-unit-xs);">Global Widget Opacity:</label>
+                            <input type="range" id="global-widget-opacity-slider" min="0.2" max="1" step="0.05" value="1" style="width: 70%; margin-right: var(--spacing-unit-sm);">
+                            <span id="global-widget-opacity-value">100%</span>
+                        </div>
+                        <div style="margin-bottom: var(--spacing-unit-md);">
+                            <label for="widget-background-blur-slider" style="display: block; margin-bottom: var(--spacing-unit-xs);">Background Blur:</label>
+                            <input type="range" id="widget-background-blur-slider" min="0" max="20" step="1" value="0" style="width: 70%; margin-right: var(--spacing-unit-sm);"> <!-- Max blur in pixels -->
+                            <span id="widget-background-blur-value">0px</span>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: var(--spacing-unit-xs);">Preset Transparency:</label>
+                            <button class="btn btn-secondary preset-transparency-btn" data-opacity="0.9" data-blur="2" style="margin-right: var(--spacing-unit-xs);">Subtle</button>
+                            <button class="btn btn-secondary preset-transparency-btn" data-opacity="0.75" data-blur="5" style="margin-right: var(--spacing-unit-xs);">Balanced</button>
+                            <button class="btn btn-secondary preset-transparency-btn" data-opacity="0.6" data-blur="10">Prominent</button>
+                        </div>
+                    </div>
+                    <div id="layout-selection-controls" style="margin-top: var(--spacing-unit-lg); border-top: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); padding-top: var(--spacing-unit-lg);">
+                        <h4>Layout Templates:</h4>
+                        <div class="layout-buttons" style="margin-top: var(--spacing-unit-sm); display: flex; flex-wrap: wrap; gap: var(--spacing-unit-sm);">
+                            <button class="btn layout-selector-btn" data-layout="default" aria-pressed="true">Default</button>
+                            <button class="btn layout-selector-btn" data-layout="traditional-grid" aria-pressed="false">Traditional Grid</button>
+                            <button class="btn layout-selector-btn" data-layout="minimalist-center" aria-pressed="false">Minimalist Center</button>
+                            <button class="btn layout-selector-btn" data-layout="asymmetrical-zen" aria-pressed="false">Asymmetrical Zen</button>
+                            <button class="btn layout-selector-btn" data-layout="seasonal-flow" aria-pressed="false">Seasonal Flow</button>
+                        </div>
+                    </div>
+                    <div id="individual-widget-opacity-controls" style="margin-top: var(--spacing-unit-md); border-top: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); padding-top: var(--spacing-unit-md);">
+                        <h4 style="margin-bottom: var(--spacing-unit-xs);">Individual Widget Opacity:</h4>
+                        <p style="font-size: var(--font-size-xs); margin-bottom: var(--spacing-unit-sm);">Overrides global. Set to 100% to follow global.</p>
+
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="time-widget-opacity-slider">Time Widget:</label>
+                            <input type="range" id="time-widget-opacity-slider" class="individual-opacity-slider" data-widget-var="--time-widget-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="weather-widget-opacity-slider">Weather Widget:</label>
+                            <input type="range" id="weather-widget-opacity-slider" class="individual-opacity-slider" data-widget-var="--weather-widget-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="quick-links-opacity-slider">Quick Links:</label>
+                            <input type="range" id="quick-links-opacity-slider" class="individual-opacity-slider" data-widget-var="--quick-links-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="daily-inspiration-opacity-slider">Daily Inspiration:</label>
+                            <input type="range" id="daily-inspiration-opacity-slider" class="individual-opacity-slider" data-widget-var="--daily-inspiration-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="meditation-timer-opacity-slider">Meditation Timer:</label>
+                            <input type="range" id="meditation-timer-opacity-slider" class="individual-opacity-slider" data-widget-var="--meditation-timer-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);">
+                            <label for="journaling-widget-opacity-slider">Journaling Widget:</label>
+                            <input type="range" id="journaling-widget-opacity-slider" class="individual-opacity-slider" data-widget-var="--journaling-widget-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span>
+                        </div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="theme-customization-opacity-slider">Theme Panel:</label>
+                            <input type="range" id="theme-customization-opacity-slider" class="individual-opacity-slider" data-widget-var="--theme-customization-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                        <div style="margin-bottom: var(--spacing-unit-xs);"><label for="card-opacity-slider">General Cards:</label>
+                            <input type="range" id="card-opacity-slider" class="individual-opacity-slider" data-widget-var="--card-opacity" min="0.2" max="1" step="0.05" value="1" style="width: 60%; margin-left: var(--spacing-unit-sm); margin-right: var(--spacing-unit-xs);">
+                            <span class="individual-opacity-value">100%</span></div>
+                    </div>
+                    <div id="theme-settings-management" style="margin-top: var(--spacing-unit-lg); border-top: 1px solid var(--current-border-color, var(--color-secondary-zen-grey)); padding-top: var(--spacing-unit-lg);">
+                        <h4>Theme Settings Management:</h4>
+                        <input type="file" id="import-theme-settings" accept=".json" style="display: none;">
+                        <button id="import-theme-btn" class="btn btn-secondary" style="margin-right: var(--spacing-unit-xs);">Import Settings</button>
+                        <button id="export-theme-btn" class="btn btn-secondary" style="margin-right: var(--spacing-unit-xs);">Export Settings</button>
+                        <button id="reset-all-settings-btn" class="btn btn-danger">Reset All Settings</button>
+                    </div>
+                    <div id="theme-preview-area" aria-labelledby="theme-preview-title">
+                        <h4 id="theme-preview-title">Preview:</h4>
+                        <div class="preview-widget-example card">
+                            <p class="preview-text">Sample Text</p>
+                            <button class="btn btn-primary preview-button-primary">Primary</button>
+                            <button class="btn btn-secondary preview-button-secondary">Secondary</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <div class="column column-content">
+                <h2>Welcome to your serene space.</h2>
+
+            </div>
+            <aside class="column column-widgets">
+                <h2>Widgets</h2>
+                <!-- Daily Inspiration Widget START -->
+                <div id="daily-inspiration-widget" class="widget" role="complementary" aria-labelledby="daily-inspiration-title">
+                    <h3 id="daily-inspiration-title">Daily Inspiration</h3>
+                    <div id="inspiration-content-area">
+                        <div id="inspiration-type-indicator" aria-hidden="true"></div>
+                        <p id="inspiration-japanese-text" lang="ja"></p>
+                        <p id="inspiration-romaji-text" class="romaji-text"></p>
+                        <p id="inspiration-english-text" lang="en"></p>
+                        <p id="inspiration-explanation" class="explanation-text"></p>
+                        <p id="inspiration-source" class="source-text"></p>
+                    </div>
+                    <div id="inspiration-controls" class="widget-controls">
+                        <label for="language-toggle" class="visually-hidden">Language Display Mode:</label>
+                        <select id="language-toggle" aria-label="Language display mode">
+                            <option value="dual">Dual (JP + EN)</option>
+                            <option value="jp_primary">Japanese Primary</option>
+                            <option value="en_primary">English Primary</option>
+                        </select>
+                        <label for="romaji-toggle" class="romaji-toggle-label">
+                            <input type="checkbox" id="romaji-toggle" checked> Show Romaji
+                        </label>
+                        <button id="inspiration-prev-btn" aria-label="Previous inspiration" title="Previous inspiration">&#9664;</button> <!-- Left arrow -->
+                        <button id="inspiration-random-btn" aria-label="Random inspiration" title="Random inspiration">&#128256;</button> <!-- Shuffle icon -->
+                        <button id="inspiration-copy-btn" aria-label="Copy inspiration" title="Copy inspiration">&#128203;</button> <!-- Clipboard icon -->
+                    </div>
+                    <!-- Controls for future steps (like language toggle, navigation) will go here -->
+                </div>
+                <!-- Daily Inspiration Widget END -->
+    <div id="time-date-widget" role="timer" aria-live="polite" aria-atomic="true">
+        <div id="time-display" aria-label="Current time">
+            <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span> <span id="am-pm"></span>
+            <span id="timezone-abbr"></span>
+        </div>
+        <div id="date-display" aria-label="Current date"></div>
+        <button id="widget-settings-button" aria-label="Time widget settings" aria-haspopup="true" aria-expanded="false">&#9881;</button> <!-- Settings Icon -->
+        <div id="widget-settings-panel" class="hidden" role="region" aria-labelledby="settings-panel-title">
+            <h4 id="settings-panel-title">Widget Settings</h4>
+            <label for="time-format-toggle">24-Hour Format:</label>
+            <input type="checkbox" id="time-format-toggle">
+        </div>
+    </div>
+    <div id="weather-widget">
+        <div id="weather-location">--</div>
+        <div id="weather-temp-current" style="font-size: 28px;">--°</div>
+        <div id="weather-condition">--</div>
+        <div id="weather-icon-current"><svg width="48" height="48"></svg></div>
+        <div id="weather-temp-feels-like">Feels like: --°</div>
+        <div id="weather-humidity">Humidity: --%</div>
+        <div id="weather-wind">Wind: -- m/s ---</div>
+        <div id="weather-last-updated" style="font-size: var(--font-size-xs);">Updated: --:--</div>
+        <div id="weather-forecast-daily">
+            <div><span>Mon</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Tue</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Wed</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Thu</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+            <div><span>Fri</span><svg width="24" height="24"></svg><span>--°/--°</span></div>
+        </div>
+        <input type="text" id="weather-location-search" placeholder="Search city...">
+        <button id="weather-refresh-button">&#x21bb;</button>
+    </div>
+
+    <div id="quick-links-panel">
+        <h3>Quick Links</h3>
+        <button id="add-link-btn">Add Link</button>
+        <div class="quick-links-actions">
+            <button id="export-links-btn" class="btn btn-secondary">Export Links</button>
+            <input type="file" id="import-links-file" accept=".json" style="display: none;">
+            <button id="import-links-btn" class="btn btn-secondary">Import Links</button>
+        </div>
+        <div id="quick-links-list">
+            <!-- Links will be added here by JavaScript -->
+        </div>
+        <div id="quick-links-empty-state">
+            <div style="font-size: 48px; margin-bottom: var(--spacing-unit-md);">⛩️</div>
+            <p>Add your favorite sites for quick access.</p>
+            <button id="add-link-empty-state-btn" class="btn btn-primary">Add First Link</button>
+        </div>
+        <div id="quick-link-modal" class="hidden" style="display: none;">
+            <form id="quick-link-form">
+                <h4 id="quick-link-modal-title">Add New Link</h4>
+                <span id="close-modal-btn" style="cursor:pointer; float:right;">&times;</span>
+                <div>
+                    <label for="link-name">Website Name:</label>
+                    <input type="text" id="link-name" name="link-name" required maxlength="25">
+                </div>
+                <div>
+                    <label for="link-url">URL:</label>
+                    <input type="url" id="link-url" name="link-url" required>
+                </div>
+                <div>
+                    <label for="link-icon">Icon (URL or Font Awesome class):</label>
+                    <input type="text" id="link-icon" name="link-icon">
+                    <!-- Or a select for predefined icons -->
+                    <!-- <select id="link-icon" name="link-icon">
+                        <option value="fa-globe">Globe</option>
+                        <option value="fa-briefcase">Briefcase</option>
+                    </select> -->
+                </div>
+                <div>
+                    <label for="link-category">Category:</label>
+                    <select id="link-category" name="link-category">
+                        <option value="">Select Category</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="learning">Learning</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <input type="hidden" id="link-id" name="link-id">
+                <div>
+                    <button type="submit">Save Link</button>
+                    <button type="button" id="cancel-link-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Meditation Timer Widget -->
+    <div id="meditation-timer-widget" class="widget">
+        <h3>Meditation Timer</h3>
+        <div class="timer-display">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring-bg" cx="100" cy="100" r="90" stroke-width="10" fill="transparent"/>
+                <circle class="progress-ring-circle" cx="100" cy="100" r="90" stroke-width="10" fill="transparent"
+                        stroke-dasharray="565.48" stroke-dashoffset="565.48"/> {/* Circumference = 2 * PI * r */}
+            </svg>
+            <span id="time-text">00:00</span>
+        </div>
+        <div class="timer-controls">
+            <button id="meditation-play-btn" aria-label="Play">Play</button>
+            <button id="meditation-pause-btn" aria-label="Pause">Pause</button>
+            <button id="meditation-stop-btn" aria-label="Stop">Stop</button>
+        </div>
+        <div class="meditation-presets">
+            <button class="preset-btn" data-duration="300">5 min</button>
+            <button class="preset-btn" data-duration="600">10 min</button>
+            <button class="preset-btn" data-duration="900">15 min</button>
+            <button class="preset-btn" data-duration="1800">30 min</button>
+            <input type="number" id="custom-duration-input" min="1" max="60" placeholder="Mins (1-60)">
+            <button id="custom-duration-btn">Set Custom</button>
+        </div>
+
+        <div id="pomodoro-phase-display" class="widget-subsection-title" style="display: none;"></div>
+
+        <div class="pomodoro-controls widget-section">
+            <button id="toggle-pomodoro-btn">Enable Pomodoro</button>
+            <div id="pomodoro-settings" class="hidden">
+                <label for="pomodoro-work-input">Work (min):</label>
+                <input type="number" id="pomodoro-work-input" value="25" min="15" max="45">
+
+                <label for="pomodoro-short-break-input">Short Break (min):</label>
+                <input type="number" id="pomodoro-short-break-input" value="5" min="3" max="10">
+
+                <label for="pomodoro-long-break-input">Long Break (min):</label>
+                <input type="number" id="pomodoro-long-break-input" value="15" min="10" max="30">
+
+                <label for="pomodoro-cycles-input">Cycles before Long Break:</label>
+                <input type="number" id="pomodoro-cycles-input" value="4" min="2" max="6">
+            </div>
+        </div>
+
+        <div class="widget-section sound-settings">
+            <h4>Sound Options</h4>
+            <div class="sound-selection">
+                <label for="bell-sound-select">Bell Sound:</label>
+                <select id="bell-sound-select">
+                    <option value="silent">Silent</option>
+                    <option value="audio/temple-bell.mp3">Temple Bell</option>
+                    <option value="audio/wind-chime.mp3">Wind Chime</option>
+                    <option value="audio/singing-bowl.mp3">Singing Bowl</option>
+                    <option value="audio/mokugyo.mp3">Mokugyo</option>
+                </select>
+                <button id="preview-sound-btn" aria-label="Preview selected sound">&#128266;</button>
+            </div>
+            <div class="volume-control">
+                <label for="volume-slider">Volume:</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+            </div>
+        </div>
+
+        <div class="widget-section ambient-sound-settings">
+            <h4>Ambient Sounds</h4>
+            <div id="ambient-sounds-list">
+                <!-- Ambient sounds will be populated by JavaScript -->
+            </div>
+            <!-- <button id="manage-ambient-sounds-btn" style="display:none;">Manage Ambient Sounds</button> -->
+        </div>
+
+        <div id="breathing-guide-container" class="widget-section hidden"> <!-- Initially hidden -->
+            <h4>Breathing Guide</h4>
+            <div id="breathing-anim-area">
+                <div id="breathing-circle"></div>
+                <div id="breathing-text"></div> <!-- To display Inhale, Hold, Exhale -->
+            </div>
+            <div class="breathing-guide-controls">
+                <label for="breathing-pattern-select">Pattern:</label>
+                <select id="breathing-pattern-select">
+                    <option value="4-2-6">Balanced (4-2-6)</option> <!-- Inhale-Hold-Exhale -->
+                    <option value="4-4-4">Equal (4-4-4)</option>
+                    <option value="4-7-8">Relaxing (4-7-8)</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <div id="custom-breathing-pattern-inputs" class="hidden">
+                    <input type="number" id="inhale-time" min="1" placeholder="In (s)">
+                    <input type="number" id="hold-time" min="0" placeholder="Hold (s)">
+                    <input type="number" id="exhale-time" min="1" placeholder="Out (s)">
+                </div>
+                <button id="toggle-breathing-guide-btn">Show Guide</button>
+            </div>
+        </div>
+        <!-- More sections will be added here later -->
+    </div>
+<!-- Journaling Widget START -->
+<div id="journaling-widget" class="widget" role="complementary" aria-labelledby="journaling-widget-title">
+    <h3 id="journaling-widget-title">My Journal</h3>
+    <div id="journal-entry-area">
+        <textarea id="journal-text-input" placeholder="Write your thoughts for today..." aria-label="Journal Entry Text Area"></textarea>
+        <div id="journal-mood-selector" role="group" aria-labelledby="journal-mood-title">
+            <span id="journal-mood-title" class="visually-hidden">Select your mood:</span>
+            <button class="mood-btn" data-mood="😊" aria-label="Happy">😊</button>
+            <button class="mood-btn" data-mood="🙂" aria-label="Content">🙂</button>
+            <button class="mood-btn" data-mood="😐" aria-label="Neutral">😐</button>
+            <button class="mood-btn" data-mood="😕" aria-label="Confused">😕</button>
+            <button class="mood-btn" data-mood="😟" aria-label="Worried">😟</button>
+            <button class="mood-btn" data-mood="😢" aria-label="Sad">😢</button>
+        </div>
+        <button id="journal-save-btn" class="btn btn-primary">Save Entry</button>
+    </div>
+    <div id="journal-history-area">
+        <h4>Past Entries</h4>
+        <div id="journal-current-entry-display">
+            <p id="journal-entry-date-display" class="journal-meta">Date: ---</p>
+            <p id="journal-entry-mood-display" class="journal-meta">Mood: ---</p>
+            <div id="journal-entry-text-display" class="journal-text-content">
+                <p>No entry selected or available.</p>
+            </div>
+        </div>
+        <div id="journal-navigation-controls" class="widget-controls">
+            <button id="journal-prev-entry-btn" aria-label="Previous entry" title="Previous entry">&#9664;</button>
+            <input type="date" id="journal-date-picker" aria-label="Select entry by date">
+            <button id="journal-next-entry-btn" aria-label="Next entry" title="Next entry">&#9654;</button>
+        </div>
+        <div id="journal-empty-state" style="display: none; text-align: center; padding: var(--spacing-unit-md);">
+            <p>Your journal is empty. Write your first entry!</p>
+        </div>
+    </div>
+</div>
+<!-- Journaling Widget END -->
+            </aside>
+        </main>
+    </div>
+    <div id="gallery-controls">
+        <button id="toggle-rotation" aria-label="Pause image rotation">Pause</button>
+        <button id="prev-image" aria-label="Previous image">Previous</button>
+        <button id="next-image" aria-label="Next image">Next</button>
+        <select id="category-filter" aria-label="Filter images by category">
+            <option value="all">All Categories</option>
+            <!-- Categories will be populated by JavaScript -->
+        </select>
+        <div id="image-info-overlay">
+            <!-- Image title and location will appear here -->
+        </div>
     </div>
 
     <!-- Main Audio Player Section -->
@@ -45,6 +433,28 @@
     <script src="js/gallery.js" defer></script>
     <script src="js/main-audio-player.js" defer></script> <!-- Added Main Audio Player JS -->
     <script src="js/visual-system.js" defer></script> <!-- Added Visual System JS -->
+    <script src="js/daily_inspiration.js" defer></script>
+    <script src="js/time-widget.js" defer></script>
+    <script src="js/weather-widget.js" defer></script>
+    <script src="js/quick-links.js" defer></script>
+    <script src="js/meditation-timer.js" defer></script>
+    <script src="js/widget-customizer.js" defer></script>
+    <script src="js/layout-switcher.js" defer></script>
+    <script src="js/theme-switcher.js" defer></script>
+    <script src="js/journaling-widget.js" defer></script>
 
+    <!-- Lightbox Structure -->
+    <div id="lightbox-overlay" class="lightbox-hidden">
+        <div id="lightbox-container">
+            <img id="lightbox-image" src="" alt="Lightbox Image">
+            <button id="lightbox-close-btn" aria-label="Close lightbox">&times;</button>
+            <div id="lightbox-info">
+                <!-- Image title and other details will go here -->
+            </div>
+            <!-- Optional: Navigation buttons for lightbox gallery -->
+            <button id="lightbox-prev-btn" class="lightbox-nav-btn" aria-label="Previous image (lightbox)">&lt;</button>
+            <button id="lightbox-next-btn" class="lightbox-nav-btn" aria-label="Next image (lightbox)">&gt;</button>
+        </div>
+    </div>
 </body>
 </html>
