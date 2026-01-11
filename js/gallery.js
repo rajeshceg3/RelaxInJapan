@@ -76,6 +76,15 @@ function initializeGallery() {
         galleryControlsElement = document.getElementById('gallery-controls');
 
         if (!backgroundGalleryElement || !categoryFilterElement || !toggleRotationBtn || !nextImageBtn || !prevImageBtn || !imageInfoOverlayElement || !galleryControlsElement) {
+            console.log('Init Check Failed:', {
+                bg: !!backgroundGalleryElement,
+                filter: !!categoryFilterElement,
+                toggle: !!toggleRotationBtn,
+                next: !!nextImageBtn,
+                prev: !!prevImageBtn,
+                info: !!imageInfoOverlayElement,
+                controls: !!galleryControlsElement
+            });
             console.error("One or more gallery DOM elements are missing. Initialization aborted.");
             return;
         }
@@ -442,7 +451,10 @@ function getFilteredImages() {
 }
 
 function openLightbox(imageObject) {
-    if (!imageObject || !imageObject.path || !lightboxOverlayElement) return;
+    if (!imageObject || !imageObject.path || !lightboxOverlayElement) {
+        console.log('openLightbox aborted:', { imageObject, hasPath: imageObject?.path, hasOverlay: !!lightboxOverlayElement });
+        return;
+    }
 
     document.removeEventListener('keydown', handleLightboxEscape); // Remove existing, if any
 
