@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serene Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/meditation-timer.css">
 </head>
@@ -27,6 +29,9 @@
     </div>
     <div class="dashboard-container">
         <header class="dashboard-header">
+            <button id="mobile-settings-toggle" aria-label="Toggle Settings" class="btn-icon">
+                &#9881; <!-- Gear Icon -->
+            </button>
             <h1>Serene Dashboard</h1>
         </header>
         <main class="dashboard-main">
@@ -400,20 +405,20 @@
         </main>
     </div>
     <div id="gallery-controls">
+        <button id="prev-image" aria-label="Previous image">Prev</button>
         <button id="toggle-rotation" aria-label="Pause image rotation">Pause</button>
-        <button id="prev-image" aria-label="Previous image">Previous</button>
         <button id="next-image" aria-label="Next image">Next</button>
         <select id="category-filter" aria-label="Filter images by category">
-            <option value="all">All Categories</option>
+            <option value="all">All</option>
             <!-- Categories will be populated by JavaScript -->
         </select>
-        <div id="image-info-overlay">
-            <!-- Image title and location will appear here -->
-        </div>
+    </div>
+    <div id="image-info-overlay">
+        <!-- Image title and location will appear here -->
     </div>
 
     <!-- Main Audio Player Section -->
-    <div id="main-audio-player-container" class="widget glassmorphism-panel player-initially-hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000;">
+    <div id="main-audio-player-container" class="widget glassmorphism-panel player-initially-hidden">
         <div id="track-info-display">
             <span id="current-track-name">Track Name</span> - <span id="current-track-artist">Artist</span>
             <div><span id="current-track-time">0:00</span> / <span id="current-track-duration">0:00</span></div>
@@ -442,6 +447,7 @@
     <script src="js/layout-switcher.js" defer></script>
     <script src="js/theme-switcher.js" defer></script>
     <script src="js/journaling-widget.js" defer></script>
+    <script src="js/mobile-ux.js" defer></script>
 
     <!-- Lightbox Structure -->
     <div id="lightbox-overlay" class="lightbox-hidden">
