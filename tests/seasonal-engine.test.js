@@ -1,20 +1,11 @@
 // tests/seasonal-engine.test.js
 
 // Import functions to be tested.
-// Assuming seasonal-engine.js exports functions via window or a module system.
-const {
-    getSeasonForDate,
-    mapSeasonToTheme,
-    getSeasonByOffset,
-    applyEffectsForSeason,
-    registerSeasonalCallbacks,
-    applySeasonalLogic,
-    handleExitPreview,
-    setSeasonalAutomation,
-    setSelectedHemisphere,
-    initializeSeasonalSettings, // Added
-    initializeSeasonalControls  // Added
-} = window;
+// First, require the file to execute it and populate window/global
+// We do this inside beforeEach with resetModules to ensure clean state
+
+// Access functions from window *inside* tests or beforeEach to ensure they are defined
+// const { ... } = window; // Removed top-level destructuring
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -44,16 +35,34 @@ let mockDailyInspirationWidget;
 
 describe('Seasonal Engine Logic', () => {
     beforeEach(() => {
+        jest.resetModules(); // Reset module registry to re-evaluate requires
+
         // Reset window properties for each test
         window.seasonalAutomationEnabled = false;
         window.selectedHemisphere = 'northern';
         window.isPreviewingSeason = false; // Not a global, but internal state reset for clarity
         window.previewSeasonOffset = 0;   // Internal state reset
 
+        // Mock DOM elements that might be used by applyEffectsForSeason
+        // These are used if isPreview is true within applyEffectsForSeason
+        document.body.innerHTML = `
+            <div id="seasonal-preview-info"></div>
+            <button id="exit-seasonal-preview-btn"></button>
+        `;
+
+        try {
+            require('../js/seasonal-engine.js');
+        } catch (e) {
+            console.error("Error requiring seasonal-engine.js:", e);
+        }
+
         // Reset and re-register mock callbacks
         mockApplyThemeCallback = jest.fn();
         mockSetGalleryFilterCallback = jest.fn();
-        registerSeasonalCallbacks(mockApplyThemeCallback, mockSetGalleryFilterCallback);
+        // Access registerSeasonalCallbacks from window
+        if (window.registerSeasonalCallbacks) {
+            window.registerSeasonalCallbacks(mockApplyThemeCallback, mockSetGalleryFilterCallback);
+        }
 
         mockDailyInspirationWidget = {
             refreshContentForSeason: jest.fn(),
@@ -63,15 +72,7 @@ describe('Seasonal Engine Logic', () => {
 
         // Clear localStorage mock
         localStorageMock.clear();
-        // Clear any other mocks if necessary, e.g., DOM element mocks
-        document.body.innerHTML = ''; // Clear DOM
 
-        // Mock DOM elements that might be used by applyEffectsForSeason
-        // These are used if isPreview is true within applyEffectsForSeason
-        document.body.innerHTML = `
-            <div id="seasonal-preview-info"></div>
-            <button id="exit-seasonal-preview-btn"></button>
-        `;
         // Assign to window for direct access if functions expect them on window, or ensure they are found by document.getElementById
         // The seasonal-engine.js caches these in `initializeSeasonalControls`, so direct assignment to window might not be how it works.
         // Instead, the functions use module-scoped `seasonalPreviewInfoEl`, `exitSeasonalPreviewBtnEl`.
@@ -94,80 +95,82 @@ describe('Seasonal Engine Logic', () => {
         delete window.seasonalPreviewInfoEl;
         delete window.exitSeasonalPreviewBtnEl;
         delete window.dailyInspirationWidget;
+        // Clean up DOM
+        document.body.innerHTML = '';
     });
 
     describe('getSeasonForDate', () => {
         // Northern Hemisphere Tests
         it('should return "spring" for Northern Hemisphere spring dates', () => {
-            expect(getSeasonForDate(new Date(2024, 2, 20), 'northern')).toBe('spring'); // March 20
-            expect(getSeasonForDate(new Date(2024, 3, 15), 'northern')).toBe('spring'); // April 15
-            expect(getSeasonForDate(new Date(2024, 5, 20), 'northern')).toBe('spring'); // June 20
+            expect(window.getSeasonForDate(new Date(2024, 2, 20), 'northern')).toBe('spring'); // March 20
+            expect(window.getSeasonForDate(new Date(2024, 3, 15), 'northern')).toBe('spring'); // April 15
+            expect(window.getSeasonForDate(new Date(2024, 5, 20), 'northern')).toBe('spring'); // June 20
         });
 
         it('should return "summer" for Northern Hemisphere summer dates', () => {
-            expect(getSeasonForDate(new Date(2024, 5, 21), 'northern')).toBe('summer'); // June 21
-            expect(getSeasonForDate(new Date(2024, 7, 1), 'northern')).toBe('summer');   // August 1
-            expect(getSeasonForDate(new Date(2024, 8, 22), 'northern')).toBe('summer'); // Sept 22
+            expect(window.getSeasonForDate(new Date(2024, 5, 21), 'northern')).toBe('summer'); // June 21
+            expect(window.getSeasonForDate(new Date(2024, 7, 1), 'northern')).toBe('summer');   // August 1
+            expect(window.getSeasonForDate(new Date(2024, 8, 22), 'northern')).toBe('summer'); // Sept 22
         });
 
         it('should return "autumn" for Northern Hemisphere autumn dates', () => {
-            expect(getSeasonForDate(new Date(2024, 8, 23), 'northern')).toBe('autumn'); // Sept 23
-            expect(getSeasonForDate(new Date(2024, 10, 1), 'northern')).toBe('autumn'); // Nov 1
-            expect(getSeasonForDate(new Date(2024, 11, 21), 'northern')).toBe('autumn'); // Dec 21
+            expect(window.getSeasonForDate(new Date(2024, 8, 23), 'northern')).toBe('autumn'); // Sept 23
+            expect(window.getSeasonForDate(new Date(2024, 10, 1), 'northern')).toBe('autumn'); // Nov 1
+            expect(window.getSeasonForDate(new Date(2024, 11, 21), 'northern')).toBe('autumn'); // Dec 21
         });
 
         it('should return "winter" for Northern Hemisphere winter dates', () => {
-            expect(getSeasonForDate(new Date(2024, 11, 22), 'northern')).toBe('winter'); // Dec 22
-            expect(getSeasonForDate(new Date(2024, 0, 15), 'northern')).toBe('winter');  // Jan 15
-            expect(getSeasonForDate(new Date(2024, 2, 19), 'northern')).toBe('winter');  // March 19
+            expect(window.getSeasonForDate(new Date(2024, 11, 22), 'northern')).toBe('winter'); // Dec 22
+            expect(window.getSeasonForDate(new Date(2024, 0, 15), 'northern')).toBe('winter');  // Jan 15
+            expect(window.getSeasonForDate(new Date(2024, 2, 19), 'northern')).toBe('winter');  // March 19
         });
 
         // Southern Hemisphere Tests
         it('should return "autumn" for Southern Hemisphere autumn dates (corresponds to NH spring)', () => {
-            expect(getSeasonForDate(new Date(2024, 2, 20), 'southern')).toBe('autumn');
-            expect(getSeasonForDate(new Date(2024, 3, 15), 'southern')).toBe('autumn');
-            expect(getSeasonForDate(new Date(2024, 5, 20), 'southern')).toBe('autumn');
+            expect(window.getSeasonForDate(new Date(2024, 2, 20), 'southern')).toBe('autumn');
+            expect(window.getSeasonForDate(new Date(2024, 3, 15), 'southern')).toBe('autumn');
+            expect(window.getSeasonForDate(new Date(2024, 5, 20), 'southern')).toBe('autumn');
         });
 
         it('should return "winter" for Southern Hemisphere winter dates (corresponds to NH summer)', () => {
-            expect(getSeasonForDate(new Date(2024, 5, 21), 'southern')).toBe('winter');
-            expect(getSeasonForDate(new Date(2024, 7, 1), 'southern')).toBe('winter');
-            expect(getSeasonForDate(new Date(2024, 8, 22), 'southern')).toBe('winter');
+            expect(window.getSeasonForDate(new Date(2024, 5, 21), 'southern')).toBe('winter');
+            expect(window.getSeasonForDate(new Date(2024, 7, 1), 'southern')).toBe('winter');
+            expect(window.getSeasonForDate(new Date(2024, 8, 22), 'southern')).toBe('winter');
         });
 
         it('should return "spring" for Southern Hemisphere spring dates (corresponds to NH autumn)', () => {
-            expect(getSeasonForDate(new Date(2024, 8, 23), 'southern')).toBe('spring');
-            expect(getSeasonForDate(new Date(2024, 10, 1), 'southern')).toBe('spring');
-            expect(getSeasonForDate(new Date(2024, 11, 21), 'southern')).toBe('spring');
+            expect(window.getSeasonForDate(new Date(2024, 8, 23), 'southern')).toBe('spring');
+            expect(window.getSeasonForDate(new Date(2024, 10, 1), 'southern')).toBe('spring');
+            expect(window.getSeasonForDate(new Date(2024, 11, 21), 'southern')).toBe('spring');
         });
 
         it('should return "summer" for Southern Hemisphere summer dates (corresponds to NH winter)', () => {
-            expect(getSeasonForDate(new Date(2024, 11, 22), 'southern')).toBe('summer');
-            expect(getSeasonForDate(new Date(2024, 0, 15), 'southern')).toBe('summer');
-            expect(getSeasonForDate(new Date(2024, 2, 19), 'southern')).toBe('summer');
+            expect(window.getSeasonForDate(new Date(2024, 11, 22), 'southern')).toBe('summer');
+            expect(window.getSeasonForDate(new Date(2024, 0, 15), 'southern')).toBe('summer');
+            expect(window.getSeasonForDate(new Date(2024, 2, 19), 'southern')).toBe('summer');
         });
     });
 
     describe('mapSeasonToTheme', () => {
         it('should map "spring" to "haru"', () => {
-            expect(mapSeasonToTheme('spring')).toBe('haru');
+            expect(window.mapSeasonToTheme('spring')).toBe('haru');
         });
 
         it('should map "summer" to "natsu"', () => {
-            expect(mapSeasonToTheme('summer')).toBe('natsu');
+            expect(window.mapSeasonToTheme('summer')).toBe('natsu');
         });
 
         it('should map "autumn" to "momiji"', () => {
-            expect(mapSeasonToTheme('autumn')).toBe('momiji');
+            expect(window.mapSeasonToTheme('autumn')).toBe('momiji');
         });
 
         it('should map "winter" to "yuki"', () => {
-            expect(mapSeasonToTheme('winter')).toBe('yuki');
+            expect(window.mapSeasonToTheme('winter')).toBe('yuki');
         });
 
         it('should map an unknown season to "default"', () => {
-            expect(mapSeasonToTheme('unknownSeason')).toBe('default');
-            expect(mapSeasonToTheme('')).toBe('default');
+            expect(window.mapSeasonToTheme('unknownSeason')).toBe('default');
+            expect(window.mapSeasonToTheme('')).toBe('default');
         });
     });
 
@@ -175,39 +178,39 @@ describe('Seasonal Engine Logic', () => {
         const baseDate = new Date(2024, 5, 15); // June 15, 2024 (Northern Spring / Southern Winter)
 
         it('should return the current season for offset 0', () => {
-            expect(getSeasonByOffset(0, baseDate, 'northern')).toBe('spring'); // June 15 is spring
-            expect(getSeasonByOffset(0, baseDate, 'southern')).toBe('winter');
+            expect(window.getSeasonByOffset(0, baseDate, 'northern')).toBe('spring'); // June 15 is spring
+            expect(window.getSeasonByOffset(0, baseDate, 'southern')).toBe('winter');
         });
 
         it('should return next season for offset 1 (Northern)', () => {
             // Base: June 15 (Spring) -> Offset 1 (3 months later: Sept 15) -> Summer
-            expect(getSeasonByOffset(1, baseDate, 'northern')).toBe('summer');
+            expect(window.getSeasonByOffset(1, baseDate, 'northern')).toBe('summer');
         });
 
         it('should return previous season for offset -1 (Northern)', () => {
             // Base: June 15 (Spring) -> Offset -1 (3 months earlier: March 15) -> Winter
-            expect(getSeasonByOffset(-1, baseDate, 'northern')).toBe('winter');
+            expect(window.getSeasonByOffset(-1, baseDate, 'northern')).toBe('winter');
         });
 
         it('should return next season for offset 1 (Southern)', () => {
              // Base: June 15 (Winter) -> Offset 1 (3 months later: Sept 15) -> Spring
-            expect(getSeasonByOffset(1, baseDate, 'southern')).toBe('spring');
+            expect(window.getSeasonByOffset(1, baseDate, 'southern')).toBe('spring');
         });
 
         it('should return previous season for offset -1 (Southern)', () => {
             // Base: June 15 (Winter) -> Offset -1 (3 months earlier: March 15) -> Autumn
-            expect(getSeasonByOffset(-1, baseDate, 'southern')).toBe('autumn');
+            expect(window.getSeasonByOffset(-1, baseDate, 'southern')).toBe('autumn');
         });
 
         it('should handle larger offsets correctly (e.g., 4 for a year later)', () => {
             // Base: June 15, 2024 (Spring NH) -> Offset 4 (12 months later: June 15, 2025) -> Spring NH
-            expect(getSeasonByOffset(4, baseDate, 'northern')).toBe('spring');
+            expect(window.getSeasonByOffset(4, baseDate, 'northern')).toBe('spring');
         });
 
          it('should use window.selectedHemisphere if hemisphere is not provided', () => {
             window.selectedHemisphere = 'southern';
             // Base: June 15 (Winter SH) -> Offset 0 -> Winter SH
-            expect(getSeasonByOffset(0, baseDate)).toBe('winter');
+            expect(window.getSeasonByOffset(0, baseDate)).toBe('winter');
             window.selectedHemisphere = 'northern'; // reset for other tests
         });
     });
@@ -217,7 +220,7 @@ describe('Seasonal Engine Logic', () => {
         // These elements are used by the function being tested.
 
         it('should call applyTheme and setGalleryFilter callbacks with correct theme and category (not preview)', () => {
-            applyEffectsForSeason('spring', false);
+            window.applyEffectsForSeason('spring', false);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('haru');
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('all'); // Default original category
             expect(mockDailyInspirationWidget.refreshContentForSeason).toHaveBeenCalledWith('spring');
@@ -226,7 +229,7 @@ describe('Seasonal Engine Logic', () => {
         });
 
         it('should call applyTheme and setGalleryFilter for "seasons" category (preview mode)', () => {
-            applyEffectsForSeason('summer', true);
+            window.applyEffectsForSeason('summer', true);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('natsu');
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('seasons');
             expect(mockDailyInspirationWidget.refreshContentForSeason).toHaveBeenCalledWith('summer');
@@ -239,7 +242,7 @@ describe('Seasonal Engine Logic', () => {
             // but applyEffectsForSeason is called by it.
             // We simulate the state where originalGalleryCategory is set.
             window.originalGalleryCategory = 'nature'; // Simulate this internal state for the test.
-            applyEffectsForSeason('winter', false);
+            window.applyEffectsForSeason('winter', false);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('yuki');
             // When isPreview is false, it should use originalGalleryCategory if available
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('nature');
@@ -248,23 +251,23 @@ describe('Seasonal Engine Logic', () => {
 
         it('should handle missing dailyInspirationWidget gracefully', () => {
             delete window.dailyInspirationWidget; // Simulate widget not existing
-            applyEffectsForSeason('autumn', false);
+            window.applyEffectsForSeason('autumn', false);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('momiji');
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('all');
             expect(console.warn).toHaveBeenCalledWith("dailyInspirationWidget or refreshContentForSeason method not found during applyEffectsForSeason.");
         });
 
         it('should handle missing applyTheme callback gracefully', () => {
-            registerSeasonalCallbacks(null, mockSetGalleryFilterCallback); // Unregister applyTheme
-            applyEffectsForSeason('spring', false);
+            window.registerSeasonalCallbacks(null, mockSetGalleryFilterCallback); // Unregister applyTheme
+            window.applyEffectsForSeason('spring', false);
             expect(mockApplyThemeCallback).not.toHaveBeenCalled(); // It was jest.fn() but now null
             expect(console.error).toHaveBeenCalledWith("applyTheme callback not registered for applyEffectsForSeason.");
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('all');
         });
 
         it('should handle missing setGalleryFilter callback gracefully', () => {
-            registerSeasonalCallbacks(mockApplyThemeCallback, null); // Unregister setGalleryFilter
-            applyEffectsForSeason('spring', false);
+            window.registerSeasonalCallbacks(mockApplyThemeCallback, null); // Unregister setGalleryFilter
+            window.applyEffectsForSeason('spring', false);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('haru');
             expect(console.warn).toHaveBeenCalledWith("setGalleryFilterCallback not registered for applyEffectsForSeason.");
             expect(mockSetGalleryFilterCallback).not.toHaveBeenCalled();
@@ -296,7 +299,7 @@ describe('Seasonal Engine Logic', () => {
             // Restore original functions
             window.getSeasonByOffset = originalGetSeasonByOffset;
             window.getSeasonForDate = originalGetSeasonForDate;
-            if (window.applyEffectsForSeason.mockRestore) {
+            if (window.applyEffectsForSeason && window.applyEffectsForSeason.mockRestore) {
                  window.applyEffectsForSeason.mockRestore();
             }
         });
@@ -306,7 +309,7 @@ describe('Seasonal Engine Logic', () => {
             window.previewSeasonOffset = 1;
             window.getSeasonByOffset.mockReturnValue('mockPreviewSeason');
 
-            applySeasonalLogic();
+            window.applySeasonalLogic();
 
             expect(window.getSeasonByOffset).toHaveBeenCalledWith(1, expect.any(Date), window.selectedHemisphere);
             expect(window.applyEffectsForSeason).toHaveBeenCalledWith('mockPreviewSeason', true);
@@ -318,7 +321,7 @@ describe('Seasonal Engine Logic', () => {
             window.isPreviewingSeason = false;
             window.getSeasonForDate.mockReturnValue('mockActualSeason');
 
-            applySeasonalLogic();
+            window.applySeasonalLogic();
 
             expect(window.getSeasonForDate).toHaveBeenCalledWith(expect.any(Date), window.selectedHemisphere);
             expect(window.applyEffectsForSeason).toHaveBeenCalledWith('mockActualSeason', false);
@@ -329,12 +332,12 @@ describe('Seasonal Engine Logic', () => {
             window.seasonalAutomationEnabled = false;
             window.isPreviewingSeason = false;
 
-            applySeasonalLogic();
+            window.applySeasonalLogic();
 
             expect(window.applyEffectsForSeason).not.toHaveBeenCalled();
             expect(window.getSeasonForDate).not.toHaveBeenCalled();
             expect(window.getSeasonByOffset).not.toHaveBeenCalled();
-            expect(console.log).toHaveBeenCalledWith("Seasonal automation is disabled and not in preview. No seasonal logic applied.");
+            expect(console.log).toHaveBeenCalledWith("Seasonal automation is disabled. No seasonal logic applied.");
         });
     });
 
@@ -367,12 +370,12 @@ describe('Seasonal Engine Logic', () => {
 
         test('should do nothing if not in preview mode', () => {
             window.isPreviewingSeason = false;
-            handleExitPreview();
+            window.handleExitPreview();
             expect(mockApplyThemeCallback).not.toHaveBeenCalled();
         });
 
         test('should restore original theme, category, and reset preview state', () => {
-            handleExitPreview();
+            window.handleExitPreview();
 
             expect(window.isPreviewingSeason).toBe(false);
             expect(window.previewSeasonOffset).toBe(0);
@@ -386,7 +389,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should call setSeasonalAutomation with original automation state (true)', () => {
             window.originalSeasonalAutomationState = true;
-            handleExitPreview();
+            window.handleExitPreview();
             expect(window.setSeasonalAutomation).toHaveBeenCalledWith(true);
         });
 
@@ -395,7 +398,7 @@ describe('Seasonal Engine Logic', () => {
             window.originalUserTheme = 'manual-theme-when-auto-off';
             mockApplyThemeCallback.mockClear();
 
-            handleExitPreview();
+            window.handleExitPreview();
 
             expect(window.setSeasonalAutomation).toHaveBeenCalledWith(false);
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('manual-theme-when-auto-off');
@@ -404,7 +407,7 @@ describe('Seasonal Engine Logic', () => {
         test('should default to "default" theme and "all" category if originals were null', () => {
             window.originalUserTheme = null;
             window.originalGalleryCategory = null;
-            handleExitPreview();
+            window.handleExitPreview();
             expect(mockApplyThemeCallback).toHaveBeenCalledWith('default');
             expect(mockSetGalleryFilterCallback).toHaveBeenCalledWith('all');
         });
@@ -438,7 +441,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should enable automation, save to localStorage, and apply logic', () => {
             window.isPreviewingSeason = false;
-            setSeasonalAutomation(true);
+            window.setSeasonalAutomation(true);
 
             expect(window.seasonalAutomationEnabled).toBe(true);
             expect(localStorageMock.setItem).toHaveBeenCalledWith('seasonalAutomationEnabled', 'true');
@@ -448,7 +451,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should disable automation and save to localStorage', () => {
             window.isPreviewingSeason = false;
-            setSeasonalAutomation(false);
+            window.setSeasonalAutomation(false);
 
             expect(window.seasonalAutomationEnabled).toBe(false);
             expect(localStorageMock.setItem).toHaveBeenCalledWith('seasonalAutomationEnabled', 'false');
@@ -458,7 +461,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should call handleExitPreview if enabling/disabling while in preview mode', () => {
             window.isPreviewingSeason = true;
-            setSeasonalAutomation(true);
+            window.setSeasonalAutomation(true);
             expect(handleExitPreviewSpy).toHaveBeenCalled();
             expect(applySeasonalLogicSpy).toHaveBeenCalled();
         });
@@ -495,7 +498,7 @@ describe('Seasonal Engine Logic', () => {
         test('should set hemisphere to "southern", save, and apply logic if automation is on', () => {
             window.seasonalAutomationEnabled = true;
             window.isPreviewingSeason = false;
-            setSelectedHemisphere('southern');
+            window.setSelectedHemisphere('southern');
 
             expect(window.selectedHemisphere).toBe('southern');
             expect(localStorageMock.setItem).toHaveBeenCalledWith('seasonalHemisphere', 'southern');
@@ -506,7 +509,7 @@ describe('Seasonal Engine Logic', () => {
         test('should set hemisphere to "northern", save, but not apply logic if automation is off', () => {
             window.seasonalAutomationEnabled = false;
             window.isPreviewingSeason = false;
-            setSelectedHemisphere('northern');
+            window.setSelectedHemisphere('northern');
 
             expect(window.selectedHemisphere).toBe('northern');
             expect(localStorageMock.setItem).toHaveBeenCalledWith('seasonalHemisphere', 'northern');
@@ -516,7 +519,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should not change hemisphere for an invalid value', () => {
             const initialHemisphere = window.selectedHemisphere;
-            setSelectedHemisphere('invalidValue');
+            window.setSelectedHemisphere('invalidValue');
 
             expect(window.selectedHemisphere).toBe(initialHemisphere);
             expect(localStorageMock.setItem).not.toHaveBeenCalled();
@@ -526,7 +529,7 @@ describe('Seasonal Engine Logic', () => {
         test('should call handleExitPreview if changing hemisphere while in preview mode', () => {
             window.isPreviewingSeason = true;
             window.seasonalAutomationEnabled = true;
-            setSelectedHemisphere('southern');
+            window.setSelectedHemisphere('southern');
 
             expect(handleExitPreviewSpy).toHaveBeenCalled();
             expect(applySeasonalLogicSpy).toHaveBeenCalled();
@@ -566,7 +569,7 @@ describe('Seasonal Engine Logic', () => {
                 return null;
             });
 
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
 
             expect(localStorageMock.getItem).toHaveBeenCalledWith('seasonalAutomationEnabled');
             expect(localStorageMock.getItem).toHaveBeenCalledWith('seasonalHemisphere');
@@ -576,25 +579,25 @@ describe('Seasonal Engine Logic', () => {
 
         test('should use default settings if localStorage is empty', () => {
             localStorageMock.getItem.mockReturnValue(null);
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
             expect(window.seasonalAutomationEnabled).toBe(false);
             expect(window.selectedHemisphere).toBe('northern');
         });
 
         test('should set radio button checked state based on loaded hemisphere', () => {
             localStorageMock.getItem.mockImplementation(key => key === 'seasonalHemisphere' ? 'southern' : null);
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
             expect(southernRadio.checked).toBe(true);
             expect(northernRadio.checked).toBe(false);
 
             localStorageMock.getItem.mockImplementation(key => key === 'seasonalHemisphere' ? 'northern' : null);
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
             expect(northernRadio.checked).toBe(true);
             expect(southernRadio.checked).toBe(false);
         });
 
         test('should call initializeSeasonalControls', () => {
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
             expect(initializeSeasonalControlsSpy).toHaveBeenCalled();
         });
 
@@ -606,7 +609,7 @@ describe('Seasonal Engine Logic', () => {
             const originalSetSelectedHemisphere = window.setSelectedHemisphere;
             window.setSelectedHemisphere = jest.fn();
 
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
 
             expect(addEventListenerSpyNorth).toHaveBeenCalledWith('change', expect.any(Function));
             expect(addEventListenerSpySouth).toHaveBeenCalledWith('change', expect.any(Function));
@@ -628,7 +631,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should warn if hemisphere radio buttons are not found', () => {
             document.body.innerHTML = '';
-            initializeSeasonalSettings();
+            window.initializeSeasonalSettings();
             expect(console.warn).toHaveBeenCalledWith("Hemisphere radio buttons not found for event listeners.");
         });
     });
@@ -677,7 +680,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should add event listener to previous season button and call applySeasonalLogic on click', () => {
             const addEventListenerSpy = jest.spyOn(prevBtn, 'addEventListener');
-            initializeSeasonalControls();
+            window.initializeSeasonalControls();
             expect(addEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
 
             const callback = addEventListenerSpy.mock.calls[0][1];
@@ -693,7 +696,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should add event listener to next season button and call applySeasonalLogic on click', () => {
             const addEventListenerSpy = jest.spyOn(nextBtn, 'addEventListener');
-            initializeSeasonalControls();
+            window.initializeSeasonalControls();
             expect(addEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
 
             const callback = addEventListenerSpy.mock.calls[0][1];
@@ -707,7 +710,7 @@ describe('Seasonal Engine Logic', () => {
 
         test('should add event listener to exit preview button and call handleExitPreview on click', () => {
             const addEventListenerSpy = jest.spyOn(exitBtn, 'addEventListener');
-            initializeSeasonalControls();
+            window.initializeSeasonalControls();
             expect(addEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
 
             const callback = addEventListenerSpy.mock.calls[0][1];
@@ -719,7 +722,7 @@ describe('Seasonal Engine Logic', () => {
         test('should correctly temporarily disable seasonalAutomation if it was on when starting preview', () => {
             window.seasonalAutomationEnabled = true;
             const addEventListenerSpy = jest.spyOn(nextBtn, 'addEventListener');
-            initializeSeasonalControls();
+            window.initializeSeasonalControls();
 
             const callback = addEventListenerSpy.mock.calls[0][1];
             callback();
@@ -736,7 +739,7 @@ describe('Seasonal Engine Logic', () => {
             const nextSpy = jest.spyOn(nextBtn, 'addEventListener');
             const exitSpy = jest.spyOn(exitBtn, 'addEventListener');
 
-            initializeSeasonalControls();
+            window.initializeSeasonalControls();
 
             expect(prevSpy).toHaveBeenCalled();
             expect(nextSpy).toHaveBeenCalled();
@@ -750,7 +753,7 @@ describe('Seasonal Engine Logic', () => {
         test('should not throw error if control buttons are missing', () => {
             document.body.innerHTML = '<div id="seasonal-preview-info"></div>';
             expect(() => {
-                initializeSeasonalControls();
+                window.initializeSeasonalControls();
             }).not.toThrow();
             expect(applySeasonalLogicSpy).not.toHaveBeenCalled();
             expect(handleExitPreviewSpy).not.toHaveBeenCalled();
