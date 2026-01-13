@@ -72,24 +72,33 @@ function initializeGallery() {
         toggleRotationBtn = document.getElementById('toggle-rotation');
         nextImageBtn = document.getElementById('next-image');
         prevImageBtn = document.getElementById('prev-image');
-        imageInfoOverlayElement = document.getElementById('image-info-overlay');
-        galleryControlsElement = document.getElementById('gallery-controls');
+        imageInfoOverlayElement = document.getElementById('image-info-compact');
+        // Fallback for older HTML structure if 'image-info-compact' is missing but 'image-info-overlay' exists
+        if (!imageInfoOverlayElement) {
+            imageInfoOverlayElement = document.getElementById('image-info-overlay');
+        }
 
-        if (!backgroundGalleryElement || !categoryFilterElement || !toggleRotationBtn || !nextImageBtn || !prevImageBtn || !imageInfoOverlayElement || !galleryControlsElement) {
-            console.log('Init Check Failed:', {
+        galleryControlsElement = document.getElementById('gallery-controls');
+        // If the new bar is used, it might have a different ID in some versions, but we aliased it in HTML.
+        // Also check for the specific new ID just in case the alias script hasn't run yet or failed.
+        if (!galleryControlsElement) {
+             galleryControlsElement = document.getElementById('gallery-controls-bar');
+        }
+
+        if (!backgroundGalleryElement || !categoryFilterElement || !toggleRotationBtn || !nextImageBtn || !prevImageBtn || !galleryControlsElement) {
+             console.log('Init Check Failed:', {
                 bg: !!backgroundGalleryElement,
                 filter: !!categoryFilterElement,
                 toggle: !!toggleRotationBtn,
                 next: !!nextImageBtn,
                 prev: !!prevImageBtn,
-                info: !!imageInfoOverlayElement,
                 controls: !!galleryControlsElement
             });
             console.error("One or more gallery DOM elements are missing. Initialization aborted.");
             return;
         }
 
-        imageInfoOverlayElement.setAttribute('aria-live', 'polite');
+        if(imageInfoOverlayElement) imageInfoOverlayElement.setAttribute('aria-live', 'polite');
 
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             console.log("Reduced motion is preferred. CSS handles transition disabling.");
@@ -128,19 +137,34 @@ function initializeGallery() {
         lightboxPrevBtnElement = document.getElementById('lightbox-prev-btn');
         lightboxNextBtnElement = document.getElementById('lightbox-next-btn');
 
+        // New Info Toggle Button
+        const infoToggleBtn = document.getElementById('info-toggle-btn');
+
         if (!lightboxOverlayElement || !lightboxContainerElement || !lightboxImageElement || !lightboxCloseBtnElement) {
             console.error("Essential lightbox DOM elements are missing. Lightbox functionality will be disabled.");
         } else {
             lightboxCloseBtnElement.addEventListener('click', closeLightbox);
+
+            const openLightboxHandler = () => {
+                if (imageGalleryState.currentImageIndex !== -1 && galleryImages[imageGalleryState.currentImageIndex]) {
+                    openLightbox(galleryImages[imageGalleryState.currentImageIndex]);
+                }
+            };
+
             if (imageInfoOverlayElement) {
-                imageInfoOverlayElement.addEventListener('click', () => {
-                    if (imageGalleryState.currentImageIndex !== -1 && galleryImages[imageGalleryState.currentImageIndex]) {
-                        openLightbox(galleryImages[imageGalleryState.currentImageIndex]);
-                    }
-                });
+                imageInfoOverlayElement.addEventListener('click', openLightboxHandler);
                 imageInfoOverlayElement.style.cursor = 'pointer';
+            }
+
+            if (infoToggleBtn) {
+                infoToggleBtn.addEventListener('click', openLightboxHandler);
+            }
+
+            if (lightboxPrevBtnElement && lightboxNextBtnElement) {
+                lightboxPrevBtnElement.addEventListener('click', showPreviousImageInLightbox);
+                lightboxNextBtnElement.addEventListener('click', showNextImageInLightbox);
             } else {
-                console.warn("Image info overlay element not found. Cannot attach lightbox trigger.");
+                console.warn("Lightbox navigation buttons not found. Navigation will be disabled.");
             }
 
             if (lightboxPrevBtnElement && lightboxNextBtnElement) {
@@ -197,11 +221,23 @@ async function loadImage(imageObject, containerElement, isPreload) {
         if (!isPreload) {
             containerElement.style.backgroundImage = `url('${imageObject.path}')`;
             containerElement.style.backgroundColor = '';
-            if (imageObject && imageObject.title && imageObject.location) {
-                imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
+
+            if (imageObject && imageObject.title && imageObject.location && imageInfoOverlayElement) {
+                // Check if we are using the new compact structure
+                const titleEl = imageInfoOverlayElement.querySelector('.info-title');
+                const locationEl = imageInfoOverlayElement.querySelector('.info-location');
+
+                if (titleEl && locationEl) {
+                    titleEl.textContent = imageObject.title;
+                    locationEl.textContent = imageObject.location;
+                } else {
+                    // Fallback to old innerHTML method
+                    imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
+                }
                 imageInfoOverlayElement.classList.add('visible');
-            } else {
-                imageInfoOverlayElement.classList.remove('visible');
+                // Ensure parent or controls bar is visible if needed, but usually handled by mousemove
+            } else if (imageInfoOverlayElement) {
+                 imageInfoOverlayElement.classList.remove('visible');
             }
         } else {
             console.log(`Preloaded: ${imageObject.title} from ${imageObject.path}`);
@@ -222,7 +258,7 @@ function handleImageLoadError(containerElement) {
         containerElement.style.backgroundImage = 'none';
         containerElement.style.backgroundColor = '#E0E0E0';
     }
-    imageInfoOverlayElement.classList.remove('visible');
+    if(imageInfoOverlayElement) imageInfoOverlayElement.classList.remove('visible');
     if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
         console.log("Attempting to load next image after error...");
         stopRotation();
@@ -339,7 +375,12 @@ function handleToggleRotation() {
         stopRotation();
         imageGalleryState.isPlaying = false;
         if (toggleRotationBtn) {
-            toggleRotationBtn.textContent = 'Resume';
+            // Check if using icon-based button (innerHTML) or text
+            if (toggleRotationBtn.querySelector('i')) {
+                toggleRotationBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                toggleRotationBtn.textContent = 'Resume';
+            }
             toggleRotationBtn.setAttribute('aria-label', 'Resume image rotation');
         }
     } else {
@@ -348,7 +389,11 @@ function handleToggleRotation() {
             if (imageGalleryState.isPlaying) startRotation();
         });
         if (toggleRotationBtn) {
-            toggleRotationBtn.textContent = 'Pause';
+            if (toggleRotationBtn.querySelector('i')) {
+                toggleRotationBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                toggleRotationBtn.textContent = 'Pause';
+            }
             toggleRotationBtn.setAttribute('aria-label', 'Pause image rotation');
         }
     }
@@ -582,8 +627,13 @@ function loadUserPreferences() {
                 imageGalleryState.isPlaying = true;
             }
             if (toggleRotationBtn) {
-                toggleRotationBtn.textContent = imageGalleryState.isPlaying ? 'Pause' : 'Resume';
-                toggleRotationBtn.setAttribute('aria-label', imageGalleryState.isPlaying ? 'Pause image rotation' : 'Resume image rotation');
+                const isPlaying = imageGalleryState.isPlaying;
+                if (toggleRotationBtn.querySelector('i')) {
+                    toggleRotationBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+                } else {
+                    toggleRotationBtn.textContent = isPlaying ? 'Pause' : 'Resume';
+                }
+                toggleRotationBtn.setAttribute('aria-label', isPlaying ? 'Pause image rotation' : 'Resume image rotation');
             }
         }
     } catch (error) {
