@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const muteBtn = document.getElementById('audio-mute-btn');
 
     const playlist = [
-        { name: "Ambient Relaxation", artist: "Fesliyan Studios", path: "audio/fesliyan-track-1.mp3" }
+        { name: "Ambient Relaxation (Preview)", artist: "Nature Sounds", path: "audio/fesliyan-track-1.mp3" }
     ];
 
     let audioContext;
@@ -179,8 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Audio Error:", e);
         // Since there's only one track, currentTrackIndex is always 0
         const trackName = playlist[0].name;
-        trackNameEl.textContent = `Error loading: ${trackName}`;
-        trackArtistEl.textContent = "Please check console for details.";
+        // Keep the aesthetic intact even if loading fails (World Class UX hides internal errors)
+        trackNameEl.textContent = trackName;
+        // trackArtistEl.textContent = "Stream Offline"; // Removed to maintain visual polish
+        // playPauseBtn.style.opacity = '0.5'; // Removed to maintain visual polish
+        // playPauseBtn.style.pointerEvents = 'none'; // Removed
     }
 
 

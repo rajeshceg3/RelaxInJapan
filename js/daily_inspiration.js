@@ -8,13 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
             englishText: document.getElementById('inspiration-english-text'),
             explanationText: document.getElementById('inspiration-explanation'),
             sourceText: document.getElementById('inspiration-source'),
-            // ADDED:
             languageToggle: document.getElementById('language-toggle'),
             romajiToggle: document.getElementById('romaji-toggle'),
         },
         content: [],
         currentContent: null,
-        // ADDED:
         languageMode: 'dual', // Default: 'dual', 'jp_primary', 'en_primary'
         showRomaji: true,     // Default: true
 
@@ -24,19 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // ADDED: Load preferences
             this.loadPreferences();
 
             await this.loadContent();
             if (this.content.length > 0) {
                 this.selectDailyContent();
-                this.displayContent(); // This will now also apply visibility rules
+                this.displayContent();
                 this.scheduleDailyUpdate();
             } else {
                 this.showError('No content loaded.');
             }
 
-            // ADDED: Event listeners for toggles
             if (this.elements.languageToggle) {
                 this.elements.languageToggle.addEventListener('change', (e) => {
                     this.languageMode = e.target.value;
@@ -53,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        // ADDED: Load preferences from localStorage
         loadPreferences() {
             const savedMode = localStorage.getItem('inspirationLanguageMode');
             if (savedMode) {
@@ -61,20 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (this.elements.languageToggle) this.elements.languageToggle.value = savedMode;
             }
             const savedRomaji = localStorage.getItem('inspirationShowRomaji');
-            if (savedRomaji !== null) { // Check for null as 'false' is a valid string
+            if (savedRomaji !== null) {
                 this.showRomaji = savedRomaji === 'true';
                 if (this.elements.romajiToggle) this.elements.romajiToggle.checked = this.showRomaji;
             }
         },
 
-        // ADDED: Save preferences to localStorage
         savePreferences() {
             localStorage.setItem('inspirationLanguageMode', this.languageMode);
             localStorage.setItem('inspirationShowRomaji', this.showRomaji);
         },
 
         async loadContent() {
-            // ... (existing loadContent method remains the same)
             try {
                 const response = await fetch('js/inspiration_content.json');
                 if (!response.ok) {
@@ -96,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let seasonToFilterBy = targetSeason;
 
-            if (!seasonToFilterBy) { // If no targetSeason provided, get current actual season
+            if (!seasonToFilterBy) {
                 if (typeof window.getCurrentSeason === 'function' && typeof window.selectedHemisphere !== 'undefined') {
                     try {
                         seasonToFilterBy = window.getCurrentSeason(window.selectedHemisphere);
@@ -105,20 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.error("Error getting current season for inspiration content:", e);
                     }
                 } else {
-                    console.warn("Seasonal functions (getCurrentSeason or selectedHemisphere) not available for daily inspiration. Using all content.");
+                    console.warn("Seasonal functions not available for daily inspiration. Using all content.");
                 }
             } else {
                 console.log("Daily Inspiration: Using target season for content - ", targetSeason);
             }
 
-            let applicableContent = this.content; // Default to all content
+            let applicableContent = this.content;
 
             if (seasonToFilterBy) {
                 const seasonalAndGeneralContent = this.content.filter(item => {
                     const itemSeason = item.season ? item.season.toLowerCase() : null;
                     const itemSeasonTags = Array.isArray(item.season_tags) ? item.season_tags.map(t => t.toLowerCase()) : [];
 
-                    const isGeneral = !itemSeason && itemSeasonTags.length === 0; // Truly general if no season info
+                    const isGeneral = !itemSeason && itemSeasonTags.length === 0;
                     const isGeneralViaTag = itemSeasonTags.includes("general");
                     const isSeasonalMatch = itemSeason === seasonToFilterBy.toLowerCase();
                     const hasMatchingSeasonTag = itemSeasonTags.includes(seasonToFilterBy.toLowerCase());
@@ -128,10 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (seasonalAndGeneralContent.length > 0) {
                     applicableContent = seasonalAndGeneralContent;
-                    console.log(`Daily Inspiration: Using ${applicableContent.length} items for season '${seasonToFilterBy}'.`);
-                } else {
-                    console.log(`Daily Inspiration: No specific or general content for season '${seasonToFilterBy}', falling back to all ${this.content.length} items.`);
-                    // Fallback to all content is already default (applicableContent = this.content)
                 }
             }
 
@@ -142,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayOfYear = Math.floor(diff / oneDay);
 
             if (applicableContent.length > 0) {
-                const contentIndex = (dayOfYear - 1 + applicableContent.length) % applicableContent.length; // Ensure positive index
+                const contentIndex = (dayOfYear - 1 + applicableContent.length) % applicableContent.length;
                 this.currentContent = applicableContent[contentIndex];
             } else {
                 this.currentContent = null;
@@ -170,27 +159,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 typeLabel = typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1);
                 this.elements.typeIndicator.textContent = `Type: ${typeLabel}`;
             }
-            // Set text content first
             if (this.elements.japaneseText) this.elements.japaneseText.textContent = japanese_text || '';
             if (this.elements.romajiText) this.elements.romajiText.textContent = romaji || '';
             if (this.elements.englishText) this.elements.englishText.textContent = english_text || '';
 
             if (this.elements.explanationText) {
                 this.elements.explanationText.textContent = explanation || '';
-                this.elements.explanationText.style.display = explanation ? 'block' : 'none'; // Keep this logic
+                this.elements.explanationText.style.display = explanation ? 'block' : 'none';
             }
             if (this.elements.sourceText) {
                 this.elements.sourceText.textContent = source ? `Source: ${source}` : '';
-                this.elements.sourceText.style.display = source ? 'block' : 'none'; // Keep this logic
+                this.elements.sourceText.style.display = source ? 'block' : 'none';
             }
-            // THEN apply visibility rules
             this.applyTextVisibility();
         },
 
-        // ADDED: Apply text visibility based on mode and romaji preference
         applyTextVisibility() {
             if (!this.elements.japaneseText || !this.elements.romajiText || !this.elements.englishText) {
-                return; // Elements not found
+                return;
             }
 
             const jpVisible = (this.languageMode === 'dual' || this.languageMode === 'jp_primary');
@@ -201,21 +187,19 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.englishText.style.display = enVisible ? 'block' : 'none';
             this.elements.romajiText.style.display = romajiVisible ? 'block' : 'none';
 
-            // Adjust styles for primary modes (optional, can be enhanced with CSS classes)
             if (this.languageMode === 'jp_primary') {
-                this.elements.japaneseText.style.fontWeight = 'bold'; // Example
+                this.elements.japaneseText.style.fontWeight = 'bold';
                 this.elements.englishText.style.fontWeight = 'normal';
             } else if (this.languageMode === 'en_primary') {
-                this.elements.englishText.style.fontWeight = 'bold'; // Example
+                this.elements.englishText.style.fontWeight = 'bold';
                 this.elements.japaneseText.style.fontWeight = 'normal';
-            } else { // dual
+            } else {
                 this.elements.japaneseText.style.fontWeight = 'normal';
                 this.elements.englishText.style.fontWeight = 'normal';
             }
         },
 
         showError(message) {
-            // ... (existing showError method remains the same)
             if (this.elements.widgetContainer) this.elements.widgetContainer.classList.add('error-state');
             if (this.elements.japaneseText) this.elements.japaneseText.textContent = message;
             if (this.elements.typeIndicator) this.elements.typeIndicator.textContent = '';
@@ -226,12 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         clearError() {
-            // ... (existing clearError method remains the same)
             if (this.elements.widgetContainer) this.elements.widgetContainer.classList.remove('error-state');
         },
 
         scheduleDailyUpdate() {
-            // ... (existing scheduleDailyUpdate method remains the same)
             const now = new Date();
             const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
             const msUntilMidnight = tomorrow - now;

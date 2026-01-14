@@ -234,6 +234,11 @@ async function loadImage(imageObject, containerElement, isPreload) {
                     // Fallback to old innerHTML method
                     imageInfoOverlayElement.innerHTML = `<p><strong>${imageObject.title}</strong><br>${imageObject.location}</p>`;
                 }
+        // Ensure "Loading..." is removed
+        const loadingText = imageInfoOverlayElement.querySelector('.info-title');
+        if (loadingText && loadingText.textContent === 'Loading...') {
+             loadingText.textContent = imageObject.title;
+        }
                 imageInfoOverlayElement.classList.add('visible');
                 // Ensure parent or controls bar is visible if needed, but usually handled by mousemove
             } else if (imageInfoOverlayElement) {
@@ -256,9 +261,17 @@ function handleImageLoadError(containerElement) {
     console.warn("Failed to load image. Displaying fallback and attempting to skip.");
     if (containerElement) {
         containerElement.style.backgroundImage = 'none';
-        containerElement.style.backgroundColor = '#E0E0E0';
+        containerElement.style.backgroundColor = '#f0f0f0'; // Lighter grey for better look
     }
-    if(imageInfoOverlayElement) imageInfoOverlayElement.classList.remove('visible');
+    // Update text so it doesn't say "Loading..." forever on error
+    if (imageInfoOverlayElement) {
+         const titleEl = imageInfoOverlayElement.querySelector('.info-title');
+         const locationEl = imageInfoOverlayElement.querySelector('.info-location');
+         if (titleEl) titleEl.textContent = "Serene Views";
+         if (locationEl) locationEl.textContent = "";
+         imageInfoOverlayElement.classList.remove('visible');
+    }
+
     if (imageGalleryState.isPlaying && imageGalleryState.userPreferences.autoRotate) {
         console.log("Attempting to load next image after error...");
         stopRotation();
