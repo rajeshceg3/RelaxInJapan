@@ -198,18 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setVolume();
 
     let inactivityTimeout;
-    const INACTIVITY_DELAY = 10000;
+    const INACTIVITY_DELAY = 5000; // Shorter delay for better UX
 
     function showControlPanel() {
-        if (audioPlayerContainer.classList.contains('hidden-by-inactive')) {
-            audioPlayerContainer.classList.remove('hidden-by-inactive');
+        if (audioPlayerContainer.classList.contains('player-hidden')) {
+            audioPlayerContainer.classList.remove('player-hidden');
         }
         resetInactivityTimer();
     }
 
     function hideControlPanel() {
         if (isPlaying) {
-             audioPlayerContainer.classList.add('hidden-by-inactive');
+             audioPlayerContainer.classList.add('player-hidden');
         }
     }
 
@@ -221,10 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (audioPlayerContainer) {
+        // Initialize state
         if (isPlaying) {
             resetInactivityTimer();
         } else {
-             audioPlayerContainer.classList.remove('hidden-by-inactive');
+             audioPlayerContainer.classList.remove('player-hidden');
         }
 
         audioPlayerContainer.addEventListener('mousemove', showControlPanel);
@@ -246,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resetInactivityTimer();
         } else {
             clearTimeout(inactivityTimeout);
-            audioPlayerContainer.classList.remove('hidden-by-inactive');
+            audioPlayerContainer.classList.remove('player-hidden');
         }
     }
     // Re-assign playPauseBtn listener to the new wrapped function
@@ -260,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!audioContext) initAudioContext();
 
         if (audioPlayerContainer) {
-            audioPlayerContainer.classList.remove('hidden-by-inactive');
+            audioPlayerContainer.classList.remove('player-hidden');
         }
 
         loadTrack(currentTrackIndex); // Load the single track (index 0)

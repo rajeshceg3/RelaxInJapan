@@ -178,12 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             modalTitle.textContent = 'Add New Link';
         }
-        quickLinkModal.classList.add('visible');
+        quickLinkModal.classList.remove('hidden'); // Show modal
     }
 
     function closeModal() {
         quickLinkForm.reset();
-        quickLinkModal.classList.remove('visible');
+        quickLinkModal.classList.add('hidden'); // Hide modal
     }
 
     if(addLinkBtn) addLinkBtn.addEventListener('click', () => openModal('add'));
