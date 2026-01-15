@@ -217,7 +217,7 @@ function applySeasonalLogic() {
     let isCurrentlyPreviewing = isPreviewingSeason; // Capture current preview state for this application
 
     if (isCurrentlyPreviewing) {
-        seasonToApply = getSeasonByOffset(previewSeasonOffset, new Date(), window.selectedHemisphere);
+        seasonToApply = window.getSeasonByOffset(previewSeasonOffset, new Date(), window.selectedHemisphere);
         console.log(`Previewing season: ${seasonToApply} (Offset: ${previewSeasonOffset})`);
     } else { // Applying actual current season based on automation or initial load
         if (!window.seasonalAutomationEnabled) {
@@ -225,7 +225,7 @@ function applySeasonalLogic() {
             // If exiting preview and automation was off, theme should have been restored by handleExitPreview
             return;
         }
-        seasonToApply = getSeasonForDate(new Date(), window.selectedHemisphere);
+        seasonToApply = window.getSeasonForDate(new Date(), window.selectedHemisphere);
         console.log(`Applying actual season: ${seasonToApply} for hemisphere: ${window.selectedHemisphere}`);
     }
 
@@ -233,7 +233,7 @@ function applySeasonalLogic() {
 
     if (isCurrentlyPreviewing) {
         // Preview logic remains largely the same: apply the target season directly without transition
-        applyEffectsForSeason(seasonToApply, true);
+        window.applyEffectsForSeason(seasonToApply, true);
         return;
     }
 
@@ -241,7 +241,7 @@ function applySeasonalLogic() {
 
     // If previewing, apply effects directly and skip transition logic
     if (isCurrentlyPreviewing) {
-        applyEffectsForSeason(seasonToApply, true);
+        window.applyEffectsForSeason(seasonToApply, true);
         // Ensure any CSS variables from a previous transition are cleared if we enter preview mode
         CSS_VARIABLES_TO_TRANSITION.forEach(varName => document.documentElement.style.removeProperty(varName));
         // Ensure body classes are reset/reapplied correctly for the previewed theme
@@ -263,7 +263,7 @@ function applySeasonalLogic() {
     const hemisphere = window.selectedHemisphere;
     const boundaries = SEASON_BOUNDARIES[hemisphere];
 
-    let currentSeasonName = getSeasonForDate(currentDate, hemisphere);
+    let currentSeasonName = window.getSeasonForDate(currentDate, hemisphere);
     // Define the canonical order of seasons for progressing
     const seasonCycle = ['spring', 'summer', 'autumn', 'winter'];
 
@@ -489,14 +489,14 @@ function handleExitPreview() {
 
 function setSeasonalAutomation(enabled) {
     if (isPreviewingSeason) {
-        handleExitPreview();
+        window.handleExitPreview();
     }
     window.seasonalAutomationEnabled = !!enabled;
     localStorage.setItem(SEASONAL_AUTOMATION_ENABLED_KEY, window.seasonalAutomationEnabled);
     console.log(`Seasonal automation ${window.seasonalAutomationEnabled ? 'enabled' : 'disabled'}.`);
 
     if (window.seasonalAutomationEnabled) {
-        applySeasonalLogic(); // This will now use the transition logic if applicable
+        window.applySeasonalLogic(); // This will now use the transition logic if applicable
     } else {
         // If automation is disabled, clear any interpolated styles and let theme-switcher handle theme
         clearInterpolatedStyles();
@@ -511,14 +511,14 @@ function setSeasonalAutomation(enabled) {
 
 function setSelectedHemisphere(hemisphere) {
     if (isPreviewingSeason) {
-        handleExitPreview();
+        window.handleExitPreview();
     }
     if (hemisphere === 'northern' || hemisphere === 'southern') {
         window.selectedHemisphere = hemisphere;
         localStorage.setItem(SEASONAL_HEMISPHERE_KEY, window.selectedHemisphere);
         console.log(`Hemisphere set to: ${window.selectedHemisphere}`);
         if (window.seasonalAutomationEnabled && !isPreviewingSeason) { // Don't auto-apply if exiting preview handled it
-            applySeasonalLogic();
+            window.applySeasonalLogic();
         }
     }
 }
@@ -545,7 +545,7 @@ function initializeSeasonalControls() {
                 }
             }
             previewSeasonOffset--;
-            applySeasonalLogic();
+            window.applySeasonalLogic();
         });
     }
 
@@ -563,12 +563,12 @@ function initializeSeasonalControls() {
                 }
             }
             previewSeasonOffset++;
-            applySeasonalLogic();
+            window.applySeasonalLogic();
         });
     }
 
     if (exitSeasonalPreviewBtnEl) {
-        exitSeasonalPreviewBtnEl.addEventListener('click', handleExitPreview);
+        exitSeasonalPreviewBtnEl.addEventListener('click', window.handleExitPreview);
     }
 }
 
@@ -591,19 +591,19 @@ function initializeSeasonalSettings() {
             southernRadio.checked = true;
         }
 
-        northernRadio.addEventListener('change', () => setSelectedHemisphere('northern'));
-        southernRadio.addEventListener('change', () => setSelectedHemisphere('southern'));
+        northernRadio.addEventListener('change', () => window.setSelectedHemisphere('northern'));
+        southernRadio.addEventListener('change', () => window.setSelectedHemisphere('southern'));
     } else {
         console.warn("Hemisphere radio buttons not found for event listeners.");
     }
 
-    initializeSeasonalControls(); // Setup listeners for preview buttons
-    applySeasonalLogic(); // Apply seasonal logic on initial load
+    window.initializeSeasonalControls(); // Setup listeners for preview buttons
+    window.applySeasonalLogic(); // Apply seasonal logic on initial load
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    initializeSeasonalSettings();
+    window.initializeSeasonalSettings();
     // applySeasonalLogic(); // Moved into initializeSeasonalSettings to ensure it runs after all setup
 });
 
@@ -623,3 +623,40 @@ window.getSeasonSpecificLayoutClass = function(season) { // Exposed for layout-s
         default: return 'layout-sf-spring'; // Fallback, e.g. for spring
     }
 };
+
+// Expose internal functions for testing purposes
+window.initializeSeasonalSettings = initializeSeasonalSettings;
+window.initializeSeasonalControls = initializeSeasonalControls;
+window.handleExitPreview = handleExitPreview;
+window.getSeasonByOffset = getSeasonByOffset;
+window.mapSeasonToTheme = mapSeasonToTheme;
+window.applyEffectsForSeason = applyEffectsForSeason;
+
+window.setSelectedHemisphere = setSelectedHemisphere;
+
+// Expose internal state variables via getters/setters for testing
+Object.defineProperty(window, 'isPreviewingSeason', {
+    get() { return isPreviewingSeason; },
+    set(val) { isPreviewingSeason = val; },
+    configurable: true
+});
+Object.defineProperty(window, 'previewSeasonOffset', {
+    get() { return previewSeasonOffset; },
+    set(val) { previewSeasonOffset = val; },
+    configurable: true
+});
+Object.defineProperty(window, 'originalUserTheme', {
+    get() { return originalUserTheme; },
+    set(val) { originalUserTheme = val; },
+    configurable: true
+});
+Object.defineProperty(window, 'originalGalleryCategory', {
+    get() { return originalGalleryCategory; },
+    set(val) { originalGalleryCategory = val; },
+    configurable: true
+});
+Object.defineProperty(window, 'originalSeasonalAutomationState', {
+    get() { return originalSeasonalAutomationState; },
+    set(val) { originalSeasonalAutomationState = val; },
+    configurable: true
+});
