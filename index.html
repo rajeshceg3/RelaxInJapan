@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Use the new Polished CSS -->
+    <link rel="stylesheet" href="css/polished.css">
+    <!-- Keep meditation-timer linked but it now extends polished.css -->
     <link rel="stylesheet" href="css/meditation-timer.css">
 </head>
 <body>
@@ -236,7 +238,16 @@
         <div id="pomodoro-phase-display" class="widget-subsection-title hidden"></div>
         <div class="pomodoro-controls widget-section collapsed-section">
             <button id="toggle-pomodoro-btn" class="btn-text">Pomodoro Mode</button>
-            <!-- ... content ... -->
+            <div id="pomodoro-settings" class="hidden">
+                 <label for="pomodoro-focus-input">Focus (min):</label>
+                 <input type="number" id="pomodoro-focus-input" value="25" min="1">
+                 <label for="pomodoro-short-break-input">Short Break (min):</label>
+                 <input type="number" id="pomodoro-short-break-input" value="5" min="1">
+                 <label for="pomodoro-long-break-input">Long Break (min):</label>
+                 <input type="number" id="pomodoro-long-break-input" value="15" min="1">
+                 <label for="pomodoro-cycles-input">Cycles:</label>
+                 <input type="number" id="pomodoro-cycles-input" value="4" min="1">
+            </div>
         </div>
         <div class="widget-section sound-settings collapsed-section">
             <h4>Sound & Volume</h4>
@@ -249,6 +260,15 @@
                 <button id="preview-sound-btn" class="icon-btn"><i class="fas fa-volume-up"></i></button>
             </div>
              <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <!-- Breathing Guide Section -->
+        <div id="breathing-guide-container">
+             <h4>Breathing Guide</h4>
+             <button id="toggle-breathing-guide-btn">Start Breathing</button>
+             <div id="breathing-anim-area" class="hidden">
+                 <div id="breathing-circle"></div>
+                 <div id="breathing-text">Inhale</div>
+             </div>
         </div>
     </div>
 
@@ -297,7 +317,7 @@
     </div>
 
     <!-- Redesigned Gallery Controls -->
-    <div id="gallery-controls-bar">
+    <div id="gallery-controls">
         <div class="controls-left">
             <div id="image-info-compact">
                  <span class="info-title">Loading...</span>
@@ -316,12 +336,6 @@
             <button id="info-toggle-btn" class="control-btn" aria-label="Info"><i class="fas fa-info-circle"></i></button>
         </div>
     </div>
-
-    <!-- Hidden original controls div to maintain JS compatibility if needed, or I will update JS to target new IDs if they changed significantly.
-         I kept IDs same where possible. 'gallery-controls' ID was used in JS. I will map old ID to new structure or update JS.
-         The JS looks for 'gallery-controls'. I will give the new bar that ID?
-         No, the previous 'gallery-controls' was a specific div. I'll use 'gallery-controls' for the new bar wrapper.
-    -->
 
     <!-- Main Audio Player Section -->
     <div id="main-audio-player-container" class="glass-panel player-floating">
@@ -365,7 +379,6 @@
                     <label for="link-url">URL</label>
                     <input type="url" id="link-url" name="link-url" required>
                 </div>
-                <!-- ... other inputs ... -->
                 <div class="form-actions">
                     <button type="button" id="cancel-link-btn" class="btn btn-text">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -384,15 +397,6 @@
             <button id="lightbox-next-btn" class="lightbox-nav-btn next" aria-label="Next">&gt;</button>
         </div>
     </div>
-
-    <!-- Important: I need to handle the ID mismatch for gallery controls since I changed the HTML structure significantly.
-         Original ID: gallery-controls. New structure uses gallery-controls-bar but I should probably rename it to gallery-controls to keep JS working.
-    -->
-    <script>
-        // Simple script to handle legacy ID mapping if needed, or I will update the ID in the HTML above.
-        // I'll update the ID in HTML to be 'gallery-controls' to match JS expectation.
-        document.getElementById('gallery-controls-bar').id = 'gallery-controls';
-    </script>
 
     <script src="js/seasonal-engine.js" defer></script>
     <script src="js/gallery.js" defer></script>
