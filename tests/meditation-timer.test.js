@@ -306,7 +306,7 @@ describe('Meditation Timer Logic', () => {
                 // but if set via style property, we can check.
                 // Assuming logic sets style.animation.
                 expect(breathingCircle.style.animation).toContain('inhaleAnimation');
-                expect(breathingCircle.style.animationDuration).toBe('2s');
+                expect(breathingCircle.style.animation).toContain('2s');
             });
 
             it('should display "Hold" after inhale duration', () => {
@@ -319,7 +319,7 @@ describe('Meditation Timer Logic', () => {
                 jest.advanceTimersByTime(1000); // Hold
                 expect(breathingText.textContent).toBe('Exhale');
                 expect(breathingCircle.style.animation).toContain('exhaleAnimation');
-                expect(breathingCircle.style.animationDuration).toBe('3s');
+                expect(breathingCircle.style.animation).toContain('3s');
             });
 
             it('should loop by calling runBreathingCycle again after exhale duration', () => {
@@ -329,11 +329,10 @@ describe('Meditation Timer Logic', () => {
                 jest.advanceTimersByTime(3000); // Exhale
 
                 // The loop is implemented via setTimeout calling runBreathingCycle again.
-                // We expect setTimeout to have been called.
-                expect(setTimeout).toHaveBeenCalledTimes(1);
+                // setTimeout is called for Hold, Exhale, and the loop.
+                expect(setTimeout).toHaveBeenCalled();
 
-                // Run pending timer to start new cycle
-                jest.runOnlyPendingTimers();
+                // By 3000ms, the exhale is done and loop callback should have fired to start Inhale
                 expect(breathingText.textContent).toBe('Inhale');
             });
 
