@@ -1,0 +1,26 @@
+[
+  {
+    "width": 320,
+    "passed": true,
+    "knownPreexistingMeditationErrors": 6,
+    "newErrors": 0
+  },
+  {
+    "width": 390,
+    "passed": true,
+    "knownPreexistingMeditationErrors": 6,
+    "newErrors": 0
+  },
+  {
+    "width": 844,
+    "passed": true,
+    "knownPreexistingMeditationErrors": 6,
+    "newErrors": 0
+  },
+  {
+    "width": 1320,
+    "passed": true,
+    "knownPreexistingMeditationErrors": 6,
+    "newErrors": 0
+  }
+]
