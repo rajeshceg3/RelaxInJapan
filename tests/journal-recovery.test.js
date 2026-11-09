@@ -15,3 +15,5 @@ test('destination storage failure leaves previous record and prior copy',()=>{co
 test('same prior key cannot overwrite recovery history',()=>{const s=store({journalEntries:'[]','journalRecoveryPrior:one':'original'});expect(()=>m.replace(s,'[]',[entry],'one')).toThrow();expect(s.getItem('journalRecoveryPrior:one')).toBe('original');});
 
 test('CI does not try an unused publishing branch or ask for write permission',()=>{const fs=require('fs');const ci=fs.readFileSync('.github/workflows/main.yml','utf8');expect(ci).not.toContain('uses: peaceiris/actions-gh-pages');expect(ci).not.toContain('contents: write');expect(ci).toContain('contents: read');expect(ci).toContain('run: npm test -- --runInBand');});
+
+test('raw envelope preserves malformed text and unpaired UTF16 code units exactly',()=>{for(const raw of [null,'{bad bytes','\ud800தமிழ்'])expect(JSON.parse(m.encodeRaw(raw)).raw).toBe(raw);expect(()=>m.parse(m.encodeRaw('[]'))).toThrow();});

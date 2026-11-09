@@ -1,1 +1,6 @@
-{malformed unchanged
+{
+  "app": "relax-in-japan-journal-raw",
+  "version": 1,
+  "storageKey": "journalEntries",
+  "raw": "{malformed unchanged"
+}
