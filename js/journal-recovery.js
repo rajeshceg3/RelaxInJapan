@@ -48,6 +48,17 @@
   document.addEventListener('DOMContentLoaded', () => {
     const file = document.getElementById('journal-backup-file');
     if (!file) return;
+    const jump=document.querySelector('.journal-jump');
+    const exit=document.getElementById('journal-exit-reading');
+    jump.addEventListener('click',event=>{
+      event.preventDefault();document.body.classList.add('journal-reading');exit.hidden=false;jump.hidden=true;
+      document.getElementById('journaling-widget').scrollIntoView({block:'start'});
+      document.getElementById('journaling-widget-title').focus({preventScroll:true});
+    });
+    exit.addEventListener('click',()=>{
+      reset();file.value='';document.getElementById('journal-recovery').open=false;
+      document.body.classList.remove('journal-reading');exit.hidden=true;jump.hidden=false;scrollTo(0,0);jump.focus();
+    });
     const status = document.getElementById('journal-recovery-status');
     const preview = document.getElementById('journal-restore-preview');
     const confirm = document.getElementById('journal-restore-confirm');

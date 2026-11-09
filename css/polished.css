@@ -969,3 +969,15 @@ body:has(#journal-recovery[open]) #main-audio-player-container {display:none!imp
 #journaling-widget #journal-mood-selector {display:flex;flex-wrap:wrap;gap:4px;}
 #journaling-widget .mood-btn {font-size:.875rem;padding:8px;}
 #journaling-widget .mood-btn.selected {background:#f1ddc8;border-color:#85502b;color:#322d25;}
+/* A temporary journal reading view makes hidden-widget layouts reachable.
+   It never changes the saved dashboard layout or opacity settings. */
+.journal-jump[hidden] {display:none!important;}
+#journal-exit-reading {font:inherit;border:0;background:transparent;cursor:pointer;min-height:44px;}
+body.journal-reading .dashboard-main {display:block!important;}
+body.journal-reading .dashboard-main>.column-sidebar,
+body.journal-reading .dashboard-main>.column-content {display:none!important;}
+body.journal-reading .dashboard-main>.column-widgets {display:block!important;width:100%;max-width:680px;margin:0 auto;flex:none!important;}
+body.journal-reading .column-widgets>:not(#journaling-widget):not(#journal-recovery) {display:none!important;}
+body.journal-reading #gallery-controls,body.journal-reading #main-audio-player-container {display:none!important;}
+body.journal-reading #journaling-widget {margin-bottom:16px;}
+body:has(#journal-recovery[open]) #journal-save-btn {background:transparent!important;color:#322d25!important;border:1px solid #8b8172;}

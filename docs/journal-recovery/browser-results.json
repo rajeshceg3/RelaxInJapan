@@ -22,5 +22,30 @@
     "passed": true,
     "knownPreexistingMeditationErrors": 6,
     "newErrors": 0
+  },
+  {
+    "layout": "default",
+    "readingViewReachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "traditional-grid",
+    "readingViewReachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "minimalist-center",
+    "readingViewReachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "asymmetrical-zen",
+    "readingViewReachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "seasonal-flow",
+    "readingViewReachable": true,
+    "savedPreferenceUnchanged": true
   }
 ]

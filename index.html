@@ -33,6 +33,7 @@
         <header class="dashboard-header glassmorphism-header">
             <h1>Serene Dashboard</h1>
             <a class="journal-jump" href="#journaling-widget">My journal</a>
+            <button id="journal-exit-reading" class="journal-jump" type="button" hidden>Back to dashboard</button>
         </header>
         <main class="dashboard-main">
             <aside class="column column-sidebar">
@@ -275,7 +276,7 @@
 
 <!-- Journaling Widget START -->
 <div id="journaling-widget" class="widget" role="complementary" aria-labelledby="journaling-widget-title">
-    <h3 id="journaling-widget-title">My Journal</h3>
+    <h3 id="journaling-widget-title" tabindex="-1">My Journal</h3>
     <p class="journal-local-note">Saved only in this browser. Download a private copy to keep it safe.</p>
     <p id="journal-save-status" role="status" aria-live="polite"></p>
     <div id="journal-entry-area">
