@@ -1,0 +1,13 @@
+{
+  "app": "relax-in-japan-links",
+  "version": 1,
+  "links": [
+    {
+      "id": "3b8a707b-033c-4667-a2bc-b81d95eec981",
+      "name": "Research",
+      "url": "https://example.com/research",
+      "icon": "📖",
+      "category": "Study"
+    }
+  ]
+}

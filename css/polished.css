@@ -981,3 +981,50 @@ body.journal-reading .column-widgets>:not(#journaling-widget):not(#journal-recov
 body.journal-reading #gallery-controls,body.journal-reading #main-audio-player-container {display:none!important;}
 body.journal-reading #journaling-widget {margin-bottom:16px;}
 body:has(#journal-recovery[open]) #journal-save-btn {background:transparent!important;color:#322d25!important;border:1px solid #8b8172;}
+
+/* Link recovery is reachable without changing the saved dashboard layout. */
+.links-jump {color:inherit;text-decoration:underline;text-underline-offset:4px;padding:12px;}
+.links-jump[hidden] {display:none!important;}
+body.links-reading .dashboard-main {display:block!important;}
+body.links-reading .dashboard-main>.column-content,
+body.links-reading .dashboard-main>.column-sidebar {display:none!important;}
+body.links-reading .dashboard-main>.column-widgets {display:block!important;width:100%;max-width:680px;margin:0 auto;flex:none!important;}
+body.links-reading .column-widgets>:not(#quick-links-panel) {display:none!important;}
+body.links-reading #quick-links-panel {display:block!important;width:100%;}
+body.links-reading #gallery-controls,body.links-reading #main-audio-player-container {display:none!important;}
+#quick-links-panel button {white-space:normal;min-height:44px;max-width:100%;}
+#quick-links-panel p,#quick-links-panel label {overflow-wrap:anywhere;line-height:1.5;}
+#quick-links-panel details {margin-top:16px;}
+#quick-links-panel summary {cursor:pointer;min-height:44px;padding:10px 0;}
+#links-restore-preview {border:1px solid #80583c;border-radius:10px;padding:14px;margin-top:12px;background:#fff5e9;color:#422f22;}
+#links-restore-preview[hidden] {display:none!important;}
+.links-recovery-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+#quick-links-panel :focus-visible,.links-jump:focus-visible {outline:3px solid #85502b;outline-offset:3px;}
+#quick-links-status:empty,#quick-link-form-status:empty {display:none;}
+#quick-link-form-status {color:#853714;background:#fff4e6;padding:10px;overflow-wrap:anywhere;}
+#quick-link-modal {overflow:auto;padding:16px;align-items:flex-start;}
+#quick-link-modal .modal-content {margin:auto;max-height:calc(100dvh - 32px);overflow:auto;width:min(480px,100%);}
+#quick-link-modal input:not([type=hidden]) {width:100%;box-sizing:border-box;}
+body.links-modal-open {overflow:hidden;}
+#links-preview-items {padding-left:20px;max-height:180px;overflow:auto;overflow-wrap:anywhere;}
+#links-exit-reading {font:inherit;border:0;background:transparent;cursor:pointer;min-height:44px;}
+#quick-links-panel button {padding:10px 14px;border:1px solid #b6afa4;border-radius:10px;background:#fff;color:#322d25;font:inherit;cursor:pointer;}
+#quick-links-panel #add-link-btn,#quick-links-panel #add-link-empty-state-btn,#quick-links-panel #links-replace-confirm {background:#85502b;color:#fff;border-color:#85502b;}
+#quick-links-panel button:disabled {background:#e2d9cd!important;color:#62594c!important;border-color:#bbb0a1!important;cursor:not-allowed;}
+#quick-links-panel:has(#links-restore-preview:not([hidden])) #add-link-btn {background:#fff;color:#322d25;}
+#links-restore-preview label {display:flex;align-items:flex-start;gap:10px;}
+#links-replace-approve {width:24px;height:24px;flex-shrink:0;margin-top:2px;}
+#quick-links-panel .quick-link-item a {color:#5f402a;text-decoration:none;min-width:0;overflow-wrap:anywhere;}
+#quick-links-panel .quick-link-item-icon {display:inline-block;margin-right:8px;}
+#quick-links-panel .quick-link-item-name {margin:4px 0;}
+#quick-links-panel .quick-link-item {padding:12px;gap:10px;}
+#quick-link-modal {position:fixed;inset:0;background:rgba(30,25,20,.5);z-index:2000;display:flex;}
+#quick-link-modal.hidden {display:none;}
+#quick-link-modal .modal-content {background:#fffaf3;padding:20px;border-radius:16px;color:#322d25;box-sizing:border-box;}
+#quick-link-modal .modal-header {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+#quick-link-modal .modal-header h4 {margin:0;}
+#quick-link-modal button {min-height:44px;min-width:44px;padding:10px 14px;}
+#quick-link-modal .form-group {margin:14px 0;}
+#quick-link-modal label {display:block;margin-bottom:5px;}
+#quick-link-modal .form-actions {display:flex;gap:10px;justify-content:flex-end;}
+#quick-link-modal button[type=submit] {background:#85502b;color:#fff;border:1px solid #85502b;border-radius:10px;}

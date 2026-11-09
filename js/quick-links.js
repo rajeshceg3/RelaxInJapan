@@ -21,24 +21,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const importLinksBtn = document.getElementById('import-links-btn');
 
 
+    const data = window.QuickLinkData;
+    const status = document.getElementById('quick-links-status');
+    const tell = text => { status.textContent = text; document.getElementById('quick-link-form-status').textContent=text; };
+    let expected = null, blocked = false, staged = null, readGeneration = 0;
+    const jump=document.querySelector('a.links-jump'),exit=document.getElementById('links-exit-reading');
+    jump.addEventListener('click',event=>{event.preventDefault();document.getElementById('journal-exit-reading').click();document.body.classList.add('links-reading');exit.hidden=false;jump.hidden=true;document.getElementById('quick-links-panel').scrollIntoView({block:'start'});document.getElementById('quick-links-title').focus({preventScroll:true});});
+    exit.addEventListener('click',()=>{document.body.classList.remove('links-reading');exit.hidden=true;jump.hidden=false;window.scrollTo(0,0);jump.focus();});
+    document.querySelector('a.journal-jump').addEventListener('click',()=>{document.body.classList.remove('links-reading');exit.hidden=true;jump.hidden=false;});
+    document.addEventListener('keydown',event=>{
+      if(quickLinkModal.classList.contains('hidden'))return;
+      if(event.key==='Escape')closeModal();
+      if(event.key==='Tab'){const fields=[...quickLinkModal.querySelectorAll('button,input:not([type=hidden])')].filter(e=>!e.disabled);const first=fields[0],last=fields[fields.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+    });
     let links = [];
-    let collapsedCategories = {}; // In-memory store for collapsed states
+    let collapsedCategories = Object.create(null); // In-memory store for collapsed states
 
     // TODO: Implement functions to load/save collapsedCategories from localStorage if persistence is desired
     // function loadCollapsedStates() { const s = localStorage.getItem('qlCollapsedCategories'); if(s) collapsedCategories = JSON.parse(s); }
     // function saveCollapsedStates() { localStorage.setItem('qlCollapsedCategories', JSON.stringify(collapsedCategories)); }
 
     function loadLinks() {
-        const storedLinks = localStorage.getItem('quickLinks');
-        if (storedLinks) {
-            links = JSON.parse(storedLinks);
-        }
+        try { expected=localStorage.getItem(data.KEY);links=data.local(expected); }
+        catch(e) { blocked=true;tell('Links could not be loaded: '+e.message+' Original data is unchanged. Download the raw copy before repair.'); }
+        addLinkBtn.disabled=blocked;addLinkEmptyStateBtn.disabled=blocked;
     }
-
-    function saveLinks() {
-        localStorage.setItem('quickLinks', JSON.stringify(links));
+    function saveLinks(next) {
+        if(blocked){tell('Saving is paused to keep original link data unchanged.');return false;}
+        try { expected=data.commit(localStorage,expected,next);links=next;tell('Links saved in this browser only. Download a file to keep a private copy.');return true; }
+        catch(e){tell('Not saved: '+e.message+' Your previous links and open form are still here.');return false;}
     }
-
     function renderLinks() {
         quickLinksList.innerHTML = '';
 
@@ -56,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 acc[category].push(link);
                 return acc;
-            }, {});
+            }, Object.create(null));
 
             Object.keys(groupedLinks).sort().forEach(categoryName => {
                 const categoryHeader = document.createElement('h5');
@@ -113,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const iconPlaceholder = document.createElement('span');
                     iconPlaceholder.className = 'quick-link-item-icon';
                     if (link.icon && link.icon.trim() !== '') {
-                        iconPlaceholder.textContent = link.icon.substring(0, 3);
+                        iconPlaceholder.textContent = Array.from(link.icon).slice(0,3).join('');
                     } else {
                         iconPlaceholder.textContent = link.name.charAt(0).toUpperCase();
                     }
@@ -152,9 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     deleteBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         if (confirm('Are you sure you want to remove this link?')) {
-                            links = links.filter(l => l.id !== link.id);
-                            saveLinks();
-                            renderLinks();
+                            if(saveLinks(links.filter(l => l.id !== link.id))) renderLinks();
                         }
                     });
                     controlsDiv.appendChild(deleteBtn);
@@ -166,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openModal(mode = 'add', linkToEdit = null) {
+        if(blocked)return;
+        document.getElementById('quick-link-form-status').textContent='';
         quickLinkForm.reset();
         linkIdInput.value = '';
         if (mode === 'edit' && linkToEdit) {
@@ -178,12 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             modalTitle.textContent = 'Add New Link';
         }
-        quickLinkModal.classList.remove('hidden'); // Show modal
+        quickLinkModal.classList.remove('hidden');
+        document.body.classList.add('links-modal-open');linkNameInput.focus();
     }
 
     function closeModal() {
         quickLinkForm.reset();
-        quickLinkModal.classList.add('hidden'); // Hide modal
+        quickLinkModal.classList.add('hidden');
+        document.body.classList.remove('links-modal-open');addLinkBtn.focus();
     }
 
     if(addLinkBtn) addLinkBtn.addEventListener('click', () => openModal('add'));
@@ -215,109 +229,58 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!url.match(/^https?:\/\//i) && !url.match(/^ftps?:\/\//i) && !url.match(/^\/\//i)) {
             url = 'https://' + url;
         }
-        try { new URL(url); } catch (e) {
+        try { data.safeURL(url); } catch (e) {
             alert('Invalid URL. Please enter a valid URL (e.g., https://example.com).');
             linkUrlInput.focus();
             return;
         }
 
+        let next;
         if (idToEdit) {
-            links = links.map(link => link.id === idToEdit ? { ...link, name, url, icon, category } : link);
+            next = links.map(link => link.id === idToEdit ? { ...link, name, url, icon, category } : link);
         } else {
             if (links.length >= 20) {
                 alert('You have reached the maximum of 20 links.');
                 return;
             }
-            const newLink = { id: Date.now().toString(), name, url, icon, category };
-            links.push(newLink);
+            const newLink = { id: crypto.randomUUID(), name, url, icon, category };
+            next=[...links,newLink];
         }
-        saveLinks();
-        renderLinks();
-        closeModal();
+        if(saveLinks(next)){renderLinks();closeModal();}
     });
 
     // loadCollapsedStates(); // TODO: Call before loadLinks and renderLinks if persisting
     loadLinks();
     renderLinks();
 
-    // Export Links Functionality
-    if (exportLinksBtn) {
-        exportLinksBtn.addEventListener('click', () => {
-            if (links.length === 0) {
-                alert('No links to export.');
-                return;
-            }
-            const jsonString = JSON.stringify(links, null, 2); // Pretty print JSON
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'quick-links-backup.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-    }
-
-    // Import Links Functionality
-    if (importLinksBtn && importLinksFile) {
-        importLinksBtn.addEventListener('click', () => {
-            importLinksFile.click(); // Trigger hidden file input
-        });
-
-        importLinksFile.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedLinks = JSON.parse(e.target.result);
-                    if (!Array.isArray(importedLinks)) {
-                        throw new Error('Invalid format: File content is not an array.');
-                    }
-
-                    // Basic validation of link structure (check first item if array is not empty)
-                    if (importedLinks.length > 0) {
-                        const firstLink = importedLinks[0];
-                        if (typeof firstLink.name === 'undefined' || typeof firstLink.url === 'undefined' || typeof firstLink.id === 'undefined') {
-                            // Allow missing icon and category, but id, name, url must be somewhat present
-                            throw new Error('Invalid link structure: Each link must have at least id, name, and url properties.');
-                        }
-                    }
-
-                    if (confirm('This will replace all your current links with the imported ones. Are you sure?')) {
-                        // Sanitize and map imported links, ensuring unique IDs and essential fields.
-                        // Cap at 20 links.
-                        const sanitizedLinks = importedLinks.slice(0, 20).map((link, index) => ({
-                            id: String(link.id || (Date.now().toString() + index)), // Ensure ID is a string, generate if missing
-                            name: String(link.name || 'Untitled Link'),
-                            url: String(link.url || '#'), // Default URL if missing
-                            icon: String(link.icon || ''),
-                            category: String(link.category || 'Uncategorized')
-                        }));
-
-                        links = sanitizedLinks;
-                        saveLinks();
-                        renderLinks(); // Re-render with new links
-                        alert('Links imported successfully!');
-                    }
-                } catch (error) {
-                    alert('Failed to import links: ' + error.message);
-                } finally {
-                    // Reset file input to allow importing the same file again if needed
-                    event.target.value = null;
-                }
-            };
-            reader.onerror = () => {
-                alert('Error reading file.');
-                event.target.value = null; // Reset file input on error
-            };
-            reader.readAsText(file);
-        });
-    }
+    function download(text,name){const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+    exportLinksBtn.addEventListener('click',()=>{try{download(data.encode(data.local(localStorage.getItem(data.KEY))),'relax-links-'+Date.now()+'.json');tell('Link file download requested. This is not cloud saving.');}catch(e){tell('Backup stopped: '+e.message+' Use the raw copy.');}});
+    document.getElementById('quick-links-raw').addEventListener('click',()=>{try{download(data.raw(localStorage.getItem(data.KEY)),'relax-links-original-'+Date.now()+'.json');tell('Raw-copy download requested. Exact stored text is inside its raw field; it may need repair before restore.');}catch(e){tell(e.message);}});
+    const preview=document.getElementById('links-restore-preview'),approve=document.getElementById('links-replace-approve'),replace=document.getElementById('links-replace-confirm');
+    function resetPreview(){staged=null;preview.hidden=true;approve.checked=false;replace.disabled=true;}
+    importLinksBtn.addEventListener('click',()=>importLinksFile.click());
+    importLinksFile.addEventListener('change',async()=>{
+      const generation=++readGeneration;resetPreview();const file=importLinksFile.files[0];if(!file){tell('No file selected. Nothing changed.');return;}
+      try{
+       if(file.size>data.LIMIT)throw Error('Choose a file smaller than 1 MB.');
+       const entries=data.parse(await file.text());if(generation!==readGeneration)return;
+       const raw=localStorage.getItem(data.KEY);const current=data.local(raw);if(blocked)throw Error('Reload after repairing the original link data.');
+       staged={entries,raw};document.getElementById('links-preview-summary').textContent=`${entries.length} links in this file replace all ${current.length} links in this browser. An empty file clears all links. Nothing has changed yet.`;
+       const items=document.getElementById('links-preview-items');items.replaceChildren();for(const l of entries){const item=document.createElement('li');item.textContent=l.name+' · '+l.url;items.append(item);}
+       preview.hidden=false;tell('Preview ready. Download your current links first. A previous raw copy will be retained before replacement.');
+      }catch(e){tell('File refused: '+e.message+' Nothing changed.');}
+      finally{if(generation===readGeneration)importLinksFile.value='';}
+    });
+    approve.addEventListener('change',()=>replace.disabled=!staged||!approve.checked);
+    document.getElementById('links-restore-cancel').addEventListener('click',()=>{++readGeneration;resetPreview();importLinksFile.value='';tell('Restore cancelled. Nothing changed.');});
+    replace.addEventListener('click',()=>{
+      if(!staged||!approve.checked)return;
+      try{data.replace(localStorage,staged.raw,staged.entries,Date.now()+'-'+crypto.randomUUID());expected=localStorage.getItem(data.KEY);links=staged.entries;renderLinks();resetPreview();importLinksFile.value='';showPrevious();tell('Links replaced in this browser only. Previous raw copy retained and available below.');}
+      catch(e){resetPreview();tell('Restore stopped: '+e.message+' Original links remain unchanged.');}
+    });
+    const previous=document.getElementById('quick-links-previous');
+    function showPrevious(){try{previous.hidden=!Object.keys(localStorage).some(k=>k.startsWith('quickLinksRecoveryPrior:'));}catch{previous.hidden=true;}}
+    showPrevious();previous.addEventListener('click',()=>{try{const k=Object.keys(localStorage).filter(k=>k.startsWith('quickLinksRecoveryPrior:')).sort().pop();download(localStorage.getItem(k),'relax-links-previous-raw-'+Date.now()+'.json');tell('Previous raw-copy download requested. Its raw field keeps the earlier stored text. It may need repair before restore.');}catch(e){tell(e.message);}});
 
     function getDragAfterElement(container, y) {
         const draggableElements = [...container.querySelectorAll('.quick-link-category-section:not(.collapsed) .quick-link-item:not(.dragging)')];
@@ -369,8 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     newLinksOrder.push(originalLink);
                 }
             });
-            links = newLinksOrder;
-            saveLinks();
+            saveLinks(newLinksOrder);
             renderLinks(); // Re-render to ensure correct structure and listeners
         });
     }

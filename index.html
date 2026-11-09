@@ -32,6 +32,8 @@
     <div class="dashboard-container">
         <header class="dashboard-header glassmorphism-header">
             <h1>Serene Dashboard</h1>
+            <a class="links-jump" href="#quick-links-panel">My links</a>
+            <button id="links-exit-reading" class="links-jump" type="button" hidden>Back to dashboard</button>
             <a class="journal-jump" href="#journaling-widget">My journal</a>
             <button id="journal-exit-reading" class="journal-jump" type="button" hidden>Back to dashboard</button>
         </header>
@@ -191,10 +193,12 @@
 
     <div id="quick-links-panel" class="widget">
         <div class="widget-header">
-            <h3>Quick Links</h3>
+            <h3 id="quick-links-title" tabindex="-1">Quick Links</h3>
             <button id="add-link-btn" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add</button>
         </div>
 
+        <p>Links stay in this browser only. Download a private file to keep a copy.</p>
+        <p id="quick-links-status" role="status"></p>
         <div id="quick-links-list">
             <!-- Links will be added here by JavaScript -->
         </div>
@@ -204,10 +208,16 @@
             <button id="add-link-empty-state-btn" class="btn btn-primary">Add First Link</button>
         </div>
         <div class="quick-links-actions footer-actions">
-            <button id="export-links-btn" class="btn btn-sm btn-outline"><i class="fas fa-file-export"></i> Export</button>
+            <button id="export-links-btn" class="btn btn-sm btn-outline">Download links</button>
             <input type="file" id="import-links-file" accept=".json" style="display: none;">
-            <button id="import-links-btn" class="btn btn-sm btn-outline"><i class="fas fa-file-import"></i> Import</button>
+            <button id="import-links-btn" class="btn btn-sm btn-outline">Choose file to preview</button>
         </div>
+        <div id="links-restore-preview" hidden>
+          <p id="links-preview-summary"></p><ul id="links-preview-items"></ul>
+          <label><input id="links-replace-approve" type="checkbox"> I understand this replaces all my links.</label>
+          <div class="links-recovery-actions"><button id="links-replace-confirm" disabled>Replace links</button><button id="links-restore-cancel">Cancel</button></div>
+        </div>
+        <details><summary>Original data copies</summary><p>Raw files preserve stored text in a raw field. They may need repair before restore.</p><button id="quick-links-raw">Download unchanged raw copy</button><button id="quick-links-previous" hidden>Download previous raw copy</button></details>
     </div>
 
     <!-- New Meditation Timer Widget -->
@@ -392,6 +402,7 @@
                 <button id="close-modal-btn" class="close-btn">&times;</button>
             </div>
             <form id="quick-link-form">
+                <p id="quick-link-form-status" role="status"></p>
                 <div class="form-group">
                     <label for="link-name">Name</label>
                     <input type="text" id="link-name" name="link-name" required maxlength="25">
@@ -400,6 +411,9 @@
                     <label for="link-url">URL</label>
                     <input type="url" id="link-url" name="link-url" required>
                 </div>
+                <div class="form-group"><label for="link-icon">Icon (optional)</label><input id="link-icon" maxlength="12"></div>
+                <div class="form-group"><label for="link-category">Category (optional)</label><input id="link-category" maxlength="100"></div>
+                <input type="hidden" id="link-id">
                 <div class="form-actions">
                     <button type="button" id="cancel-link-btn" class="btn btn-text">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -426,6 +440,7 @@
     <script src="js/daily_inspiration.js" defer></script>
     <script src="js/time-widget.js" defer></script>
     <script src="js/weather-widget.js" defer></script>
+    <script src="js/quick-link-data.js" defer></script>
     <script src="js/quick-links.js" defer></script>
     <script src="js/meditation-timer.js" defer></script>
     <script src="js/widget-customizer.js" defer></script>
