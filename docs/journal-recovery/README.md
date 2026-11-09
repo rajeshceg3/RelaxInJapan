@@ -33,3 +33,5 @@ Follow-up removes that unused publishing step, keeps the existing test job/check
 ## Hidden-layout follow-up
 
 Minimal and winter/autumn layouts hide the widget column. My journal now opens a temporary reading view, hiding unrelated widgets and floating controls while preserving the exact selected layout preference. Back to dashboard returns to that layout, without resetting or saving any new preference. Recovery has one bright next action; the journal Save is quiet while recovery is open. Browser regressions seed the hidden Minimal layout for every lifecycle run, prove return does not alter its preference, and separately check all five stored layout choices.
+
+Raw export preserves the exact localStorage string inside a JSON envelope's raw field, including malformed text and unpaired UTF16 code units that a direct UTF8 Blob would replace. It is deliberately distinct from a restorable journal file. Raw-copy fidelity has a model regression. Final unit total102.

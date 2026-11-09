@@ -31,6 +31,7 @@
     if (new Blob([text]).size > LIMIT) throw Error('Journal exceeds the 2 MB restore limit. Use the raw copy and keep it safe.');
     return text;
   }
+  function encodeRaw(raw) { return JSON.stringify({app:APP+'-raw',version:1,storageKey:KEY,raw},null,2); }
   function replace(storage, expected, entries, id) {
     validate(entries);
     if (storage.getItem(KEY) !== expected) throw Error('This journal changed after preview. Choose the file again to review the current version.');
@@ -41,7 +42,7 @@
     storage.setItem(KEY, next);
     return priorKey;
   }
-  const model = {APP,KEY,LIMIT,validate,local,parse,encode,replace};
+  const model = {APP,KEY,LIMIT,validate,local,parse,encode,encodeRaw,replace};
   if (typeof module !== 'undefined' && module.exports) module.exports = model;
   if (typeof document === 'undefined') return;
   root.JournalRecovery = model;
@@ -80,7 +81,7 @@
       catch(e) {tell('Could not make a restorable backup: ' + e.message + ' Download the unchanged raw copy below.');}
     });
     document.getElementById('journal-download-raw').addEventListener('click', () => {
-      try {download(localStorage.getItem(KEY) ?? 'null', 'relax-journal-original-' + Date.now() + '.json');tell('Unchanged raw journal download requested. A damaged raw copy may need repair before restore.');}catch(e){tell('Could not read the journal: ' + e.message);}
+      try {download(encodeRaw(localStorage.getItem(KEY)), 'relax-journal-original-' + Date.now() + '.json');tell('Raw-copy download requested. The file preserves the exact stored text inside its raw field, including damaged text. It may need repair before restore.');}catch(e){tell('Could not read the journal: ' + e.message);}
     });
     file.addEventListener('change', async () => {
       reset();const selected=file.files[0]; if(!selected){tell('No file selected. Nothing changed.');return;}
