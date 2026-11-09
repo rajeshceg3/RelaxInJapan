@@ -32,6 +32,8 @@
     <div class="dashboard-container">
         <header class="dashboard-header glassmorphism-header">
             <h1>Serene Dashboard</h1>
+            <a class="timer-jump" href="#meditation-timer-widget">My timer</a>
+            <button class="timer-jump" id="timer-exit-reading" type="button" hidden>Back to dashboard</button>
             <a class="links-jump" href="#quick-links-panel">My links</a>
             <button id="links-exit-reading" class="links-jump" type="button" hidden>Back to dashboard</button>
             <a class="journal-jump" href="#journaling-widget">My journal</a>
@@ -222,7 +224,8 @@
 
     <!-- New Meditation Timer Widget -->
     <div id="meditation-timer-widget" class="widget">
-        <h3>Meditation Timer</h3>
+        <h3 id="meditation-title" tabindex="-1">Meditation Timer</h3>
+        <p id="meditation-status" role="status">Ready. Choose a duration, then Start.</p>
         <div class="timer-display-container">
             <svg class="progress-ring" width="180" height="180">
                 <circle class="progress-ring-bg" cx="90" cy="90" r="80" stroke-width="8" fill="transparent"/>
@@ -232,36 +235,36 @@
             <span id="time-text">00:00</span>
         </div>
         <div class="timer-controls">
-            <button id="meditation-play-btn" class="control-btn big-btn" aria-label="Play"><i class="fas fa-play"></i></button>
-            <button id="meditation-pause-btn" class="control-btn big-btn hidden" aria-label="Pause"><i class="fas fa-pause"></i></button>
-            <button id="meditation-stop-btn" class="control-btn big-btn" aria-label="Stop"><i class="fas fa-stop"></i></button>
+            <button id="meditation-play-btn" class="control-btn big-btn" aria-label="Start timer">Start</button>
+            <button id="meditation-pause-btn" class="control-btn big-btn" aria-label="Pause timer" hidden>Pause</button>
+            <button id="meditation-stop-btn" class="control-btn big-btn" aria-label="Reset timer">Reset</button>
         </div>
         <div class="meditation-presets">
             <button class="preset-btn" data-duration="300">5m</button>
             <button class="preset-btn" data-duration="600">10m</button>
             <button class="preset-btn" data-duration="900">15m</button>
             <div class="custom-duration">
-                <input type="number" id="custom-duration-input" min="1" max="60" placeholder="Min">
+                <input type="number" id="custom-duration-input" aria-label="Custom timer duration in minutes" min="1" max="60" placeholder="Min">
                 <button id="custom-duration-btn" class="btn-sm">Set</button>
             </div>
         </div>
 
         <!-- Hidden sections for brevity, functionality remains same but polished CSS will handle them -->
         <div id="pomodoro-phase-display" class="widget-subsection-title hidden"></div>
-        <div class="pomodoro-controls widget-section collapsed-section">
+        <details class="pomodoro-controls widget-section"><summary>Focus and break timer</summary>
             <button id="toggle-pomodoro-btn" class="btn-text">Pomodoro Mode</button>
             <div id="pomodoro-settings" class="hidden">
-                 <label for="pomodoro-focus-input">Focus (min):</label>
-                 <input type="number" id="pomodoro-focus-input" value="25" min="1">
+                 <label for="pomodoro-work-input">Focus (min):</label>
+                 <input type="number" id="pomodoro-work-input" value="25" min="1" max="180">
                  <label for="pomodoro-short-break-input">Short Break (min):</label>
-                 <input type="number" id="pomodoro-short-break-input" value="5" min="1">
+                 <input type="number" id="pomodoro-short-break-input" value="5" min="1" max="180">
                  <label for="pomodoro-long-break-input">Long Break (min):</label>
-                 <input type="number" id="pomodoro-long-break-input" value="15" min="1">
+                 <input type="number" id="pomodoro-long-break-input" value="15" min="1" max="180">
                  <label for="pomodoro-cycles-input">Cycles:</label>
-                 <input type="number" id="pomodoro-cycles-input" value="4" min="1">
+                 <input type="number" id="pomodoro-cycles-input" value="4" min="1" max="12">
             </div>
-        </div>
-        <div class="widget-section sound-settings collapsed-section">
+        </details>
+        <details class="widget-section sound-settings"><summary>Sound settings</summary>
             <h4>Sound & Volume</h4>
             <div class="sound-controls-row">
                  <select id="bell-sound-select">
@@ -269,19 +272,22 @@
                     <option value="audio/temple-bell.mp3">Temple Bell</option>
                     <option value="audio/wind-chime.mp3">Wind Chime</option>
                 </select>
-                <button id="preview-sound-btn" class="icon-btn"><i class="fas fa-volume-up"></i></button>
+                <button id="preview-sound-btn" class="icon-btn" aria-label="Preview selected bell sound"><i class="fas fa-volume-up"></i></button>
             </div>
-             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
-        </div>
-        <!-- Breathing Guide Section -->
-        <div id="breathing-guide-container">
-             <h4>Breathing Guide</h4>
-             <button id="toggle-breathing-guide-btn">Start Breathing</button>
-             <div id="breathing-anim-area" class="hidden">
-                 <div id="breathing-circle"></div>
-                 <div id="breathing-text">Inhale</div>
-             </div>
-        </div>
+             <input type="range" id="volume-slider" aria-label="Bell volume" min="0" max="1" step="0.01" value="0.5">
+        </details>
+        <details class="timer-options"><summary>Breathing guide</summary>
+          <p>Optional pacing, not medical guidance. Stop if uncomfortable.</p>
+          <label for="breathing-pattern-select">Pattern (inhale, hold, exhale in seconds)</label>
+          <select id="breathing-pattern-select"><option value="4-2-6">4, 2, 6</option><option value="custom">Custom</option></select>
+          <div id="custom-breathing-pattern-inputs" class="hidden">
+            <label for="inhale-time">Inhale seconds</label><input id="inhale-time" type="number" min="1" max="60" value="4">
+            <label for="hold-time">Hold seconds</label><input id="hold-time" type="number" min="0" max="60" value="2">
+            <label for="exhale-time">Exhale seconds</label><input id="exhale-time" type="number" min="1" max="60" value="6">
+          </div>
+          <button id="toggle-breathing-guide-btn" type="button" aria-pressed="false">Show guide</button>
+          <div id="breathing-guide-container" class="hidden"><div id="breathing-circle"></div><div id="breathing-text"></div></div>
+        </details>
     </div>
 
 <!-- Journaling Widget START -->

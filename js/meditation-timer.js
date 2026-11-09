@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Existing Timer Elements
+    const timerJump=document.querySelector('.timer-jump[href]'),timerExit=document.getElementById('timer-exit-reading');
+    if(timerJump&&timerExit){
+      timerJump.addEventListener('click',event=>{event.preventDefault();document.getElementById('journal-exit-reading').click();document.getElementById('links-exit-reading').click();document.body.classList.add('timer-reading');timerJump.hidden=true;timerExit.hidden=false;document.getElementById('meditation-title').focus();});
+      const exit=()=>{document.body.classList.remove('timer-reading');timerJump.hidden=false;timerExit.hidden=true;};
+      timerExit.addEventListener('click',()=>{exit();timerJump.focus();});
+      document.querySelectorAll('a.journal-jump,a.links-jump').forEach(a=>a.addEventListener('click',exit));
+    }
     const timeTextElement = document.getElementById('time-text');
     const playBtn = document.getElementById('meditation-play-btn');
     const pauseBtn = document.getElementById('meditation-pause-btn');
     const stopBtn = document.getElementById('meditation-stop-btn');
     const progressCircle = document.querySelector('.progress-ring-circle');
 
-    const radius = progressCircle.r.baseVal.value;
+    const radius = Number(progressCircle.getAttribute('r'));
     const circumference = 2 * Math.PI * radius;
     progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
     progressCircle.style.strokeDashoffset = circumference;
@@ -16,6 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let intervalId = null;
     let isRunning = false;
     let wasRunningBeforePause = false;
+    let timerStarted = false;
+    const timerStatus = document.getElementById('meditation-status');
+    function syncActions(message) {
+        playBtn.hidden=isRunning;pauseBtn.hidden=!isRunning;
+        playBtn.classList.toggle('hidden',isRunning);pauseBtn.classList.toggle('hidden',!isRunning);
+        playBtn.textContent=timerStarted&&totalSeconds>0?'Resume':'Start';
+        playBtn.setAttribute('aria-label',timerStarted&&totalSeconds>0?'Resume timer':'Start timer');
+        stopBtn.disabled=!isRunning&&!timerStarted&&totalSeconds===initialSetTime;
+        if(timerStatus&&message)timerStatus.textContent=message;
+    }
 
     // Preset and Custom Duration Elements
     const presetButtons = document.querySelectorAll('.preset-btn');
@@ -215,9 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentPhase === 'shortBreak') phaseText = 'Short Break';
             if (currentPhase === 'longBreak') phaseText = 'Long Break';
             pomodoroPhaseDisplay.textContent = `Phase: ${phaseText}`;
+            pomodoroPhaseDisplay.classList.remove('hidden');
             pomodoroPhaseDisplay.style.display = 'block';
         } else {
             pomodoroPhaseDisplay.textContent = '';
+            pomodoroPhaseDisplay.classList.add('hidden');
             pomodoroPhaseDisplay.style.display = 'none';
         }
     }
@@ -241,6 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         totalSeconds = newSeconds;
         initialSetTime = newSeconds;
+        timerStarted=false;
+        syncActions('Ready. Choose a duration, then Start.');
         updateDisplay();
         if (playBtn) playBtn.disabled = false;
         if (pauseBtn) pauseBtn.disabled = true;
@@ -260,15 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (audioContext && audioContext.state === 'suspended') audioContext.resume();
         isRunning = true;
+        timerStarted=true;
+        syncActions('Timer running. Pause holds your remaining time; Reset returns to the chosen duration.');
         if (playBtn) playBtn.disabled = true;
         if (pauseBtn) pauseBtn.disabled = false;
         intervalId = setInterval(() => {
             totalSeconds--;
             updateDisplay();
-            if (totalSeconds < 0) {
+            if (totalSeconds <= 0) {
                 clearInterval(intervalId);
                 isRunning = false;
                 totalSeconds = 0;
+                timerStarted=false;
+                syncActions('Timer complete. Start repeats the chosen duration.');
                 updateDisplay();
                 if (playBtn) playBtn.disabled = false;
                 if (pauseBtn) pauseBtn.disabled = true;
@@ -284,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(intervalId);
         isRunning = false;
         if (audioContext) audioContext.suspend();
+        syncActions('Paused. Resume continues from this time; Reset returns to the chosen duration.');
         if (playBtn) playBtn.disabled = false;
         if (pauseBtn) pauseBtn.disabled = true;
     }
@@ -291,6 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(intervalId);
         isRunning = false;
         wasRunningBeforePause = false;
+        timerStarted=false;
+        syncActions('Timer reset. Press Start when ready.');
         if (isPomodoroMode && !isAutoPomodoroSwitch) {
             currentPhase = 'work';
             pomodoroCyclesCompleted = 0;
@@ -310,10 +338,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const shortBreakVal = parseInt(pomodoroShortBreakInput.value);
         const longBreakVal = parseInt(pomodoroLongBreakInput.value);
         const cyclesVal = parseInt(pomodoroCyclesInput.value);
-        pomodoroSettings.work = (workVal || 25) * 60;
-        pomodoroSettings.shortBreak = (shortBreakVal || 5) * 60;
-        pomodoroSettings.longBreak = (longBreakVal || 15) * 60;
-        pomodoroSettings.cyclesBeforeLong = cyclesVal || 4;
+        const bounded=(v,fallback,max)=>Number.isInteger(v)&&v>=1&&v<=max?v:fallback;
+        pomodoroSettings.work = bounded(workVal,25,180) * 60;
+        pomodoroSettings.shortBreak = bounded(shortBreakVal,5,180) * 60;
+        pomodoroSettings.longBreak = bounded(longBreakVal,15,180) * 60;
+        pomodoroSettings.cyclesBeforeLong = bounded(cyclesVal,4,12);
+        [pomodoroWorkInput,pomodoroShortBreakInput,pomodoroLongBreakInput,pomodoroCyclesInput].forEach((input,i)=>input.value=String(i===3?pomodoroSettings.cyclesBeforeLong:pomodoroSettings[['work','shortBreak','longBreak'][i]]/60));
         if (isPomodoroMode && !isRunning && totalSeconds > 0) {
             if (currentPhase === 'work' && initialSetTime !== pomodoroSettings.work) setTimerDuration(pomodoroSettings.work);
             else if (currentPhase === 'shortBreak' && initialSetTime !== pomodoroSettings.shortBreak) setTimerDuration(pomodoroSettings.shortBreak);
@@ -425,9 +455,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = breathingPatternSelect.value;
         if (selected === 'custom') {
             customBreathingPatternInputsDiv.classList.remove('hidden');
-            const inh = parseInt(inhaleTimeInput.value) || 4;
-            const hld = parseInt(holdTimeInput.value) || 0;
-            const exh = parseInt(exhaleTimeInput.value) || 6;
+            const bounded=(value,min,fallback)=>Number.isInteger(Number(value))&&Number(value)>=min&&Number(value)<=60?Number(value):fallback;
+            const inh = bounded(inhaleTimeInput.value,1,4);
+            const hld = bounded(holdTimeInput.value,0,0);
+            const exh = bounded(exhaleTimeInput.value,1,6);
+            inhaleTimeInput.value=inh;holdTimeInput.value=hld;exhaleTimeInput.value=exh;
             currentBreathingPattern = { inhale: inh, hold: hld, exhale: exh };
         } else {
             customBreathingPatternInputsDiv.classList.add('hidden');
@@ -444,11 +476,11 @@ document.addEventListener('DOMContentLoaded', () => {
         isBreathingGuideVisible = !isBreathingGuideVisible;
         if (isBreathingGuideVisible) {
             if (breathingGuideContainer) breathingGuideContainer.classList.remove('hidden');
-            if (toggleBreathingGuideBtn) toggleBreathingGuideBtn.textContent = 'Hide Guide';
+            if (toggleBreathingGuideBtn) {toggleBreathingGuideBtn.textContent = 'Hide guide';toggleBreathingGuideBtn.setAttribute('aria-pressed','true');}
             updateBreathingPattern(); // This will also start the cycle via runBreathingCycle
         } else {
             if (breathingGuideContainer) breathingGuideContainer.classList.add('hidden');
-            if (toggleBreathingGuideBtn) toggleBreathingGuideBtn.textContent = 'Show Guide';
+            if (toggleBreathingGuideBtn) {toggleBreathingGuideBtn.textContent = 'Show guide';toggleBreathingGuideBtn.setAttribute('aria-pressed','false');}
             clearBreathingTimeouts();
         }
     }
@@ -505,4 +537,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePomodoroPhaseDisplay();
     populateAmbientSoundsList();
     updateDisplay();
+    syncActions('Ready. Choose a duration, then Start.');
 });
