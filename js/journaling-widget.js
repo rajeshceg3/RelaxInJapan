@@ -59,20 +59,26 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         loadEntries() {
-            const storedEntries = localStorage.getItem('journalEntries');
-            if (storedEntries) {
-                this.entries = JSON.parse(storedEntries);
-                // Ensure entries are sorted by date, just in case they were manually edited or saved out of order
-                this.entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-            } else {
+            try {
+                this.expectedRaw = localStorage.getItem('journalEntries');
+                this.entries = window.JournalRecovery.local(this.expectedRaw);
+                this.entries.sort((a, b) => a.date.localeCompare(b.date));
+                this.elements.saveButton.disabled = false;
+            } catch (error) {
                 this.entries = [];
+                this.elements.saveButton.disabled = true;
+                document.getElementById('journal-save-status').textContent = 'Journal could not be read. Its original data was not changed. Use Original data copy below before any repair.';
             }
         },
 
         saveEntriesToLocalStorage() {
+            if (localStorage.getItem('journalEntries') !== this.expectedRaw) throw Error('Journal changed in another tab.');
+            window.JournalRecovery.validate(this.entries);
             // Sort before saving to maintain order
             this.entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('journalEntries', JSON.stringify(this.entries));
+            const nextRaw = JSON.stringify(this.entries);
+            localStorage.setItem('journalEntries', nextRaw);
+            this.expectedRaw = nextRaw;
         },
 
         getCurrentFormattedDate() {
@@ -103,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const priorEntries = JSON.parse(JSON.stringify(this.entries));
             // Check if an entry for today already exists
             const existingEntryIndex = this.entries.findIndex(entry => entry.date === todayDate);
 
@@ -124,7 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.entries.push(newEntry);
             }
 
-            this.saveEntriesToLocalStorage();
+            try { this.saveEntriesToLocalStorage(); }
+            catch (error) {
+                this.entries = priorEntries;
+                document.getElementById('journal-save-status').textContent = 'Could not save: ' + error.message + ' Your draft is still here. Download a backup before clearing browser storage or reload.';
+                return;
+            }
             this.elements.textInput.value = ''; // Clear textarea
             this.clearSelectedMood();
 
@@ -137,15 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.updateNavigationButtons();
             this.populateDatePickerWithEntryDates(); // Update date picker options
 
-            // Provide feedback (could be a more subtle notification)
-            // For now, a simple alert. Consider replacing with a less obtrusive notification.
-            const tempFeedback = document.createElement('p');
-            tempFeedback.textContent = 'Entry saved!';
-            tempFeedback.style.color = 'green';
-            tempFeedback.style.fontSize = 'var(--font-size-sm)';
-            tempFeedback.style.textAlign = 'center';
-            this.elements.saveButton.insertAdjacentElement('afterend', tempFeedback);
-            setTimeout(() => tempFeedback.remove(), 2000);
+            document.getElementById('journal-save-status').textContent = 'Entry saved in this browser only.';
         },
 
         displayEntry(index) {

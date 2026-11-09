@@ -943,3 +943,29 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus, sele
     margin: 0 auto !important;
 }
 .dashboard-main.layout-sf-winter { justify-content: center !important; }
+
+/* Bounded journal recovery. Keep the dashboard identity, no new global skin. */
+.journal-jump { color:inherit; text-decoration:underline; text-underline-offset:4px; padding:12px; }
+#journaling-widget { scroll-margin-top:24px; }
+.journal-local-note,#journal-save-status {font-size:.9rem;line-height:1.6;color:var(--color-text-secondary);}
+.journal-recovery {border:1px solid rgba(80,70,50,.2);border-radius:16px;background:rgba(255,250,242,.97);color:#322d25;padding:16px;margin:0 0 160px;line-height:1.6;overflow-wrap:anywhere;}
+.journal-recovery summary {cursor:pointer;min-height:44px;padding:10px 0;font-weight:600;}
+.journal-recovery p {margin:12px 0;}
+.journal-recovery button {min-height:44px;padding:10px 14px;margin:6px 4px 6px 0;border:1px solid #8b8172;border-radius:10px;background:transparent;color:#322d25;font:inherit;cursor:pointer;}
+.journal-recovery .journal-primary {background:#85502b;color:#fff;border-color:#85502b;font-weight:600;}
+.journal-recovery button:disabled {background:#e2d9cd;color:#62594c;border-color:#bbb0a1;cursor:not-allowed;}
+.journal-recovery:has(#journal-restore-preview:not([hidden])) #journal-download-backup {background:transparent;color:#322d25;border-color:#8b8172;font-weight:400;}
+.journal-file-label {display:block;margin:16px 0 8px;font-weight:600;}
+#journal-backup-file {display:block;max-width:100%;font:inherit;min-height:44px;}
+.journal-check {display:flex;gap:10px;align-items:flex-start;padding:12px 0;}
+.journal-check input {width:24px;height:24px;flex-shrink:0;margin-top:2px;}
+.journal-recovery [hidden] {display:none!important;}
+.journal-recovery :focus-visible,.journal-jump:focus-visible {outline:3px solid #85502b;outline-offset:3px;}
+/* Recovery must not sit behind ambient floating controls. Closing restores them. */
+body:has(#journal-recovery[open]) #gallery-controls,
+body:has(#journal-recovery[open]) #main-audio-player-container {display:none!important;pointer-events:none;}
+#journaling-widget #journal-save-btn {min-height:44px;background:#85502b;color:white;}
+#journaling-widget .mood-btn {min-width:44px;min-height:44px;border-radius:8px;border:1px solid #b5b0a7;background:#fff;font-size:1.1rem;}
+#journaling-widget #journal-mood-selector {display:flex;flex-wrap:wrap;gap:4px;}
+#journaling-widget .mood-btn {font-size:.875rem;padding:8px;}
+#journaling-widget .mood-btn.selected {background:#f1ddc8;border-color:#85502b;color:#322d25;}

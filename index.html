@@ -32,6 +32,7 @@
     <div class="dashboard-container">
         <header class="dashboard-header glassmorphism-header">
             <h1>Serene Dashboard</h1>
+            <a class="journal-jump" href="#journaling-widget">My journal</a>
         </header>
         <main class="dashboard-main">
             <aside class="column column-sidebar">
@@ -275,17 +276,19 @@
 <!-- Journaling Widget START -->
 <div id="journaling-widget" class="widget" role="complementary" aria-labelledby="journaling-widget-title">
     <h3 id="journaling-widget-title">My Journal</h3>
+    <p class="journal-local-note">Saved only in this browser. Download a private copy to keep it safe.</p>
+    <p id="journal-save-status" role="status" aria-live="polite"></p>
     <div id="journal-entry-area">
         <div class="journal-input-wrapper">
              <textarea id="journal-text-input" placeholder="Write your thoughts..." aria-label="Journal Entry"></textarea>
              <div class="journal-footer">
                 <div id="journal-mood-selector" role="group" aria-label="Mood">
-                    <button class="mood-btn" data-mood="😊">😊</button>
-                    <button class="mood-btn" data-mood="🙂">🙂</button>
-                    <button class="mood-btn" data-mood="😐">😐</button>
-                    <button class="mood-btn" data-mood="😕">😕</button>
-                    <button class="mood-btn" data-mood="😟">😟</button>
-                    <button class="mood-btn" data-mood="😢">😢</button>
+                    <button class="mood-btn" data-mood="😊" aria-label="Mood: Happy">Happy</button>
+                    <button class="mood-btn" data-mood="🙂" aria-label="Mood: Good">Good</button>
+                    <button class="mood-btn" data-mood="😐" aria-label="Mood: Okay">Okay</button>
+                    <button class="mood-btn" data-mood="😕" aria-label="Mood: Unsure">Unsure</button>
+                    <button class="mood-btn" data-mood="😟" aria-label="Mood: Worried">Worried</button>
+                    <button class="mood-btn" data-mood="😢" aria-label="Mood: Sad">Sad</button>
                 </div>
                 <button id="journal-save-btn" class="btn btn-primary btn-sm">Save</button>
              </div>
@@ -295,11 +298,12 @@
         <div class="journal-history-header">
              <h4>Past Entries</h4>
              <div id="journal-navigation-controls">
-                <button id="journal-prev-entry-btn" class="icon-btn"><i class="fas fa-chevron-left"></i></button>
-                <input type="date" id="journal-date-picker">
-                <button id="journal-next-entry-btn" class="icon-btn"><i class="fas fa-chevron-right"></i></button>
+                <button id="journal-prev-entry-btn" class="icon-btn" aria-label="Previous journal entry"><i class="fas fa-chevron-left"></i></button>
+                <input type="date" id="journal-date-picker" aria-label="Journal date">
+                <button id="journal-next-entry-btn" class="icon-btn" aria-label="Next journal entry"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
+        <p id="journal-empty-state">No journal entries yet.</p>
         <div id="journal-current-entry-display" class="journal-card">
             <div class="journal-entry-meta">
                 <span id="journal-entry-date-display">--</span>
@@ -311,6 +315,22 @@
         </div>
     </div>
 </div>
+<details id="journal-recovery" class="journal-recovery">
+ <summary>Journal backup &amp; restore</summary>
+ <p>A file you keep, not cloud sync. Restoring replaces this browser's journal only. Quick links, preferences and other widgets are not included.</p>
+ <button id="journal-download-backup" class="journal-primary">Download journal</button>
+ <label class="journal-file-label" for="journal-backup-file">Choose a journal backup to preview</label>
+ <input id="journal-backup-file" type="file" accept="application/json,.json">
+ <div id="journal-restore-preview" hidden>
+  <p id="journal-preview-summary"></p>
+  <label class="journal-check"><input id="journal-replace-approve" type="checkbox"> I understand this replaces my current journal.</label>
+  <button id="journal-restore-confirm" class="journal-primary" disabled hidden>Replace journal</button>
+  <button id="journal-restore-cancel" type="button">Cancel</button>
+ </div>
+ <p id="journal-recovery-status" role="status" aria-live="polite"></p>
+ <button id="journal-download-previous" type="button" hidden>Download previous copy</button>
+ <details><summary>Original data copy</summary><p>If a journal is damaged, keep its original bytes before any repair. This copy may not be restorable without repair.</p><button id="journal-download-raw" type="button">Download unchanged raw copy</button></details>
+</details>
 <!-- Journaling Widget END -->
             </aside>
         </main>
@@ -410,6 +430,7 @@
     <script src="js/widget-customizer.js" defer></script>
     <script src="js/layout-switcher.js" defer></script>
     <script src="js/theme-switcher.js" defer></script>
+    <script src="js/journal-recovery.js" defer></script>
     <script src="js/journaling-widget.js" defer></script>
     <script src="js/ui-polish.js" defer></script>
 </body>
