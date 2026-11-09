@@ -19,3 +19,7 @@ Baseline80 tests passed without covering the empty journal fault. The new20 mode
 There is a pre-existing unrelated meditation startup error at js/meditation-timer.js:38 because required inputs are missing from the HTML. This increment does not fix the timer or claim zero whole-app errors. Browser results separately record only that known error and reject all other script errors. Quick-link malformed data/unsafe import and missing form fields remain a separate follow-up. No real owner records were read or migrated, no cloud saving/automatic sync/private companion added, and no whole-dashboard design/performance/accessibility acceptance claimed.
 
 Production URL from successful existing GitHub Pages deployment: https://rajeshceg3.github.io/RelaxInJapan/ . Production release/source-byte qualification remains required after normal PR merge.
+
+## Portable CI
+
+A separate read-only journal verification workflow pins ubuntu-24.04 and Node22, installs the locked Playwright1.58.2 Chromium and runs100 unit tests plus the real browser matrix. It has no secrets, schedules, deployment step or write permission. Existing main CI/deploy workflow is unchanged. Local installed Chrome can be selected with CHROME_PATH. npm audit reports14 development dependency advisories; no production package is served by this static change. They are not silently fixed by a breaking upgrade or claimed resolved here.
