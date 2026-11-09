@@ -216,7 +216,7 @@ describe('Meditation Timer Logic', () => {
 
             // Ensure initial state for these specific tests
             breathingGuideContainer.classList.add('hidden');
-            toggleBreathingGuideBtn.textContent = 'Show Guide';
+            toggleBreathingGuideBtn.textContent = 'Show guide';
             breathingPatternSelect.value = '4-2-6';
             customBreathingPatternInputsDiv.classList.add('hidden');
             inhaleTimeInput.value = '4';
@@ -231,7 +231,7 @@ describe('Meditation Timer Logic', () => {
             it('should show the breathing guide, update button text, and start cycle', () => {
                 toggleBreathingGuideBtn.click();
                 expect(breathingGuideContainer.classList.contains('hidden')).toBe(false);
-                expect(toggleBreathingGuideBtn.textContent).toBe('Hide Guide');
+                expect(toggleBreathingGuideBtn.textContent).toBe('Hide guide');
                 expect(setTimeout).toHaveBeenCalled();
             });
 
@@ -242,7 +242,7 @@ describe('Meditation Timer Logic', () => {
 
                 toggleBreathingGuideBtn.click(); // Hide it
                 expect(breathingGuideContainer.classList.contains('hidden')).toBe(true);
-                expect(toggleBreathingGuideBtn.textContent).toBe('Show Guide');
+                expect(toggleBreathingGuideBtn.textContent).toBe('Show guide');
                 expect(clearTimeout).toHaveBeenCalled();
             });
         });

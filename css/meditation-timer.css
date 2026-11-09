@@ -200,3 +200,30 @@
 .hidden {
     display: none !important;
 }
+
+/* State-owned action: one obvious Start/Resume or Pause, quieter Reset. */
+#meditation-timer-widget .timer-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:16px 0;}
+#meditation-timer-widget .timer-controls button{min-height:48px;min-width:100px;width:auto;border-radius:12px;padding:10px 18px;font:inherit;font-size:16px;font-weight:600;}
+#meditation-play-btn,#meditation-pause-btn{background:#85502b!important;color:#fff!important;border:1px solid #85502b;}
+#meditation-stop-btn{background:transparent;border:1px solid #918272;color:#49372a;}
+#meditation-timer-widget [hidden]{display:none!important;}
+#meditation-timer-widget button:disabled{opacity:.55;cursor:not-allowed;}
+#meditation-timer-widget button:focus-visible,#meditation-timer-widget summary:focus-visible,#meditation-timer-widget input:focus-visible,#meditation-timer-widget select:focus-visible{outline:3px solid #85502b;outline-offset:3px;}
+#meditation-status{line-height:1.5;min-height:3em;}
+#meditation-timer-widget details{padding:12px 0;text-align:left;}
+#meditation-timer-widget summary{min-height:44px;cursor:pointer;padding:10px 0;}
+#meditation-timer-widget details input,#meditation-timer-widget details select{max-width:100%;min-height:44px;}
+#meditation-timer-widget details label{display:block;margin:8px 0 4px;}
+#meditation-timer-widget details button{min-height:44px;padding:8px 12px;}
+#meditation-timer-widget .meditation-presets{display:flex;flex-wrap:wrap;justify-content:center;}
+#meditation-timer-widget .preset-btn,#custom-duration-btn,#custom-duration-input{min-height:44px;}
+@media(prefers-reduced-motion:reduce){#breathing-circle{animation:none!important;transition:none!important;}}
+#meditation-timer-widget .timer-display-container{position:relative;width:180px;height:180px;margin:20px auto;display:grid;place-items:center;}
+#meditation-timer-widget .timer-display-container svg{position:absolute;inset:0;width:180px;height:180px;transform:rotate(-90deg);}
+#meditation-timer-widget #time-text{position:relative;font-size:36px;line-height:1;color:#332b23;}
+#meditation-timer-widget .meditation-presets{align-items:center;gap:8px;margin:16px 0;}
+#meditation-timer-widget .preset-btn{min-width:56px;flex:0 0 auto;padding:10px 12px;border-radius:8px;font:inherit;}
+#meditation-timer-widget .custom-duration{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap;}
+#meditation-timer-widget #custom-duration-input{width:80px;padding:8px;box-sizing:border-box;}
+#meditation-timer-widget #custom-duration-btn{padding:10px 12px;font:inherit;border-radius:8px;}
+#meditation-timer-widget .sound-settings{box-shadow:none;border:0;border-radius:0;}

@@ -1028,3 +1028,14 @@ body.links-modal-open {overflow:hidden;}
 #quick-link-modal label {display:block;margin-bottom:5px;}
 #quick-link-modal .form-actions {display:flex;gap:10px;justify-content:flex-end;}
 #quick-link-modal button[type=submit] {background:#85502b;color:#fff;border:1px solid #85502b;border-radius:10px;}
+
+/* Temporary timer view preserves the chosen dashboard layout. */
+.timer-jump{color:inherit;text-decoration:underline;text-underline-offset:4px;padding:12px;}
+.timer-jump[hidden]{display:none!important;}
+#timer-exit-reading{font:inherit;border:0;background:transparent;cursor:pointer;min-height:44px;}
+body.timer-reading .dashboard-main{display:block!important;}
+body.timer-reading .dashboard-main>.column-content,body.timer-reading .dashboard-main>.column-sidebar{display:none!important;}
+body.timer-reading .dashboard-main>.column-widgets{display:block!important;width:100%;max-width:680px;margin:0 auto;flex:none!important;}
+body.timer-reading .column-widgets>:not(#meditation-timer-widget){display:none!important;}
+body.timer-reading #meditation-timer-widget{display:block!important;width:100%;}
+body.timer-reading #gallery-controls,body.timer-reading #main-audio-player-container{display:none!important;}

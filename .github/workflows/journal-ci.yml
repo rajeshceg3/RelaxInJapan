@@ -21,6 +21,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tests/journal-browser.mjs
       - run: node tests/quick-links-browser.mjs
+      - run: node tests/timer-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -28,4 +29,5 @@ jobs:
           path: |
             docs/journal-recovery/
             docs/quick-links-recovery/
+            docs/timer-actions/
           retention-days: 14

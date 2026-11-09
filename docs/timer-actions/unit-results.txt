@@ -1,0 +1,16 @@
+
+> relaxinjapan@1.0.0 test
+> jest --runInBand
+
+PASS tests/timer-shipped-dom.test.js
+PASS tests/meditation-timer.test.js
+PASS tests/journal-recovery.test.js
+PASS tests/seasonal-engine.test.js
+PASS tests/gallery.test.js
+PASS tests/quick-link-data.test.js
+
+Test Suites: 6 passed, 6 total
+Tests:       124 passed, 124 total
+Snapshots:   0 total
+Time:        1.433 s, estimated 2 s
+Ran all test suites.
