@@ -2,5 +2,5 @@
   "app": "relax-in-japan-links-raw",
   "version": 1,
   "storageKey": "quickLinks",
-  "raw": "[{\"id\":\"dc959a25-295d-4adf-9eb4-50c330659ddf\",\"name\":\"Revised\",\"url\":\"https://example.com/research\",\"icon\":\"📖\",\"category\":\"Study\"}]"
+  "raw": "[{\"id\":\"be029d77-2f59-4a80-9d6c-18eb37ea8e5e\",\"name\":\"Revised\",\"url\":\"https://example.com/research\",\"icon\":\"📖\",\"category\":\"Study\"}]"
 }

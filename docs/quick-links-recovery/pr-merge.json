@@ -1,0 +1,21 @@
+{
+  "pr": "https://github.com/rajeshceg3/RelaxInJapan/pull/69",
+  "head": "1c2814720b03a05854a67aa19f4f1e9ff574893c",
+  "checks": [
+    {
+      "name": "build-and-deploy",
+      "conclusion": "success",
+      "html_url": "https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42621756128/job/129175404594"
+    },
+    {
+      "name": "journal",
+      "conclusion": "success",
+      "html_url": "https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42621756097/job/129175404366"
+    }
+  ],
+  "result": {
+    "sha": "f49a6b6330f5d25f201f1ccd2e4917689efd0fe9",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  }
+}

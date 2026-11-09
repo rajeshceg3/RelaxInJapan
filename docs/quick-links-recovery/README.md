@@ -30,3 +30,13 @@ For installed Chrome: `CHROME_PATH=/usr/bin/google-chrome node tests/quick-links
 For production: prefix `DIRECT_URL=https://rajeshceg3.github.io/RelaxInJapan/`.
 
 The browser fixture uses isolated synthetic local data, actual file downloads, rendered controls, reload, failed storage, stale previews, malformed originals and four viewport widths. Local/hosted results identify the gate actually run. CI uploads pixel and downloaded synthetic-file evidence. No owner data is included.
+
+## Production qualification, 2026-11-09 18:37 IST
+
+PR69 https://github.com/rajeshceg3/RelaxInJapan/pull/69 final head1c2814720b03a05854a67aa19f4f1e9ff574893c passed both checks before normal merge. Runtime main f49a6b6330f5d25f201f1ccd2e4917689efd0fe9.
+
+Native Pages https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42622205841 and main workflows42622207665/42622207678 all succeeded on that exact commit. Live https://rajeshceg3.github.io/RelaxInJapan/ . All19 referenced runtime files, including index, both CSS and16scripts, matched exact source bytes. Served script retained as tests/quick-links-served.mjs.
+
+Actual hosted custom-link journey passed320/390/844/1320 and all5saved layouts with synthetic isolated data. Hosted journal regression also passed4widths and5layouts. Inspected actual hosted390preview,844quota notice and scrolled Save/Cancel,1320preview and320malformed raw recovery pixels. Controls readable and reachable; short-screen modal scroll checked at both notice and footer. The unrelated meditation initialization error remains6reload errors perwidth in fixtures, with no new link errors.
+
+Evidence-only branch retains hosted results and screenshots beside code. It is not a new production deployment. No private owner storage was read or migrated.

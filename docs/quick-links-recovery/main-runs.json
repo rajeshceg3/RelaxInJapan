@@ -1,0 +1,26 @@
+[
+  {
+    "id": 42622207665,
+    "name": "CI/CD Pipeline for Serene Dashboard",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42622207665",
+    "head_sha": "f49a6b6330f5d25f201f1ccd2e4917689efd0fe9"
+  },
+  {
+    "id": 42622207678,
+    "name": "Journal verification",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42622207678",
+    "head_sha": "f49a6b6330f5d25f201f1ccd2e4917689efd0fe9"
+  },
+  {
+    "id": 42622205841,
+    "name": "pages build and deployment",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42622205841",
+    "head_sha": "f49a6b6330f5d25f201f1ccd2e4917689efd0fe9"
+  }
+]
