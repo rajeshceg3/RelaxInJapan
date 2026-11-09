@@ -6,9 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4 # Updated to a more recent version
@@ -16,21 +19,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4 # Updated to a more recent version
         with:
-          node-version: '18' # Specify a Node.js version
+          node-version: '22'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run Tests
-        run: npx jest
+        run: npm test -- --runInBand
 
-      # Optional: Generate Code Coverage Report (as mentioned in README)
-      # - name: Generate Code Coverage
-      #   run: npx jest --coverage
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main' # Only deploy on push to main
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./ # Assuming index.html is in the root
+      # Production Pages is configured from main / (root), verified in repository
+      # Pages settings. The native pages-build-deployment workflow owns publishing.
+      # Do not also push gh-pages or widen token permissions for a redundant path.

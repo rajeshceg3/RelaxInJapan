@@ -23,3 +23,9 @@ Production URL from successful existing GitHub Pages deployment: https://rajeshc
 ## Portable CI
 
 A separate read-only journal verification workflow pins ubuntu-24.04 and Node22, installs the locked Playwright1.58.2 Chromium and runs100 unit tests plus the real browser matrix. It has no secrets, schedules, deployment step or write permission. Existing main CI/deploy workflow is unchanged. Local installed Chrome can be selected with CHROME_PATH. npm audit reports14 development dependency advisories; no production package is served by this static change. They are not silently fixed by a breaking upgrade or claimed resolved here.
+
+## Redundant deployment failure found during release
+
+PR66 merged as0b2cf0a7f1de62e1c4a898a27ef086c5afded24e. The real native Pages run https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42564925363 succeeded and served the updated index. Journal main CI passed. The unrelated legacy deploy step https://github.com/rajeshceg3/RelaxInJapan/actions/runs/42564926309/job/128989259219 tried pushing gh-pages and failed403 as github-actions[bot]. Current Pages settings https://github.com/rajeshceg3/RelaxInJapan/settings/pages explicitly show Deploy from a branch: main / (root), last published by native pages build and deployment. No settings changed.
+
+Follow-up removes that unused publishing step, keeps the existing test job/check name, pins supported runner and Node22, uses npm ci, and explicitly narrows contents permission to read. Native main/root Pages publishing remains unchanged. No token write grant, secret, account or provider change. Source regression checks that the redundant publisher and write permission are absent. Final total101 unit tests.
