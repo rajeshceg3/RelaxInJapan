@@ -22,6 +22,13 @@ jobs:
       - run: node tests/journal-browser.mjs
       - run: node tests/quick-links-browser.mjs
       - run: node tests/timer-browser.mjs
+      - run: node tests/calm-browser.mjs
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Verify original stored bytes across views
+        run: |
+          python3 -m http.server 4213 > /tmp/calm-server.log 2>&1 &
+          node tests/calm-data.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -30,4 +37,5 @@ jobs:
             docs/journal-recovery/
             docs/quick-links-recovery/
             docs/timer-actions/
+            docs/calm-experience/
           retention-days: 14

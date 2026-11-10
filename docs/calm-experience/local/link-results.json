@@ -1,0 +1,46 @@
+[
+  {
+    "width": 320,
+    "passed": true,
+    "newErrors": 0,
+    "knownTimerErrors": 0
+  },
+  {
+    "width": 390,
+    "passed": true,
+    "newErrors": 0,
+    "knownTimerErrors": 0
+  },
+  {
+    "width": 844,
+    "passed": true,
+    "newErrors": 0,
+    "knownTimerErrors": 0
+  },
+  {
+    "width": 1320,
+    "passed": true,
+    "newErrors": 0,
+    "knownTimerErrors": 0
+  },
+  {
+    "layout": "default",
+    "passed": true
+  },
+  {
+    "layout": "traditional-grid",
+    "passed": true
+  },
+  {
+    "layout": "minimalist-center",
+    "passed": true
+  },
+  {
+    "layout": "asymmetrical-zen",
+    "passed": true
+  },
+  {
+    "layout": "seasonal-flow",
+    "passed": true
+  }
+]
