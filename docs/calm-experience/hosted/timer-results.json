@@ -1,0 +1,51 @@
+[
+  {
+    "width": 320,
+    "passed": true,
+    "pageErrors": 0,
+    "clock": "Playwright-controlled timer events, not background/device accuracy"
+  },
+  {
+    "width": 390,
+    "passed": true,
+    "pageErrors": 0,
+    "clock": "Playwright-controlled timer events, not background/device accuracy"
+  },
+  {
+    "width": 844,
+    "passed": true,
+    "pageErrors": 0,
+    "clock": "Playwright-controlled timer events, not background/device accuracy"
+  },
+  {
+    "width": 1320,
+    "passed": true,
+    "pageErrors": 0,
+    "clock": "Playwright-controlled timer events, not background/device accuracy"
+  },
+  {
+    "layout": "default",
+    "reachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "traditional-grid",
+    "reachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "minimalist-center",
+    "reachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "asymmetrical-zen",
+    "reachable": true,
+    "savedPreferenceUnchanged": true
+  },
+  {
+    "layout": "seasonal-flow",
+    "reachable": true,
+    "savedPreferenceUnchanged": true
+  }
+]

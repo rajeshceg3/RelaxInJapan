@@ -9,3 +9,6 @@ A single calm layout replaces prior dashboard grids. Original layout selection b
 Verification:124Jest tests, existing four-width timer/journal/link journeys (only disclosure access updated), new320/390/844/1320experience journeys incl keyboard modal trap, and all5saved-layout fixture navigation/reload tests with exact original journal/link/preference bytes unchanged. Original-before/current-local screenshots and results retained here. Physical-device/Safari/background timer accuracy and fresh weather accuracy are not inferred from these checks.
 
 Production remains a separate acceptance gate: normal PR/greenCI/Pages exactcommit, all served runtime bytes and public hosted journeys/pixels.
+
+## Qualified production
+PR71 merged as cd1ec478e51b9cf0b699a0e6e366214e2d9dd85a. Exact Pages and both main CI runs green. All20served runtime files match. Public hosted4width experience, timer, journal/link regression journeys pass with zero errors, and5saved-layout byte-preservation matrices pass. Actual hosted390/844/1320arrival and task pixels inspected. Original before images retained. Missing bell recordings remain unavailable; this release adds no sound claims.
