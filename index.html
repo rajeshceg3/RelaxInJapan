@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serene Dashboard</title>
+    <title>Relax in Japan - A little room to exhale</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="css/polished.css">
     <!-- Keep meditation-timer linked but it now extends polished.css -->
     <link rel="stylesheet" href="css/meditation-timer.css">
+    <link rel="stylesheet" href="css/calm.css">
 </head>
-<body>
+<body data-calm-view="home">
     <div id="background-gallery"></div>
     <div class="background-svg-container" id="background-svg-animations">
         <!-- SVGs will be injected here by JavaScript or defined statically -->
@@ -30,20 +31,28 @@
         </svg>
     </div>
     <div class="dashboard-container">
-        <header class="dashboard-header glassmorphism-header">
-            <h1>Serene Dashboard</h1>
-            <a class="timer-jump" href="#meditation-timer-widget">My timer</a>
-            <button class="timer-jump" id="timer-exit-reading" type="button" hidden>Back to dashboard</button>
-            <a class="links-jump" href="#quick-links-panel">My links</a>
-            <button id="links-exit-reading" class="links-jump" type="button" hidden>Back to dashboard</button>
-            <a class="journal-jump" href="#journaling-widget">My journal</a>
-            <button id="journal-exit-reading" class="journal-jump" type="button" hidden>Back to dashboard</button>
+        <header class="dashboard-header">
+            <button id="calm-home" class="wordmark" type="button" aria-label="Relax in Japan, home">relax <span>in japan</span></button>
+            <nav aria-label="Your space">
+              <a class="timer-jump" href="#meditation-timer-widget">Pause</a>
+              <a class="journal-jump" href="#journaling-widget">Write</a>
+              <a class="links-jump" href="#quick-links-panel">Links</a>
+              <button id="calm-space" type="button" aria-controls="space-settings">Space</button>
+            </nav>
+            <button class="view-close" id="timer-exit-reading" type="button" hidden>Close timer</button>
+            <button class="view-close" id="links-exit-reading" type="button" hidden>Close links</button>
+            <button class="view-close" id="journal-exit-reading" type="button" hidden>Close journal</button>
         </header>
+        <section id="calm-arrival" aria-labelledby="arrival-title">
+          <div class="arrival-copy"><p class="eyebrow">A moment, just for you</p><h1 id="arrival-title">A little room<br>to exhale.</h1><p>Nothing to finish. Nowhere to rush.</p><button id="calm-begin" type="button">Begin a pause <span aria-hidden="true">↗</span></button></div>
+          <figure class="calm-landscape"><svg viewBox="0 0 1200 650" role="img" aria-labelledby="landscape-title" preserveAspectRatio="xMidYMid slice"><title id="landscape-title">An imagined mountain garden, reflected in still water</title><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#e7d8c4"/><stop offset="1" stop-color="#f9f4ea"/></linearGradient><linearGradient id="lake" x2="0" y2="1"><stop stop-color="#a7b7ac"/><stop offset="1" stop-color="#e3e6d9"/></linearGradient><linearGradient id="mount" x2="1" y2="1"><stop stop-color="#5c756c"/><stop offset="1" stop-color="#9daa99"/></linearGradient></defs><path fill="url(#sky)" d="M0 0h1200v650H0z"/><circle cx="874" cy="155" r="56" fill="#d9aa7d" opacity=".75"/><path d="M0 340Q160 210 325 314L588 84 799 329Q1030 181 1200 293V650H0" fill="#bdc4b2"/><path d="M220 370L587 84 790 372Z" fill="url(#mount)"/><path d="M516 142L587 84 642 166 603 148 582 157 554 137Z" fill="#eeeadd"/><path d="M0 369Q252 335 473 370T1200 353V650H0" fill="url(#lake)"/><path d="M340 398L590 608 759 399Z" fill="#8b9f91" opacity=".2"/><path d="M0 487Q106 403 233 431Q315 446 364 484L0 565" fill="#415d50"/><path d="M0 472Q97 438 169 455L107 480 246 510 0 533" fill="#62765b"/><path d="M975 650Q1001 529 1200 497V650" fill="#79816a"/><path d="M1023 650Q1093 543 1200 530" stroke="#d9c7a9" fill="none" stroke-width="25"/><g stroke="#dae1d6" opacity=".7" fill="none"><path d="M443 424h263M587 457h316M396 498h183M688 540h259M424 582h196"/></g><path d="M98 481Q132 355 109 284M115 392Q72 339 43 333M120 367Q163 320 201 324" stroke="#526049" stroke-width="8" fill="none"/><g fill="#718066"><ellipse cx="69" cy="325" rx="75" ry="23"/><ellipse cx="159" cy="315" rx="73" ry="23"/><ellipse cx="101" cy="279" rx="69" ry="25"/></g></svg><figcaption>AN IMAGINED GARDEN · ORIGINAL ILLUSTRATION</figcaption></figure>
+          <footer class="arrival-footer"><span>Let the day wait a moment.</span><button id="calm-write" type="button">Leave a thought <span aria-hidden="true">↗</span></button></footer>
+        </section>
         <main class="dashboard-main">
-            <aside class="column column-sidebar">
-                <h2>Customization</h2>
+            <aside class="column column-sidebar" id="space-settings">
+                <p class="eyebrow">Make room</p><h2>Your space.</h2><p class="space-intro">A few things, only when you need them.</p>
                 <div id="theme-customization-panel" class="widget">
-                    <h3>Theme Customization</h3>
+                    <h3>Colour &amp; atmosphere</h3>
                     <div id="palette-selection" aria-labelledby="palette-selection-title">
                         <h4 id="palette-selection-title">Select a Color Palette:</h4>
                         <div class="palette-buttons">
@@ -199,7 +208,7 @@
             <button id="add-link-btn" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add</button>
         </div>
 
-        <p>Links stay in this browser only. Download a private file to keep a copy.</p>
+        <p>Saved in this browser. Not cloud-synced.</p>
         <p id="quick-links-status" role="status"></p>
         <div id="quick-links-list">
             <!-- Links will be added here by JavaScript -->
@@ -209,7 +218,7 @@
             <p>Add your favorite sites.</p>
             <button id="add-link-empty-state-btn" class="btn btn-primary">Add First Link</button>
         </div>
-        <div class="quick-links-actions footer-actions">
+        <details id="links-data-disclosure"><summary>Manage existing data</summary><div class="quick-links-actions footer-actions">
             <button id="export-links-btn" class="btn btn-sm btn-outline">Download links</button>
             <input type="file" id="import-links-file" accept=".json" style="display: none;">
             <button id="import-links-btn" class="btn btn-sm btn-outline">Choose file to preview</button>
@@ -220,11 +229,11 @@
           <div class="links-recovery-actions"><button id="links-replace-confirm" disabled>Replace links</button><button id="links-restore-cancel">Cancel</button></div>
         </div>
         <details><summary>Original data copies</summary><p>Raw files preserve stored text in a raw field. They may need repair before restore.</p><button id="quick-links-raw">Download unchanged raw copy</button><button id="quick-links-previous" hidden>Download previous raw copy</button></details>
-    </div>
+    </details></div>
 
     <!-- New Meditation Timer Widget -->
     <div id="meditation-timer-widget" class="widget">
-        <h3 id="meditation-title" tabindex="-1">Meditation Timer</h3>
+        <p class="eyebrow">A quiet interval</p><h2 id="meditation-title" tabindex="-1">Stay a little.</h2>
         <p id="meditation-status" role="status">Ready. Choose a duration, then Start.</p>
         <div class="timer-display-container">
             <svg class="progress-ring" width="180" height="180">
@@ -292,8 +301,8 @@
 
 <!-- Journaling Widget START -->
 <div id="journaling-widget" class="widget" role="complementary" aria-labelledby="journaling-widget-title">
-    <h3 id="journaling-widget-title" tabindex="-1">My Journal</h3>
-    <p class="journal-local-note">Saved only in this browser. Download a private copy to keep it safe.</p>
+    <p class="eyebrow">Leave it on the page</p><h2 id="journaling-widget-title" tabindex="-1">What's on your mind?</h2>
+    <p class="journal-local-note">Private to this browser. Not cloud-synced.</p>
     <p id="journal-save-status" role="status" aria-live="polite"></p>
     <div id="journal-entry-area">
         <div class="journal-input-wrapper">
@@ -311,7 +320,7 @@
              </div>
         </div>
     </div>
-    <div id="journal-history-area">
+    <details id="journal-history-disclosure"><summary>Earlier thoughts</summary><div id="journal-history-area">
         <div class="journal-history-header">
              <h4>Past Entries</h4>
              <div id="journal-navigation-controls">
@@ -330,10 +339,10 @@
                 <p class="placeholder-text">Select a date to view entry.</p>
             </div>
         </div>
-    </div>
+    </div></details>
 </div>
 <details id="journal-recovery" class="journal-recovery">
- <summary>Journal backup &amp; restore</summary>
+ <summary>Manage existing journal data</summary>
  <p>A file you keep, not cloud sync. Restoring replaces this browser's journal only. Quick links, preferences and other widgets are not included.</p>
  <button id="journal-download-backup" class="journal-primary">Download journal</button>
  <label class="journal-file-label" for="journal-backup-file">Choose a journal backup to preview</label>
@@ -442,7 +451,7 @@
     <script src="js/seasonal-engine.js" defer></script>
     <script src="js/gallery.js" defer></script>
     <script src="js/main-audio-player.js" defer></script>
-    <script src="js/visual-system.js" defer></script>
+
     <script src="js/daily_inspiration.js" defer></script>
     <script src="js/time-widget.js" defer></script>
     <script src="js/weather-widget.js" defer></script>
@@ -454,6 +463,7 @@
     <script src="js/theme-switcher.js" defer></script>
     <script src="js/journal-recovery.js" defer></script>
     <script src="js/journaling-widget.js" defer></script>
-    <script src="js/ui-polish.js" defer></script>
+
+    <script src="js/calm-experience.js" defer></script>
 </body>
 </html>
